@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kallon GPS Solutions & Services - Suivi GPS en temps réel en Guinée et Sierra Leone. Protégez votre véhicule ou flotte avec notre technologie de pointe.">
+    <title>Kallon GPS | Suivi GPS en temps réel — Guinée & Sierra Leone</title>
+    <meta property="og:title" content="Kallon GPS | Suivi GPS en temps réel">
+    <meta property="og:description" content="Protégez votre véhicule avec le suivi GPS en temps réel. Alertes instantanées, historique des trajets, suivi de flotte en Guinée et Sierra Leone.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://gps-tracking-service.vercel.app/">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <style>
+        :root { --navy:#0D1B2A; --gold:#F5A623; --green:#27AE60; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body { font-family:'DM Sans',sans-serif; background:#0A1421; color:#fff; line-height:1.6; }
+        h1,h2,h3 { font-family:'Bebas Neue',sans-serif; letter-spacing:1px; }
+        .container { max-width:1280px; margin:0 auto; padding:0 20px; }
+
+        /* NAV */
+        nav { position:fixed; top:0; left:0; right:0; background:rgba(13,27,42,0.98); backdrop-filter:blur(12px); z-index:1000; transition:transform 0.4s ease; }
+        .nav-content { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; max-width:1280px; margin:0 auto; }
+        .logo { display:flex; align-items:center; gap:12px; text-decoration:none; }
+        .logo-text { display:flex; flex-direction:column; }
+        .logo-main { font-family:'Bebas Neue',sans-serif; font-size:26px; color:var(--gold); line-height:1; }
+        .logo-sub { font-size:11px; color:#ccc; }
+        .nav-links { display:flex; gap:28px; list-style:none; }
+        .nav-links a { color:white; text-decoration:none; font-weight:500; font-size:15px; transition:color 0.3s; }
+        .nav-links a:hover { color:var(--gold); }
+        .nav-actions { display:flex; align-items:center; gap:12px; }
+        .lang-toggle { background:transparent; border:2px solid var(--gold); color:var(--gold); padding:7px 14px; border-radius:50px; cursor:pointer; font-weight:700; font-size:13px; }
+        .cta-phone { background:var(--gold); color:#0D1B2A; padding:12px 22px; border-radius:50px; font-weight:700; text-decoration:none; font-size:14px; transition: all 0.3s ease; }
+        .cta-phone:hover { background: #e09520; transform: translateY(-2px); }
+        .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; }
+        .hamburger span { width:26px; height:3px; background:white; border-radius:3px; transition:0.3s; }
+        .mobile-menu { display:none; flex-direction:column; gap:0; background:#0D1B2A; border-top:1px solid #1a2a3a; }
+        .mobile-menu.active { display:flex; }
+        .mobile-menu a { color:white; text-decoration:none; padding:16px 20px; font-size:17px; font-weight:500; border-bottom:1px solid #1a2a3a; }
+
+        /* HERO */
+        .hero { min-height:800px; background:linear-gradient(180deg,#0A1421,#0D1B2A); position:relative; display:flex; align-items:center; overflow:hidden; padding:140px 0 60px; }
+        .hero-grid { position:absolute; inset:0; background:linear-gradient(rgba(245,166,35,0.12) 1px,transparent 1px),linear-gradient(90deg,rgba(245,166,35,0.12) 1px,transparent 1px); background-size:80px 80px; animation:gridShift 40s linear infinite; z-index:1; }
+        .gps-dots { position:absolute; inset:0; background:radial-gradient(circle,#F5A623 1.5px,transparent 2px),radial-gradient(circle,#27AE60 1.2px,transparent 2px); background-size:80px 80px; background-position:0 0,40px 40px; animation:dotsMove 8s linear infinite; z-index:2; opacity:0.6; }
+        .map-routes { position:absolute; inset:0; z-index:3; }
+        .route { position:absolute; height:3px; background:linear-gradient(90deg,transparent,#F5A623,transparent); box-shadow:0 0 10px #F5A623; animation:routeDash 4s linear infinite; border-radius:3px; }
+        .signal-trails { position:absolute; top:18%; left:15%; width:420px; height:420px; z-index:4; }
+        .signal-ring { position:absolute; top:50%; left:50%; border:2px solid rgba(245,166,35,0.3); border-radius:50%; transform:translate(-50%,-50%); animation:signalExpand 5s linear infinite; }
+        .radar { position:absolute; top:15%; left:12%; width:380px; height:380px; border:3px solid rgba(39,174,96,0.2); border-radius:50%; z-index:5; animation:radarSweep 18s linear infinite; opacity:0.3; }
+        @keyframes gridShift { 0%{background-position:0 0} 100%{background-position:160px 160px} }
+        @keyframes dotsMove { 0%{background-position:0 0,40px 40px} 100%{background-position:80px 80px,120px 120px} }
+        @keyframes routeDash { 0%{background-position:0 0} 100%{background-position:300px 0} }
+        @keyframes signalExpand { 0%{width:40px;height:40px;opacity:0.8} 100%{width:420px;height:420px;opacity:0} }
+        @keyframes radarSweep { to{transform:rotate(360deg)} }
+        .hero-content { position:relative; z-index:10; display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; max-width:1280px; margin:0 auto; padding:0 20px; }
+        .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(245,166,35,0.15); border:1px solid rgba(245,166,35,0.4); color:var(--gold); padding:8px 16px; border-radius:50px; font-size:13px; font-weight:600; margin-bottom:20px; }
+        .hero h1 { font-size:clamp(38px,5vw,56px); line-height:1.15; margin-bottom:18px; }
+        .hero p { font-size:17px; color:#ccc; margin-bottom:12px; }
+        .location-line { color:var(--gold); font-weight:600; font-size:15px; margin:14px 0; }
+        .brand-line { font-size:18px; font-weight:500; color:#fff; margin-bottom:16px; font-style:italic; opacity:0.9; }
+        .hero-badges { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:28px; }
+        .hero-badge-box { background:rgba(245,166,35,0.12); color:var(--gold); padding:10px 16px; border-radius:10px; font-size:13px; display:flex; align-items:center; gap:6px; border:1px solid rgba(245,166,35,0.25); }
+        .btn-row { display:flex; gap:14px; flex-wrap:wrap; }
+        .btn-primary { background:var(--gold); color:#0D1B2A; border:none; padding:16px 32px; font-size:16px; font-weight:700; border-radius:50px; cursor:pointer; transition:all 0.3s; }
+        .btn-primary:hover { background:#e09520; transform:translateY(-2px); box-shadow:0 8px 24px rgba(245,166,35,0.4); }
+        .btn-secondary { background:transparent; color:white; border:2px solid var(--gold); padding:16px 32px; font-size:16px; font-weight:700; border-radius:50px; cursor:pointer; transition:all 0.3s; }
+        .btn-secondary:hover { background:rgba(245,166,35,0.1); }
+
+        /* PHONE MOCKUP */
+        .hero-phone { max-width:300px; margin:0 auto; }
+        .phone-frame { background:#111; border:12px solid #1a1a1a; border-radius:44px; padding:10px; box-shadow:0 30px 60px rgba(0,0,0,0.7); }
+        .phone-screen { background:#0A1421; border-radius:34px; height:500px; overflow:hidden; border:2px solid #2a2a2a; }
+        .map-container { height:320px; background:#0f1c2e; position:relative; overflow:hidden; }
+        .map-grid-inner { position:absolute; inset:0; background:linear-gradient(rgba(39,174,96,0.1) 1px,transparent 1px),linear-gradient(90deg,rgba(39,174,96,0.1) 1px,transparent 1px); background-size:40px 40px; }
+        .map-road-h { position:absolute; height:4px; background:#1a3a2a; width:100%; }
+        .map-road-v { position:absolute; width:4px; background:#1a3a2a; height:100%; }
+        .pin { position:absolute; top:42%; left:55%; width:24px; height:24px; background:#e74c3c; border-radius:50%; animation:pinPulse 2s infinite; z-index:10; }
+        .pin::after { content:''; position:absolute; top:50%; left:50%; width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:10px solid #e74c3c; transform:translate(-50%,80%); }
+        @keyframes pinPulse { 0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.6)} 70%{box-shadow:0 0 0 18px transparent} }
+        .phone-info { padding:14px 16px; background:rgba(13,27,42,0.98); }
+        .phone-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:13px; }
+        .moving-badge { background:var(--green); color:white; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+        .gps-coords { font-family:monospace; color:var(--gold); font-size:12px; margin-top:4px; }
+
+        /* SECTIONS */
+        section { padding:90px 0; }
+        .section-title { font-size:42px; text-align:center; margin-bottom:50px; }
+
+        /* HOW IT WORKS */
+        .steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:30px; }
+        .step-card { background:#0F1F35; border-radius:16px; padding:40px 28px; text-align:center; position:relative; border-top:4px solid var(--gold); transition:transform 0.3s; }
+        .step-card:hover { transform:translateY(-8px); }
+        .step-number { position:absolute; top:-18px; left:28px; background:var(--gold); color:#0D1B2A; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; }
+        .step-icon { font-size:44px; margin-bottom:16px; }
+        .step-card h3 { font-size:24px; margin-bottom:10px; }
+
+        /* FEATURES */
+        .features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:28px; }
+        .feature-card { background:#0F1F35; border-radius:16px; padding:34px 26px; border-top:3px solid transparent; transition:all 0.3s; }
+        .feature-card:hover { transform:translateY(-6px); border-top-color:var(--gold); }
+        .feature-icon { font-size:42px; margin-bottom:16px; }
+        .feature-card h3 { font-size:22px; margin-bottom:10px; }
+
+        /* LIVE DEMO */
+        .demo-wrapper { display:grid; grid-template-columns:1.2fr 0.8fr; gap:50px; align-items:center; margin-top:30px; }
+        .demo-info { background:#0F1F35; padding:40px; border-radius:20px; border-left:4px solid var(--gold); }
+        .demo-info h3 { font-size:32px; margin-bottom:14px; }
+        .demo-info p { color:#ddd; font-size:16px; margin-bottom:24px; line-height:1.7; }
+        
+        /* PRICING */
+        .pricing-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:36px; }
+        .price-card { background:#0F1F35; border-radius:20px; padding:44px 32px; text-align:center; position:relative; border:2px solid transparent; transition:all 0.4s; display:flex; flex-direction:column; }
+        .price-card:hover { border-color:var(--gold); transform:translateY(-10px); box-shadow:0 20px 40px rgba(245,166,35,0.15); }
+        .price-badge { position:absolute; top:18px; right:18px; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:700; }
+        .price-label { color:#aaa; font-size:17px; margin-bottom:8px; }
+        .price-amount { font-size:48px; font-weight:700; color:var(--gold); margin:10px 0 4px; }
+        .price-per { color:#aaa; font-size:14px; margin-bottom:4px; }
+        .fleet-banner { background:rgba(245,166,35,0.12); border-left:4px solid var(--gold); padding:14px 16px; border-radius:10px; margin:20px 0; cursor:pointer; font-style:italic; font-size:14px; text-align:left; transition:background 0.3s; }
+        .fleet-banner:hover { background:rgba(245,166,35,0.22); }
+        .price-features { text-align:left; list-style:none; margin:16px 0 24px; line-height:2.2; font-size:15px; }
+        .price-btn { margin-top:auto; width:100%; padding:16px; font-size:16px; font-weight:700; border-radius:50px; cursor:pointer; transition:all 0.3s; }
+        .price-btn-gold { background:var(--gold); color:#0D1B2A; border:none; }
+        .price-btn-outline { background:transparent; color:white; border:2px solid var(--gold); }
+        .price-btn:hover { transform:translateY(-2px); }
+
+        /* FAQ SECTION */
+        .faq-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:40px; }
+        .faq-card { background:#0F1F35; padding:30px; border-radius:16px; border-left:3px solid var(--gold); }
+        .faq-card h4 { font-size:20px; margin-bottom:10px; color:var(--gold); }
+
+        /* WHY US */
+        .why-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+        .why-list { list-style:none; font-size:18px; line-height:3; }
+        .shield-badge { width:240px; height:240px; background:linear-gradient(135deg,#F5A623,#d48a00); border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; box-shadow:0 0 50px rgba(245,166,35,0.4); }
+        .shield-inner { text-align:center; color:#0D1B2A; padding:20px; }
+        .trust-badges { display:flex; flex-wrap:wrap; justify-content:center; gap:44px; margin-top:70px; text-align:center; }
+        .trust-badge { font-size:14px; }
+        .trust-badge-icon { font-size:38px; margin-bottom:8px; }
+
+        /* TESTIMONIALS */
+        .testimonials-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:28px; }
+        .testimonial-card { background:#0F1F35; padding:32px; border-radius:16px; border-top:3px solid var(--gold); }
+        .stars { color:var(--gold); font-size:20px; margin-bottom:14px; }
+        .testimonial-text { font-style:italic; line-height:1.8; color:#ddd; margin-bottom:22px; }
+        .testimonial-author { display:flex; align-items:center; gap:14px; }
+        .author-avatar { width:50px; height:50px; background:var(--gold); color:#0D1B2A; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; flex-shrink:0; }
+
+        /* CONTACT */
+        .contact-section { background:linear-gradient(135deg,#F5A623,#d48a00); color:#0D1B2A; text-align:center; padding:100px 20px; }
+        .contact-title { font-size:46px; color:#0D1B2A; margin-bottom:16px; }
+        .contact-sub { font-size:19px; margin-bottom:28px; }
+        .contact-phone { font-size:38px; font-weight:900; letter-spacing:2px; margin:24px 0; }
+        .contact-btns { display:flex; gap:18px; justify-content:center; flex-wrap:wrap; margin-bottom:36px; }
+        .contact-btn-dark { background:#0D1B2A; color:white; padding:16px 32px; border-radius:50px; font-size:16px; font-weight:700; text-decoration:none; transition:transform 0.3s; }
+        .contact-btn-white { background:white; color:#0D1B2A; padding:16px 32px; border-radius:50px; font-size:16px; font-weight:700; text-decoration:none; transition:transform 0.3s; }
+        .contact-btn-dark:hover,.contact-btn-white:hover { transform:translateY(-3px); }
+        .contact-closing { font-size:20px; font-weight:700; }
+
+        /* FOOTER */
+        footer { background:#060F1A; padding:65px 20px 28px; }
+        .footer-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:44px; max-width:1280px; margin:0 auto 44px; }
+        .footer-logo-main { font-family:'Bebas Neue',sans-serif; font-size:30px; color:var(--gold); }
+        .footer-logo-sub { font-size:12px; color:#aaa; margin-bottom:6px; }
+        .footer-serving { font-size:13px; color:var(--gold); font-style:italic; }
+        .footer-heading { font-weight:700; margin-bottom:14px; font-size:15px; }
+        .footer-link { display:block; color:#aaa; text-decoration:none; margin:7px 0; font-size:14px; transition:color 0.3s; }
+        .footer-link:hover { color:var(--gold); }
+        .footer-phone { color:var(--gold); font-size:16px; text-decoration:none; display:block; margin-bottom:8px; }
+        .footer-bottom { text-align:center; padding-top:24px; border-top:1px solid #1a2a3a; font-size:13px; color:#444; max-width:1280px; margin:0 auto; }
+
+        /* FLOATING WA */
+        .float-wa { position:fixed; bottom:28px; right:28px; width:62px; height:62px; background:#25D366; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:30px; box-shadow:0 8px 28px rgba(37,211,102,0.5); z-index:2000; text-decoration:none; transition:transform 0.3s; }
+        .float-wa:hover { transform:scale(1.1); }
+
+        /* MODAL */
+        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:3000; align-items:center; justify-content:center; backdrop-filter:blur(8px); }
+        .modal.active { display:flex; }
+        .modal-box { background:#0F1F35; max-width:440px; width:92%; border-radius:22px; padding:38px 32px; border:2px solid var(--gold); box-shadow:0 24px 70px rgba(0,0,0,0.7); position:relative; }
+        .modal-close-btn { position:absolute; top:14px; right:18px; font-size:32px; color:#777; cursor:pointer; background:none; border:none; }
+        .modal-title { font-size:28px; margin-bottom:8px; }
+        .modal-sub { color:#aaa; margin-bottom:22px; font-size:15px; }
+        .modal-input { width:100%; padding:14px 18px; background:#0A1421; border:1px solid #334455; border-radius:12px; color:white; font-size:15px; margin-bottom:16px; }
+        .modal-submit { width:100%; padding:16px; background:#25D366; color:white; border:none; border-radius:50px; font-size:17px; font-weight:700; cursor:pointer; }
+
+        /* LEAFLET FLEET MARKER */
+        .fleet-marker { background:transparent !important; border:none !important; }
+        .leaflet-div-icon { background:transparent !important; border:none !important; }
+
+        /* LEAFLET FLEET TOOLTIP */
+        .fleet-tooltip {
+            background:#0D1B2A !important;
+            border:1px solid #F5A623 !important;
+            color:white !important;
+            font-family:'DM Sans',sans-serif !important;
+            font-size:13px !important;
+            border-radius:8px !important;
+            padding:6px 10px !important;
+        }
+        .fleet-tooltip::before { border-top-color:#F5A623 !important; }
+        .leaflet-control-zoom a {
+            background:#0D1B2A !important;
+            color:#F5A623 !important;
+            border-color:#1a2a3a !important;
+        }
+        .leaflet-bar { border-color:#1a2a3a !important; }
+
+        /* RESPONSIVE */
+        @media(max-width:768px) {
+            .nav-links { display:none; }
+            .cta-phone { display:none; }
+            .hamburger { display:flex; }
+            .hero-content { grid-template-columns:1fr; text-align:center; padding-top:20px; }
+            .hero-phone { display:none; }
+            .why-grid { grid-template-columns:1fr; }
+            .pricing-grid { grid-template-columns:1fr; }
+            .faq-grid { grid-template-columns:1fr; }
+            .demo-wrapper { grid-template-columns:1fr; gap:30px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav id="navbar">
+    <div class="nav-content">
+        <a href="#home" class="logo">
+            <svg width="40" height="40" viewBox="0 0 60 60" fill="none">
+                <path d="M30 10 L45 25 L45 45 L15 45 L15 25 Z" fill="#F5A623"/>
+                <circle cx="30" cy="32" r="8" fill="#0D1B2A"/>
+            </svg>
+            <div class="logo-text">
+                <span class="logo-main">KALLON</span>
+                <span class="logo-sub">GPS Solutions &amp; Services</span>
+            </div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#home" data-en="Home" data-fr="Accueil">Accueil</a></li>
+            <li><a href="#how" data-en="How It Works" data-fr="Comment">Comment</a></li>
+            <li><a href="#features" data-en="Features" data-fr="Fonctionnalités">Fonctionnalités</a></li>
+            <li><a href="#live-demo" data-en="Live Demo" data-fr="Démonstration">Démonstration</a></li>
+            <li><a href="#pricing" data-en="Pricing" data-fr="Tarifs">Tarifs</a></li>
+            <li><a href="#faq" data-en="FAQ" data-fr="FAQ">FAQ</a></li>
+            <li><a href="#why-us" data-en="Why Us" data-fr="Pourquoi Nous">Pourquoi Nous</a></li>
+            <li><a href="#contact" data-en="Contact" data-fr="Contact">Contact</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button onclick="toggleLanguage()" id="lang-btn" class="lang-toggle">🇬🇧 EN</button>
+            <a href="https://wa.me/224629255946" class="cta-phone" target="_blank">📞 +224 629 255 946</a>
+            <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+        <a href="#home" data-en="Home" data-fr="Accueil" onclick="toggleMobileMenu()">Accueil</a>
+        <a href="#how" data-en="How It Works" data-fr="Comment ça marche" onclick="toggleMobileMenu()">Comment ça marche</a>
+        <a href="#features" data-en="Features" data-fr="Fonctionnalités" onclick="toggleMobileMenu()">Fonctionnalités</a>
+        <a href="#live-demo" data-en="Live Demo" data-fr="Démonstration" onclick="toggleMobileMenu()">Démonstration</a>
+        <a href="#pricing" data-en="Pricing" data-fr="Tarifs" onclick="toggleMobileMenu()">Tarifs</a>
+        <a href="#faq" data-en="FAQ" data-fr="FAQ" onclick="toggleMobileMenu()">FAQ</a>
+        <a href="#why-us" data-en="Why Us" data-fr="Pourquoi Nous" onclick="toggleMobileMenu()">Pourquoi Nous</a>
+        <a href="#contact" data-en="Contact" data-fr="Contact" onclick="toggleMobileMenu()">Contact</a>
+    </div>
+</nav>
+
+<section id="home" class="hero">
+    <div class="hero-grid"></div>
+    <div class="gps-dots"></div>
+    <div class="map-routes">
+        <div class="route" style="top:22%;left:8%;width:380px;transform:rotate(-12deg);"></div>
+        <div class="route" style="top:48%;left:18%;width:420px;transform:rotate(28deg);animation-delay:-2s;"></div>
+        <div class="route" style="top:68%;left:10%;width:340px;transform:rotate(-35deg);animation-delay:-1s;"></div>
+    </div>
+    <div class="signal-trails">
+        <div class="signal-ring" style="animation-delay:0s;"></div>
+        <div class="signal-ring" style="animation-delay:1.25s;"></div>
+        <div class="signal-ring" style="animation-delay:2.5s;"></div>
+        <div class="signal-ring" style="animation-delay:3.75s;"></div>
+    </div>
+    <div class="radar"></div>
+    <div class="hero-content container">
+        <div class="hero-text">
+            <div class="hero-badge">🔒 <span data-en="SECURE TRACKING" data-fr="SUIVI SÉCURISÉ">SUIVI SÉCURISÉ</span></div>
+            <h1 data-en="Real-Time GPS Tracking for Your Fleet or Vehicle" data-fr="Suivi GPS en temps réel pour votre flotte ou véhicule">Suivi GPS en temps réel pour votre flotte ou véhicule</h1>
+            <p data-en="Advanced monitoring and protection against theft. Keep your car or truck on your screen wherever it goes." data-fr="Surveillance avancée et protection contre le vol. Gardez votre voiture ou camion sous les yeux, où qu'il aille.">Surveillance avancée et protection contre le vol. Gardez votre voiture ou camion sous les yeux, où qu'il aille.</p>
+            <div class="location-line">📍 Conakry, Guinée &amp; Sierra Leone</div>
+            <div class="brand-line" data-en="Trusted by over 500+ satisfied vehicle owners." data-fr="Plus de 500 propriétaires de véhicules satisfaits.">Plus de 500 propriétaires de véhicules satisfaits.</div>
+            
+            <div class="hero-badges">
+                <div class="hero-badge-box">⚡ <span data-en="Live Tracking" data-fr="Suivi en direct">Suivi en direct</span></div>
+                <div class="hero-badge-box">🛡️ <span data-en="Anti-Theft System" data-fr="Système anti-vol">Système anti-vol</span></div>
+                <div class="hero-badge-box">📊 <span data-en="Reports" data-fr="Rapports d'activité">Rapports d'activité</span></div>
+            </div>
+
+            <div class="btn-row">
+                <button onclick="openModal()" class="btn-primary" data-en="Protect My Vehicle" data-fr="Protéger Mon Véhicule">Protéger Mon Véhicule</button>
+                <button onclick="window.open('https://wa.me/224629255946','_blank')" class="btn-secondary" data-en="Track My Car Now" data-fr="Suivre Ma Voiture Maintenant">Suivre Ma Voiture Maintenant</button>
+            </div>
+        </div>
+
+        <div class="hero-phone">
+            <div class="phone-frame">
+                <div class="phone-screen">
+                    <div class="map-container">
+                        <div class="map-grid-inner"></div>
+                        <div class="map-road-h" style="top:30%;"></div>
+                        <div class="map-road-h" style="top:60%;"></div>
+                        <div class="map-road-v" style="left:35%;"></div>
+                        <div class="map-road-v" style="left:65%;"></div>
+                        <div class="pin"></div>
+                    </div>
+                    <div class="phone-info">
+                        <div class="phone-header">
+                            <strong>Toyota Corolla • Conakry</strong>
+                            <span class="moving-badge" data-en="MOVING" data-fr="EN MOUVEMENT">EN MOUVEMENT</span>
+                        </div>
+                        <div style="font-size:13px;color:#aaa;">55 km/h</div>
+                        <div class="gps-coords" id="gps-coords">9.6418° N, 13.5789° W</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="how" style="background:#0A1421;">
+    <div class="container">
+        <h2 class="section-title" data-en="How It Works" data-fr="Comment Ça Marche">Comment Ça Marche</h2>
+        <div class="steps">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-icon">📱</div>
+                <h3>1. <span data-en="Connect" data-fr="Connecter">Connecter</span></h3>
+                <p data-en="Log in securely from your phone, tablet, or computer." data-fr="Connectez-vous en toute sécurité depuis votre téléphone, tablette ou ordinateur.">Connectez-vous en toute sécurité depuis votre téléphone, tablette ou ordinateur.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-icon">📍</div>
+                <h3>2. <span data-en="Track" data-fr="Suivre">Suivre</span></h3>
+                <p data-en="Monitor location, speed, and stops with our live map." data-fr="Surveillez l'emplacement, la vitesse et les arrêts grâce à notre carte en direct.">Surveillez l'emplacement, la vitesse et les arrêts grâce à notre carte en direct.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-icon">🛡️</div>
+                <h3>3. <span data-en="Protect" data-fr="Protéger">Protéger</span></h3>
+                <p data-en="Receive instant alerts if your car moves unexpectedly." data-fr="Recevez des alertes instantanées si votre voiture bouge de manière inattendue.">Recevez des alertes instantanées si votre voiture bouge de manière inattendue.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="features" style="background:#0F1F35;">
+    <div class="container">
+        <h2 class="section-title" data-en="Amazing Features" data-fr="Fonctionnalités Incroyables">Fonctionnalités Incroyables</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🛰️</div>
+                <h3 data-en="Live GPS Tracking" data-fr="Suivi GPS en direct">Suivi GPS en direct</h3>
+                <p data-en="Track your vehicle in real time with continuous location updates. View movements, routes, and stops directly from your mobile or web dashboard." data-fr="Suivez votre véhicule en temps réel avec des mises à jour de localisation continues. Affichez les mouvements, les itinéraires et les arrêts directement depuis votre tableau de bord mobile ou Web.">Suivez votre véhicule en temps réel avec des mises à jour de localisation continues. Affichez les mouvements, les itinéraires et les arrêts directement depuis votre tableau de bord mobile ou Web.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🗺️</div>
+                <h3 data-en="Route History & Playback" data-fr="Historique et relecture des itinéraires">Historique et relecture des itinéraires</h3>
+                <p data-en="Access detailed trip history and replay past journeys to understand where your vehicle has been and how it’s being used." data-fr="Accédez à l'historique détaillé des trajets et rejouez les trajets passés pour comprendre où votre véhicule est allé et comment il est utilisé.">Accédez à l'historique détaillé des trajets et rejouez les trajets passés pour comprendre où votre véhicule est allé et comment il est utilisé.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔔</div>
+                <h3 data-en="Smart Alerts & Notifications" data-fr="Alertes et notifications intelligentes">Alertes et notifications intelligentes</h3>
+                <p data-en="Stay informed with instant alerts such as ignition activity, overspeeding, route deviations, or device disconnection." data-fr="Restez informé grâce à des alertes instantanées telles que l'activité du contact, les excès de vitesse, les déviations d'itinéraire ou la déconnexion de l'appareil.">Restez informé grâce à des alertes instantanées telles que l'activité du contact, les excès de vitesse, les déviations d'itinéraire ou la déconnexion de l'appareil.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📍</div>
+                <h3 data-en="Geofencing Control" data-fr="Contrôle de géolocalisation">Contrôle de géolocalisation</h3>
+                <p data-en="Create custom zones and receive notifications whenever a vehicle enters or exits selected areas." data-fr="Créez des zones personnalisées et recevez des notifications chaque fois qu'un véhicule entre ou sort de zones sélectionnées.">Créez des zones personnalisées et recevez des notifications chaque fois qu'un véhicule entre ou sort de zones sélectionnées.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⛽</div>
+                <h3 data-en="Fuel Level Insights" data-fr="Aperçu du niveau de carburant">Aperçu du niveau de carburant</h3>
+                <p data-en="View fuel level data directly from compatible vehicles. Monitor changes over time and gain useful insights into fuel usage and refilling patterns." data-fr="Affichez les données de niveau de carburant directement à partir des véhicules compatibles. Surveillez les changements au fil du temps et obtenez des informations utiles sur l'utilisation du carburant et les habitudes de ravitaillement.">Affichez les données de niveau de carburant directement à partir des véhicules compatibles. Surveillez les changements au fil du temps et obtenez des informations utiles sur l'utilisation du carburant et les habitudes de ravitaillement.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔋</div>
+                <h3 data-en="Power & Device Monitoring" data-fr="Surveillance de l'alimentation et de l'appareil">Surveillance de l'alimentation et de l'appareil</h3>
+                <p data-en="Track your device status, including battery level and power disconnection alerts, to ensure continuous operation." data-fr="Suivez l'état de votre appareil, y compris le niveau de la batterie et les alertes de déconnexion de l'alimentation, pour garantir un fonctionnement continu.">Suivez l'état de votre appareil, y compris le niveau de la batterie et les alertes de déconnexion de l'alimentation, pour garantir un fonctionnement continu.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section id="stats" style="background:#0D1B2A; padding:60px 0;">
+    <div class="container">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:30px;text-align:center;">
+            <div class="stat-card">
+                <div class="stat-number" data-target="500" style="font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--gold);line-height:1;">0</div>
+                <div style="font-size:14px;color:#aaa;margin-top:6px;" data-en="Satisfied Clients" data-fr="Clients Satisfaits">Clients Satisfaits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="2" style="font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--gold);line-height:1;">0</div>
+                <div style="font-size:14px;color:#aaa;margin-top:6px;" data-en="Countries Covered" data-fr="Pays Couverts">Pays Couverts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="99" style="font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--gold);line-height:1;">0</div>
+                <div style="font-size:14px;color:#aaa;margin-top:6px;" data-en="% System Uptime" data-fr="% Disponibilité">% Disponibilité</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="24" style="font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--gold);line-height:1;">0</div>
+                <div style="font-size:14px;color:#aaa;margin-top:6px;" data-en="/ 7 Support" data-fr="/ 7 Assistance">/ 7 Assistance</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="live-demo" style="background:#0A1421;">
+    <div class="container">
+        <h2 class="section-title" data-en="Fleet Tracking — Live Demo" data-fr="Suivi de Flotte — Démo en Direct">Suivi de Flotte — Démo en Direct</h2>
+        <p style="text-align:center;color:#aaa;margin:-30px 0 40px;font-size:16px;" data-en="Real Conakry roads. 4 vehicles moving live. Click any vehicle to track it." data-fr="Vraies routes de Conakry. 4 véhicules en direct. Cliquez sur un véhicule pour le suivre.">Vraies routes de Conakry. 4 véhicules en direct. Cliquez sur un véhicule pour le suivre.</p>
+
+        <div style="background:#0F1F35;border-radius:20px;overflow:hidden;border:2px solid #1a2a3a;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+            <div style="background:#0D1B2A;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1a2a3a;flex-wrap:wrap;gap:10px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="width:12px;height:12px;background:#27AE60;border-radius:50%;display:inline-block;box-shadow:0 0 8px #27AE60;"></span>
+                    <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;">KALLON FLEET — LIVE</span>
+                </div>
+                <div id="vehicle-selectors" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+            </div>
+
+            <div id="fleet-map" style="width:100%;height:450px;background:#0d1c2e;display:flex;align-items:center;justify-content:center;">
+                <div id="map-loader" style="color:#F5A623;font-size:16px;font-weight:700;letter-spacing:1px;">
+                    🛰️ Chargement de la carte...
+                </div>
+            </div>
+
+            <div style="background:#0D1B2A;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                <div>
+                    <div style="color:#aaa;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px" data-en="Vehicle" data-fr="Véhicule">Véhicule</div>
+                    <div id="info-vehicle" style="font-size:20px;font-weight:700;">Toyota Corolla • RC-1234-A</div>
+                    <div style="margin-top:14px;">
+                        <span style="color:#aaa;font-size:12px;" data-en="Driver:" data-fr="Chauffeur:">Chauffeur:</span>
+                        <span id="info-driver" style="margin-left:6px;font-weight:500;">Mamadou Bah</span>
+                    </div>
+                    <div style="margin-top:8px;">
+                        <span style="color:#aaa;font-size:12px;" data-en="Location:" data-fr="Emplacement:">Emplacement:</span>
+                        <span id="info-location" style="margin-left:6px;font-weight:500;">Kipé, Conakry</span>
+                    </div>
+                </div>
+                <div style="text-align:right;display:flex;flex-direction:column;justify-content:space-between;">
+                    <div>
+                        <div style="color:#aaa;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px" data-en="Status" data-fr="Statut">Statut</div>
+                        <span id="info-status" class="moving-badge" style="background:#27AE60;">EN MOUVEMENT</span>
+                    </div>
+                    <div>
+                        <div style="color:#aaa;font-size:12px;margin-bottom:2px;" data-en="Speed" data-fr="Vitesse">Vitesse</div>
+                        <div id="info-speed" style="font-size:24px;font-weight:700;color:var(--gold);">55 km/h</div>
+                        <div style="color:#aaa;font-size:11px;margin-top:4px;" data-en="GPS" data-fr="GPS">GPS</div>
+                        <div id="info-gps" style="font-family:monospace;font-size:12px;color:var(--gold);">9.6418° N, 13.5789° W</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="pricing" class="container">
+    <h2 class="section-title" data-en="Our Transparent Pricing" data-fr="Nos Tarifs Transparents">Nos Tarifs Transparents</h2>
+    <div style="text-align:center; margin-bottom:16px;">
+        <select id="currency-btn" class="lang-toggle" onchange="changeCurrency()" style="cursor:pointer; appearance:auto; font-size:15px; padding:10px 20px;">
+            <option value="GNF" style="background:#0D1B2A; color:var(--gold);">🇬🇳 GNF — Franc Guinéen</option>
+            <option value="USD" style="background:#0D1B2A; color:var(--gold);">💵 USD — US Dollar</option>
+            <option value="SLE" style="background:#0D1B2A; color:var(--gold);">🇸🇱 SLE — Sierra Leone Leone</option>
+        </select>
+    </div>
+    <div style="text-align:center;margin-bottom:30px;"><span id="rate-badge" style="font-size:13px;color:#aaa;background:#0F1F35;display:inline-block;padding:8px 18px;border-radius:20px;border:1px solid #1a2a3a;">⏳ Chargement du taux de change en direct...</span></div>
+    <div class="pricing-grid">
+        <div class="price-card">
+            <div class="price-badge" style="background:rgba(245,166,35,0.2);color:var(--gold);" data-en="MONTHLY" data-fr="MENSUEL">MENSUEL</div>
+            <div class="price-label" data-en="Standard Protection" data-fr="Protection Standard">Protection Standard</div>
+            <div class="price-amount" data-usd="$10 - $12" data-gnf="100,000 - 120,000 GNF" data-sle="150 - 180 SLE">100,000 - 120,000 GNF</div>
+            <div class="price-per" data-en="per vehicle / month" data-fr="par véhicule / mois">par véhicule / mois</div>
+
+            <div class="fleet-banner" onclick="window.open('https://wa.me/224629255946','_blank')">
+                💡 <span data-en="Managing a fleet? We offer special reduced rates for 10+ vehicles. Message us for a personalized quote!" data-fr="Vous gérez une flotte ? Nous offrons des tarifs réduits pour plus de 10 véhicules. Envoyez-nous un message pour un devis personnalisé !">Vous gérez une flotte ? Nous offrons des tarifs réduits pour plus de 10 véhicules. Envoyez-nous un message pour un devis personnalisé !</span>
+            </div>
+
+            <ul class="price-features">
+                <li>✅ <span data-en="Live Tracking" data-fr="Suivi en direct">Suivi en direct</span></li>
+                <li>✅ <span data-en="Smart Alerts" data-fr="Alertes intelligentes">Alertes intelligentes</span></li>
+                <li>✅ <span data-en="History & Reports" data-fr="Historique & rapports">Historique &amp; rapports</span></li>
+                <li>✅ <span data-en="Fast Support" data-fr="Assistance rapide">Assistance rapide</span></li>
+            </ul>
+            <button onclick="window.open('https://wa.me/224629255946','_blank')" class="price-btn price-btn-gold" data-en="Subscribe Now" data-fr="S'abonner Maintenant">S'abonner Maintenant</button>
+        </div>
+
+        <div class="price-card" style="border-color:var(--gold);">
+            <div class="price-badge" style="background:var(--gold);color:#0D1B2A;" data-en="POPULAR" data-fr="POPULAIRE">POPULAIRE</div>
+            <div class="price-label" data-en="Device + Installation" data-fr="Appareil + Installation">Appareil + Installation</div>
+            <div class="price-amount" data-usd="$25 - $35" data-gnf="250,000 - 350,000 GNF" data-sle="375 - 525 SLE">250,000 - 350,000 GNF</div>
+            <div class="price-per" data-en="one-time payment" data-fr="paiement unique">paiement unique</div>
+
+            <div class="fleet-banner" onclick="window.open('https://wa.me/224629255946','_blank')">
+                🛠️ <span data-en="Need it installed at your location? Our team offers mobile installation around Conakry." data-fr="Besoin d'une installation sur place ? Notre équipe se déplace dans tout Conakry.">Besoin d'une installation sur place ? Notre équipe se déplace dans tout Conakry.</span>
+            </div>
+
+            <ul class="price-features">
+                <li>✅ <span data-en="Original GPS Tracking Device" data-fr="Appareil de suivi GPS original">Appareil de suivi GPS original</span></li>
+                <li>✅ <span data-en="Professional Setup & Calibration" data-fr="Configuration et calibrage professionnels">Configuration et calibrage professionnels</span></li>
+                <li>✅ <span data-en="1 Year Hardware Warranty" data-fr="Garantie de 1 year sur le matériel">Garantie de 1 an sur le matériel</span></li>
+                <li>✅ <span data-en="1st Month Service Included" data-fr="1er mois de service inclus">1er mois de service inclus</span></li>
+            </ul>
+            <button onclick="openModal()" class="price-btn price-btn-outline" data-en="Get Started" data-fr="Démarrer">Démarrer</button>
+        </div>
+    </div>
+</section>
+
+<section id="faq" class="container">
+    <h2 class="section-title" data-en="Frequently Asked Questions" data-fr="Questions Fréquemment Posées">Questions Fréquemment Posées</h2>
+    <div class="faq-grid">
+        <div class="faq-card">
+            <h4>1. ⚡ <span data-en="How long does installation take?" data-fr="Combien de temps dure l'installation ?">Combien de temps dure l'installation ?</span></h4>
+            <p data-en="A standard installation takes about 45 to 60 minutes. We can perform this at your home or office in Conakry." data-fr="Une installation standard prend entre 45 et 60 minutes. Nous pouvons l'effectuer à votre domicile ou à votre bureau à Conakry.">Une installation standard prend entre 45 et 60 minutes. Nous pouvons l'effectuer à votre domicile ou à votre bureau à Conakry.</p>
+        </div>
+        <div class="faq-card">
+            <h4>2. 📶 <span data-en="Does the tracker work outside Conakry?" data-fr="Le traceur fonctionne-t-il en dehors de Conakry ?">Le traceur fonctionne-t-il en dehors de Conakry ?</span></h4>
+            <p data-en="Yes, our coverage includes all major regions in Guinea and Sierra Leone without additional roaming fees." data-fr="Oui, notre couverture s'étend à toutes les grandes régions de Guinée et de Sierra Leone sans frais d'itinérance supplémentaires.">Oui, notre couverture s'étend à toutes les grandes régions de Guinée et de Sierra Leone sans frais d'itinérance supplémentaires.</p>
+            <div class="faq-card">
+                <h4>3. 📱 <span data-en="Do I need a smartphone?" data-fr="Faut-il un smartphone ?">Faut-il un smartphone ?</span></h4>
+                <p data-en="Yes, our platform works on Android, iPhone, and any computer browser. As long as you have internet access, you can track your vehicle." data-fr="Oui, notre plateforme fonctionne sur Android, iPhone et tout navigateur d'ordinateur. Tant que vous avez accès à internet, vous pouvez suivre votre véhicule.">Oui, notre plateforme fonctionne sur Android, iPhone et tout navigateur d'ordinateur.</p>
+            </div>
+            <div class="faq-card">
+                <h4>4. 🔒 <span data-en="Is my data private and secure?" data-fr="Mes données sont-elles sécurisées ?">Mes données sont-elles sécurisées ?</span></h4>
+                <p data-en="Absolutely. Your vehicle data is encrypted and only accessible to you. We never share your information with third parties." data-fr="Absolument. Les données de votre véhicule sont chiffrées et accessibles uniquement par vous. Nous ne partageons jamais vos informations.">Absolument. Les données de votre véhicule sont chiffrées et accessibles uniquement par vous.</p>
+            </div>
+            <div class="faq-card">
+                <h4>5. 💳 <span data-en="How do I pay?" data-fr="Comment payer ?">Comment payer ?</span></h4>
+                <p data-en="You can pay via mobile money (Orange Money, MTN), bank transfer, or cash. Contact us on WhatsApp to arrange payment." data-fr="Vous pouvez payer via mobile money (Orange Money, MTN), virement bancaire ou espèces. Contactez-nous sur WhatsApp.">Vous pouvez payer via mobile money (Orange Money, MTN), virement bancaire ou espèces.</p>
+            </div>
+            <div class="faq-card">
+                <h4>6. 🚗 <span data-en="Can I track multiple vehicles?" data-fr="Puis-je suivre plusieurs véhicules ?">Puis-je suivre plusieurs véhicules ?</span></h4>
+                <p data-en="Yes! We offer fleet plans for businesses with multiple vehicles at special discounted rates for 5+ vehicles. Contact us for a quote." data-fr="Oui ! Nous proposons des forfaits flotte pour les entreprises. Contactez-nous pour des tarifs réduits spéciaux pour 5+ véhicules.">Oui ! Nous proposons des forfaits flotte pour les entreprises avec plusieurs véhicules.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="why-us" style="background:#060F1A;">
+    <div class="container why-grid">
+        <div>
+            <h2 class="section-title" style="text-align:left;margin-bottom:28px;" data-en="Why Choose Kallon GPS?" data-fr="Pourquoi Choisir Kallon GPS?">Pourquoi Choisir Kallon GPS?</h2>
+            <ul class="why-list">
+                <li>🛡️ <strong data-en="99.8% System Uptime" data-fr="99.8% Disponibilité">99.8% Disponibilité</strong></li>
+                <li>🛰️ <strong data-en="Sierra Leone & Guinea Coverage" data-fr="Couverture en Guinée et Sierra Leone">Couverture en Guinée et Sierra Leone</strong></li>
+                <li>⚡ <strong data-en="Engine Relay Cut" data-fr="Coupure moteur anti-vol">Coupure moteur anti-vol</strong></li>
+                <li>⏱️ <strong data-en="24/7 Monitoring Center" data-fr="Surveillance 24h/7j">Surveillance 24h/7j</strong></li>
+            </ul>
+        </div>
+        <div>
+            <div class="shield-badge">
+                <div class="shield-inner">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#0D1B2A" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    <div style="font-weight:900; font-size:22px; color:#0D1B2A; margin-top:8px;" data-en="SECURE" data-fr="SÉCURISÉ">SÉCURISÉ</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="trust-badges">
+            <div class="trust-badge"><div class="trust-badge-icon">👥</div><div data-en="Trusted by Drivers" data-fr="Approuvé par les conducteurs">Approuvé par les conducteurs</div></div>
+            <div class="trust-badge"><div class="trust-badge-icon">📶</div><div data-en="Strong Network" data-fr="Connexion Réseau Stable">Connexion Réseau Stable</div></div>
+            <div class="trust-badge"><div class="trust-badge-icon">👍</div><div data-en="Quality Service" data-fr="Un service de qualité">Un service de qualité</div></div>
+        </div>
+    </div>
+</section>
+
+<section id="testimonials" style="background:#111B2E;">
+    <div class="container">
+        <h2 class="section-title" data-en="What Our Clients Say" data-fr="Ce Que Disent Nos Clients">Ce Que Disent Nos Clients</h2>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text" data-en='"I can now check my taxi location at any time. Kallon GPS gave me total peace of mind. Excellent and professional service!"' data-fr='"Je peux vérifier la position de mon taxi à tout moment. Kallon GPS m'\''a donné une tranquillité totale. Un service excellent et professionnel !"'>"Je peux vérifier la position de mon taxi à tout moment. Kallon GPS m'a donné une tranquillité totale. Un service excellent et professionnel !"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">MD</div>
+                    <div><strong>Mamadou Diallo</strong><br><small style="color:#aaa;">Conakry, Guinée</small></div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text" data-en='"We installed Kallon GPS on our whole company fleet. It helped us optimize routes and cut down costs. Really impressed."' data-fr='"Nous avons installé Kallon GPS sur toute la flotte de notre entreprise. Cela nous a aidés à optimiser les trajets et à réduire les coûts. Vraiment impressionné."''>"Nous avons installé Kallon GPS sur toute la flotte de notre entreprise. Cela nous a aidés à optimiser les trajets et à réduire les coûts. Vraiment impressionné."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">AS</div>
+                    <div><strong>Aboubacar Sylla</strong><br><small style="color:#aaa;">Conakry, Guinée</small></div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text" data-en='"My stolen car was successfully located and recovered thanks to this tracking system. Highly recommended!"' data-fr='"Ma voiture volée a été localisée et récupérée avec succès grâce à ce système de suivi. Hautement recommandé !"'>"Ma voiture volée a été localisée et récupérée avec succès grâce à ce système de suivi. Hautement recommandé !"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">FK</div>
+                    <div><strong>Fatimata Kourouma</strong><br><small style="color:#aaa;">Freetown, Sierra Leone</small></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="contact" class="contact-section">
+    <h2 class="contact-title" data-en="Ready to Protect Your Vehicle?" data-fr="Prêt à Protéger Votre Véhicule ?">Prêt à Protéger Votre Véhicule ?</h2>
+    <p class="contact-sub" data-en="Contact our support or message us directly on WhatsApp for an immediate response." data-fr="Contactez notre support ou envoyez-nous un message directement sur WhatsApp pour une réponse immédiate.">Contactez notre support ou envoyez-nous un message directement sur WhatsApp pour une réponse immédiate.</p>
+
+    <div class="contact-phone">📞 +224 629 255 946</div>
+
+    <div class="contact-btns">
+        <a href="tel:+224629255946" class="contact-btn-dark" data-en="📞 Call Now" data-fr="📞 Appeler Maintenant">📞 Appeler Maintenant</a>
+        <a href="https://wa.me/224629255946?text=Bonjour%20Kallon%20GPS%2C%20je%20souhaite%20prot%C3%A9ger%20mon%20v%C3%A9hicule." target="_blank" class="contact-btn-white">💬 WhatsApp</a>
+    </div>
+
+    <div style="margin-top:28px;">
+        <p class="contact-sub" data-en="Prefer email? Reach us anytime:" data-fr="Vous préférez un e-mail ? Contactez-nous à tout moment :">Vous préférez un e-mail ? Contactez-nous à tout moment :</p>
+        <a href="mailto:sekoukallon2001@gmail.com" style="color:#0D1B2A; font-weight:700; font-size:18px; text-decoration:underline;">sekoukallon2001@gmail.com</a>
+    </div>
+
+    <p class="contact-closing" style="margin-top:36px;" data-en="Stay Connected. Stay Protected." data-fr="Restez Connecté. Restez Protégé.">Restez Connecté. Restez Protégé.</p>
+</section>
+
+<footer>
+    <div class="footer-grid">
+        <div>
+            <div class="footer-logo-main">KALLON</div>
+            <div class="footer-logo-sub">GPS Solutions &amp; Services</div>
+            <div class="footer-serving" data-en="Serving Guinea & Sierra Leone" data-fr="Au service de la Guinée et de la Sierra Leone">Au service de la Guinée et de la Sierra Leone</div>
+        </div>
+        <div>
+            <div class="footer-heading" data-en="Quick Links" data-fr="Liens Rapides">Liens Rapides</div>
+            <a href="#home" class="footer-link" data-en="Home" data-fr="Accueil">Accueil</a>
+            <a href="#how" class="footer-link" data-en="How It Works" data-fr="Comment ça marche">Comment ça marche</a>
+            <a href="#features" class="footer-link" data-en="Features" data-fr="Fonctionnalités">Fonctionnalités</a>
+            <a href="#pricing" class="footer-link" data-en="Pricing" data-fr="Tarifs">Tarifs</a>
+        </div>
+        <div>
+            <div class="footer-heading" data-en="Contact Us" data-fr="Contactez-nous">Contactez-nous</div>
+            <a href="https://wa.me/224629255946" class="footer-phone" target="_blank">📞 +224 629 255 946</a>
+            <div style="color:#777; font-size:13px;" data-en="Conakry, Guinea & Freetown, SL" data-fr="Conakry, Guinée & Freetown, SL">Conakry, Guinée &amp; Freetown, SL</div>
+        </div>
+        <div>
+            <div class="footer-heading" data-en="Newsletter" data-fr="Newsletter">Newsletter</div>
+            <p style="color:#777; font-size:13px; margin-bottom:10px;" data-en="Get updates on new features and offers." data-fr="Recevez des mises à jour sur les nouvelles fonctionnalités et offres.">Recevez des mises à jour sur les nouvelles fonctionnalités et offres.</p>
+            <form onsubmit="submitNewsletter(event);" style="display:flex;">
+                <input type="email" placeholder="Email" style="padding:6px 10px; border-radius:6px 0 0 6px; border:none; outline:none;">
+                <button type="submit" style="background:var(--gold); color:#0D1B2A; border:none; padding:6px 12px; border-radius:0 6px 6px 0; font-weight:700; cursor:pointer;" data-en="Join" data-fr="Rejoindre">Rejoindre</button>
+            </form>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        &copy; <span id="year"></span>&nbsp;Kallon GPS Solutions &amp; Services. <span data-en="All rights reserved." data-fr="Tous droits réservés.">Tous droits réservés.</span>
+    </div>
+</footer>
+
+<a href="https://wa.me/224629255946" class="float-wa" target="_blank" title="Open WhatsApp">💬</a>
+
+<div id="contact-modal" class="modal">
+    <div class="modal-box">
+        <button class="modal-close-btn" onclick="closeModal()">&times;</button>
+        <h3 class="modal-title" data-en="Protect Your Vehicle" data-fr="Protéger Votre Véhicule">Protéger Votre Véhicule</h3>
+        <p class="modal-sub" data-en="Leave your details and we will call you back within 10 minutes." data-fr="Laissez vos coordonnées et nous vous rappellerons sous 10 minutes.">Laissez vos coordonnées et nous vous rappellerons sous 10 minutes.</p>
+        <form onsubmit="submitProtectForm(event);">
+            <input type="text" id="name-input" class="modal-input" placeholder="Votre Nom" required>
+            <input type="tel" id="phone-input" class="modal-input" placeholder="+224 629 255 946" required>
+            <input type="email" id="email-input" class="modal-input" placeholder="votre.email@exemple.com">
+            <button type="submit" class="modal-submit" data-en="Get Protected Now" data-fr="Me Protéger Maintenant">Me Protéger Maintenant</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    let currentLang = 'fr';
+    let currentCurrency = 'GNF';
+    let fleetMap = null;
+
+    const vehicleState = [
+        {
+            id: 0,
+            name: 'Toyota Corolla',
+            driver: 'Mamadou Bah',
+            plate: 'RC-1234-A',
+            color: '#e74c3c',
+            location: 'Kipé, Conakry',
+            stopped: false,
+            baseSpeed: 42,
+            wpIndex: 0,
+            progress: 0,
+            waypoints: [
+                [9.6385, -13.6180],
+                [9.6110, -13.6450],
+                [9.5950, -13.6650],
+                [9.5600, -13.6800],
+                [9.5130, -13.7120]
+            ]
+        },
+        {
+            id: 1,
+            name: 'Honda CR-V',
+            driver: 'Fatoumata Barry',
+            plate: 'RC-5678-B',
+            color: '#3498db',
+            location: 'Matoto, Conakry',
+            stopped: false,
+            baseSpeed: 38,
+            wpIndex: 0,
+            progress: 0,
+            waypoints: [
+                [9.5100, -13.7100],
+                [9.5300, -13.6900],
+                [9.5600, -13.6600],
+                [9.5900, -13.6300],
+                [9.6100, -13.6000]
+            ]
+        },
+        {
+            id: 2,
+            name: 'Toyota RAV4',
+            driver: 'Aboubacar Sylla',
+            plate: 'RC-8830-C',
+            color: '#f1c40f',
+            location: 'Matam, Conakry',
+            stopped: false,
+            baseSpeed: 50,
+            wpIndex: 0,
+            progress: 0,
+            waypoints: [
+                [9.6200, -13.5800],
+                [9.6000, -13.6100],
+                [9.5750, -13.6400],
+                [9.5500, -13.6700],
+                [9.5200, -13.7000]
+            ]
+        },
+        {
+            id: 3,
+            name: 'Mitsubishi L200',
+            driver: 'Oumar Camara',
+            plate: 'RC-9911-D',
+            color: '#9b59b6',
+            location: 'Dixinn, Conakry',
+            stopped: false,
+            baseSpeed: 30,
+            wpIndex: 0,
+            progress: 0,
+            waypoints: [
+                [9.5150, -13.7150],
+                [9.5400, -13.6900],
+                [9.5700, -13.6600],
+                [9.6000, -13.6300],
+                [9.6300, -13.5900]
+            ]
+        }
+    ];
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobile-menu');
+        menu.classList.toggle('active');
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'fr' ? 'en' : 'fr';
+        document.getElementById('lang-btn').textContent = currentLang === 'fr' ? '🇬🇧 EN' : '🇫🇷 FR';
+        applyLanguage();
+    }
+
+    function changeCurrency() {
+        const select = document.getElementById('currency-btn');
+        currentCurrency = select.value;
+        localStorage.setItem('kallonCurrency', currentCurrency);
+        applyCurrency();
+    }
+
+    function applyLanguage() {
+        document.querySelectorAll('[data-en]').forEach(el => {
+            // skip elements that have child elements (like the rate badge span)
+            if (el.children.length > 0) return;
+            el.textContent = currentLang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-fr');
+        });
+        
+        const ni = document.getElementById('name-input');
+        const pi = document.getElementById('phone-input');
+        const ei = document.getElementById('email-input');
+        
+        if (ni) ni.placeholder = currentLang === 'en' ? 'Your Name' : 'Votre Nom';
+        if (pi) pi.placeholder = '+224 629 255 946';
+        if (ei) ei.placeholder = currentLang === 'en' ? 'your.email@example.com' : 'votre.email@exemple.com';
+        
+        applyCurrency();
+
+        const activeBtn = document.querySelector('.vehicle-btn.active');
+        if (activeBtn) {
+            const vId = parseInt(activeBtn.dataset.id);
+            const vObj = vehicleState.find(v => v.id === vId);
+            if (vObj && document.getElementById('info-status')) {
+                document.getElementById('info-status').textContent = vObj.stopped ? (currentLang === 'en' ? 'STOPPED' : 'ARRÊTÉ') : (currentLang === 'en' ? 'MOVING' : 'EN MOUVEMENT');
+            }
+        }
+    }
+
+    function applyCurrency() {
+        document.querySelectorAll('.price-amount').forEach(el => {
+            if (currentCurrency === 'USD') {
+                el.textContent = el.getAttribute('data-usd');
+            } else if (currentCurrency === 'GNF') {
+                el.textContent = el.getAttribute('data-gnf');
+            } else if (currentCurrency === 'SLE') {
+                el.textContent = el.getAttribute('data-sle');
+            }
+        });
+    }
+
+    function openModal() {
+        document.getElementById('contact-modal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('contact-modal').classList.remove('active');
+    }
+
+    function lerpVal(a, b, t) {
+        return a + (b - a) * t;
+    }
+
+    function initFleetMap() {
+        if (!document.getElementById('fleet-map')) return;
+        
+        // Remove loading text
+        const loader = document.getElementById('map-loader');
+        if (loader) loader.remove();
+
+        fleetMap = L.map('fleet-map', {
+            center: [9.5370, -13.6600],
+            zoom: 12,
+            zoomControl: true,
+            attributionControl: false,
+            preferCanvas: true
+        });
+        
+        // Satellite imagery (Esri — free, no API key needed)
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19,
+            attribution: ''
+        }).addTo(fleetMap);
+
+        // Road + label overlay on top of satellite = hybrid look
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19,
+            subdomains: 'abcd',
+            opacity: 0.85,
+            attribution: ''
+        }).addTo(fleetMap);
+
+        vehicleState.forEach(v => {
+            if (!v.stopped) {
+                v.polyline = L.polyline(v.waypoints, {
+                    color: v.color,
+                    weight: 4,
+                    opacity: 0.35,
+                    dashArray: '8, 10'
+                }).addTo(fleetMap);
+            }
+            
+            const markerHtml = `
+                <div style="width:28px; height:28px; background:${v.stopped ? '#555' : v.color}; border:3px solid white; border-radius:50%; box-shadow: 0 0 0 4px ${v.color}55, 0 4px 12px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; color:white; font-size:10px; font-weight:bold;">
+                    ${v.id + 1}
+                </div>
+            `;
+
+            v.marker = L.marker(v.waypoints[0], {
+                icon: L.divIcon({
+                    html: markerHtml,
+                    className: 'fleet-marker',
+                    iconSize: [28, 28],
+                    iconAnchor: [14, 14]
+                })
+            }).addTo(fleetMap);
+
+            v.marker.bindTooltip(`<strong>${v.name}</strong><br>${v.location}`, {
+                className: 'fleet-tooltip',
+                direction: 'top',
+                offset: [0, -12]
+            });
+
+            v.marker.on('click', () => {
+                const btn = document.querySelector(`[data-id="${v.id}"]`);
+                if (btn) btn.click();
+            });
+
+            v.currentLat = v.waypoints[0][0];
+            v.currentLng = v.waypoints[0][1];
+        });
+
+        const selectorsDiv = document.getElementById('vehicle-selectors');
+        if (selectorsDiv) {
+            vehicleState.forEach(v => {
+                const btn = document.createElement('button');
+                btn.className = 'vehicle-btn';
+                btn.dataset.id = v.id;
+                btn.style.cssText = `background:#0A1421; color:white; border:1px solid ${v.stopped ? '#555' : v.color}; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:500; display:flex; align-items:center; gap:6px; transition:all 0.2s;`;
+                
+                btn.innerHTML = `<span style="width:8px;height:8px;background:${v.stopped ? '#555' : v.color};border-radius:50%;"></span> ${v.name}`;
+                
+                btn.onclick = () => {
+                    document.querySelectorAll('.vehicle-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    document.getElementById('info-vehicle').textContent = `${v.name} • ${v.plate}`;
+                    document.getElementById('info-driver').textContent = v.driver;
+                    document.getElementById('info-location').textContent = v.location;
+
+                    const statusEl = document.getElementById('info-status');
+                    if (v.stopped) {
+                        statusEl.textContent = currentLang === 'en' ? 'STOPPED' : 'ARRÊTÉ';
+                        statusEl.style.background = '#555';
+                    } else {
+                        statusEl.textContent = currentLang === 'en' ? 'MOVING' : 'EN MOUVEMENT';
+                        statusEl.style.background = 'var(--green)';
+                    }
+
+                    if (fleetMap) {
+                        fleetMap.panTo([v.currentLat, v.currentLng]);
+                    }
+                };
+
+                selectorsDiv.appendChild(btn);
+            });
+
+            const firstBtn = selectorsDiv.querySelector('button');
+            if (firstBtn) firstBtn.click();
+        }
+    }
+
+    function animateFleetVehicles() {
+        vehicleState.forEach(v => {
+            if (v.stopped || !v.marker) return;
+            const pts = v.waypoints;
+            v.progress += 0.002 + (v.baseSpeed / 12000);
+            if (v.progress >= 1) {
+                v.progress = 0;
+                v.wpIndex = (v.wpIndex + 1) % pts.length; // loop back to 0
+            }
+            const from = pts[v.wpIndex];
+            const to = pts[(v.wpIndex + 1) % pts.length]; // safe wrap
+            const lat = lerpVal(from[0], to[0], v.progress);
+            const lng = lerpVal(from[1], to[1], v.progress);
+            v.currentLat = lat;
+            v.currentLng = lng;
+            v.currentSpeed = Math.floor(v.baseSpeed + (Math.sin(Date.now()/2000 + v.id) * 5));
+            v.marker.setLatLng([lat, lng]);
+            const activeBtn = document.querySelector('.vehicle-btn.active');
+            if (activeBtn && parseInt(activeBtn.dataset.id) === v.id) {
+                document.getElementById('info-speed').textContent = v.currentSpeed + ' km/h';
+                document.getElementById('info-gps').textContent = lat.toFixed(4) + '° N, ' + Math.abs(lng).toFixed(4) + '° W';
+                document.getElementById('info-location').textContent = v.location;
+            }
+        });
+    }
+
+    // ── NAVBAR HIDE ON SCROLL ────────────────────────────────────────────────
+    let lastScrollY = 0;
+    window.addEventListener('scroll', () => {
+        const navbar = document.querySelector('nav');
+        const currentScrollY = window.scrollY;
+        if (currentScrollY > lastScrollY && currentScrollY > 120) {
+            navbar.style.transform = 'translateY(-100%)';
+        } else {
+            navbar.style.transform = 'translateY(0)';
+        }
+        lastScrollY = currentScrollY;
+    });
+
+    // ── SCROLL REVEAL ────────────────────────────────────────────────────────
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('section').forEach(sec => {
+        // Never hide hero or fleet demo (map needs visible container to init)
+        if (sec.id === 'home' || sec.id === 'live-demo' || sec.id === 'stats') return;
+        sec.style.opacity = '0';
+        sec.style.transform = 'translateY(28px)';
+        sec.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
+        revealObserver.observe(sec);
+    });
+
+    // ── STATS COUNTER ANIMATION ──────────────────────────────────────────────
+    function animateCounter(el, target, duration) {
+        let start = 0;
+        const step = target / (duration / 16);
+        const timer = setInterval(() => {
+            start += step;
+            if (start >= target) { start = target; clearInterval(timer); }
+            if (target === 99) el.textContent = Math.floor(start) + '%';
+            else if (target === 2) el.textContent = Math.floor(start);
+            else if (target === 24) el.textContent = Math.floor(start);
+            else el.textContent = Math.floor(start) + '+';
+        }, 16);
+    }
+
+    const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                document.querySelectorAll('.stat-number').forEach(el => {
+                    const target = parseInt(el.getAttribute('data-target'));
+                    animateCounter(el, target, 1800);
+                });
+                statsObserver.disconnect();
+            }
+        });
+    }, { threshold: 0.3 });
+
+    const statsSection = document.getElementById('stats');
+    if (statsSection) statsObserver.observe(statsSection);
+
+    // ── LIVE EXCHANGE RATES ──────────────────────────────────────────────────
+    // Base USD prices (source of truth)
+    const BASE_PRICES_USD = {
+        monthly: { min: 10, max: 12 },
+        installation: { min: 25, max: 35 }
+    };
+
+    // Fallback rates in case API is unavailable
+    let exchangeRates = { GNF: 8650, SLE: 22.5 };
+    let ratesLoaded = false;
+
+    async function fetchExchangeRates() {
+        try {
+            // Free API — no key needed, 1500 requests/month
+            const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            if (!res.ok) throw new Error('API error');
+            const data = await res.json();
+            if (data.rates && data.rates.GNF && data.rates.SLE) {
+                exchangeRates.GNF = Math.round(data.rates.GNF);
+                exchangeRates.SLE = parseFloat(data.rates.SLE.toFixed(2));
+                ratesLoaded = true;
+                console.log('Live rates loaded: GNF=' + exchangeRates.GNF + ' SLE=' + exchangeRates.SLE);
+            }
+        } catch (e) {
+            // Silently use fallback rates
+            console.log('Using fallback exchange rates');
+        }
+        // Update prices with whatever rates we have
+        buildPriceStrings();
+        applyCurrency();
+        updateRateBadge();
+    }
+
+    function buildPriceStrings() {
+        const gnfMin1 = Math.round(BASE_PRICES_USD.monthly.min * exchangeRates.GNF / 1000) * 1000;
+        const gnfMax1 = Math.round(BASE_PRICES_USD.monthly.max * exchangeRates.GNF / 1000) * 1000;
+        const gnfMin2 = Math.round(BASE_PRICES_USD.installation.min * exchangeRates.GNF / 1000) * 1000;
+        const gnfMax2 = Math.round(BASE_PRICES_USD.installation.max * exchangeRates.GNF / 1000) * 1000;
+
+        const sleMin1 = Math.round(BASE_PRICES_USD.monthly.min * exchangeRates.SLE);
+        const sleMax1 = Math.round(BASE_PRICES_USD.monthly.max * exchangeRates.SLE);
+        const sleMin2 = Math.round(BASE_PRICES_USD.installation.min * exchangeRates.SLE);
+        const sleMax2 = Math.round(BASE_PRICES_USD.installation.max * exchangeRates.SLE);
+
+        const amounts = document.querySelectorAll('.price-amount');
+        if (amounts.length >= 2) {
+            amounts[0].setAttribute('data-gnf', gnfMin1.toLocaleString() + ' – ' + gnfMax1.toLocaleString() + ' GNF');
+            amounts[0].setAttribute('data-usd', '$' + BASE_PRICES_USD.monthly.min + ' – $' + BASE_PRICES_USD.monthly.max + ' USD');
+            amounts[0].setAttribute('data-sle', sleMin1.toLocaleString() + ' – ' + sleMax1.toLocaleString() + ' SLE');
+
+            amounts[1].setAttribute('data-gnf', gnfMin2.toLocaleString() + ' – ' + gnfMax2.toLocaleString() + ' GNF');
+            amounts[1].setAttribute('data-usd', '$' + BASE_PRICES_USD.installation.min + ' – $' + BASE_PRICES_USD.installation.max + ' USD');
+            amounts[1].setAttribute('data-sle', sleMin2.toLocaleString() + ' – ' + sleMax2.toLocaleString() + ' SLE');
+        }
+    }
+
+    function updateRateBadge() {
+        const badge = document.getElementById('rate-badge');
+        if (badge) {
+            const time = new Date().toLocaleTimeString();
+            badge.innerHTML = ratesLoaded
+                ? '📡 <span data-en="Live rate" data-fr="Taux en direct">Taux en direct</span>: 1 USD = ' + exchangeRates.GNF.toLocaleString() + ' GNF / ' + exchangeRates.SLE + ' SLE &nbsp;·&nbsp; ' + time
+                : '⚠️ <span data-en="Estimated rate" data-fr="Taux estimé">Taux estimé</span>: 1 USD ≈ ' + exchangeRates.GNF.toLocaleString() + ' GNF / ' + exchangeRates.SLE + ' SLE';
+        }
+    }
+
+    // ── WHATSAPP FORM SUBMIT ─────────────────────────────────────────────────
+    function submitProtectForm(event) {
+        event.preventDefault();
+        var name = document.getElementById('name-input').value.trim() || 'Client';
+        var phone = document.getElementById('phone-input').value.trim();
+        var enMsg = 'Hello Kallon GPS! My name is ' + name + ', number: ' + phone + '. I want GPS tracking for my vehicle.';
+        var frMsg = 'Bonjour Kallon GPS! Mon nom est ' + name + ', numero: ' + phone + '. Je veux proteger mon vehicule.';
+        var msg = currentLang === 'en' ? enMsg : frMsg;
+        window.open('https://wa.me/224629255946?text=' + encodeURIComponent(msg), '_blank');
+        closeModal();
+    }
+
+    // ── NEWSLETTER SUBMIT ────────────────────────────────────────────────────
+    function submitNewsletter(event) {
+        event.preventDefault();
+        const email = event.target.querySelector('input[type=email]').value.trim();
+        const msg = 'Bonjour Kallon GPS ! Je souhaite recevoir vos actualités. Mon email : ' + email;
+        window.open('https://wa.me/224629255946?text=' + encodeURIComponent(msg), '_blank');
+        event.target.reset();
+    }
+
+    // ── INIT ────────────────────────────────────────────────────────────────
+    document.addEventListener("DOMContentLoaded", () => {
+        // Init map after a short delay to ensure container is rendered
+        setTimeout(() => {
+            initFleetMap();
+            // Force Leaflet to recalculate map size
+            if (fleetMap) {
+                fleetMap.invalidateSize();
+            }
+        }, 300);
+
+        setInterval(animateFleetVehicles, 40);
+        applyLanguage();
+
+        const select = document.getElementById('currency-btn');
+        if (select) { select.value = 'GNF'; }
+
+        // Fetch live rates immediately then refresh every 10 minutes
+        fetchExchangeRates();
+        setInterval(fetchExchangeRates, 600000);
+    });
+
+    // Also invalidate map size on window resize
+    window.addEventListener('resize', () => {
+        if (fleetMap) fleetMap.invalidateSize();
+    });
+</script>
+
+</body>
+</html>
