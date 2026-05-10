@@ -904,13 +904,13 @@ let waNumber = '224629255946';
 let adminUser = 'admin';
 let adminPass = 'kallon2024';
 
-// Load from localStorage
+// Load from localStorage (fall back to hardcoded defaults if not yet saved)
 function loadSettings() {
-    supabaseUrl = localStorage.getItem('sb_url') || '';
-    supabaseKey = localStorage.getItem('sb_key') || '';
-    waNumber    = localStorage.getItem('wa_number') || '224629255946';
-    adminUser   = localStorage.getItem('admin_user') || 'admin';
-    adminPass   = localStorage.getItem('admin_pass') || 'kallon2024';
+    supabaseUrl = localStorage.getItem('sb_url') || supabaseUrl;
+    supabaseKey = localStorage.getItem('sb_key') || supabaseKey;
+    waNumber    = localStorage.getItem('wa_number') || waNumber;
+    adminUser   = localStorage.getItem('admin_user') || adminUser;
+    adminPass   = localStorage.getItem('admin_pass') || adminPass;
 
     if (supabaseUrl) document.getElementById('sb-url').value = supabaseUrl;
     if (supabaseKey) document.getElementById('sb-key').value = supabaseKey;
@@ -1325,8 +1325,13 @@ function saveWA() {
 }
 
 function checkSetup() {
-    if (!supabaseUrl || !supabaseKey) {
+    // Hide banner if either localStorage or hardcoded credentials are present
+    const url = localStorage.getItem('sb_url') || supabaseUrl;
+    const key = localStorage.getItem('sb_key') || supabaseKey;
+    if (!url || !key) {
         document.getElementById('setup-banner').classList.remove('hidden');
+    } else {
+        document.getElementById('setup-banner').classList.add('hidden');
     }
 }
 
