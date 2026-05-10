@@ -11,7 +11,7 @@
     <meta property="og:url" content="https://gps-tracking-service.vercel.app/">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
     <style>
         :root {
             --blue:      #0A84FF;
@@ -1115,6 +1115,316 @@
             .contact-form-box { padding:28px 20px; }
         }
         html, body { overflow-x:hidden; max-width:100%; }
+
+        /* ══════════════════════════════════════════
+           ENHANCED ANIMATIONS — GPS SATELLITE THEME
+        ══════════════════════════════════════════ */
+
+        /* ── REDUCED MOTION ── */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+        }
+
+        /* ── REVEAL SYSTEM ── */
+        .reveal {
+            opacity:0; transform:translateY(30px);
+            transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+            will-change:transform, opacity;
+        }
+        .reveal.visible { opacity:1; transform:translateY(0); }
+        .reveal-delay-1 { transition-delay:0.1s; }
+        .reveal-delay-2 { transition-delay:0.2s; }
+        .reveal-delay-3 { transition-delay:0.3s; }
+        .reveal-delay-4 { transition-delay:0.4s; }
+
+        /* ── DATA NODES ── */
+        .data-node {
+            position:absolute; width:6px; height:6px;
+            background:var(--blue); border-radius:50%;
+            z-index:3; will-change:transform,opacity;
+            animation:nodePulse 3s ease-in-out infinite;
+        }
+        @keyframes nodePulse {
+            0%,100% { opacity:0.3; transform:scale(1); }
+            50% { opacity:1; transform:scale(1.5); }
+        }
+
+        /* ── RADAR SWEEP ── */
+        .hero-radar {
+            position:absolute; right:8%; top:50%;
+            transform:translateY(-50%);
+            width:400px; height:400px; z-index:2;
+            border-radius:50%; overflow:hidden;
+            border:1px solid rgba(10,132,255,0.08);
+            will-change:transform;
+        }
+        .hero-radar::after {
+            content:''; position:absolute; inset:0;
+            background:conic-gradient(from 0deg, transparent 0deg, transparent 300deg, rgba(10,132,255,0.15) 340deg, rgba(10,132,255,0.05) 360deg);
+            animation:radarRotate 4s linear infinite;
+            border-radius:50%;
+        }
+        @keyframes radarRotate { to { transform:rotate(360deg); } }
+
+        /* ── SATELLITES ── */
+        .satellite {
+            position:absolute; z-index:4;
+            will-change:transform;
+            animation:orbit 20s linear infinite;
+        }
+        .satellite:nth-child(2) { animation-delay:-10s; animation-duration:25s; }
+        @keyframes orbit {
+            0%   { transform:translate(10vw,-5vh) rotate(0deg); }
+            25%  { transform:translate(20vw,15vh) rotate(90deg); }
+            50%  { transform:translate(5vw,25vh) rotate(180deg); }
+            75%  { transform:translate(-10vw,10vh) rotate(270deg); }
+            100% { transform:translate(10vw,-5vh) rotate(360deg); }
+        }
+        .sat-body {
+            width:24px; height:12px;
+            background:rgba(10,132,255,0.5);
+            border-radius:3px; position:relative;
+        }
+        .sat-body::before, .sat-body::after {
+            content:''; position:absolute;
+            top:50%; transform:translateY(-50%);
+            width:20px; height:4px;
+            background:rgba(10,132,255,0.35);
+        }
+        .sat-body::before { right:100%; margin-right:2px; }
+        .sat-body::after  { left:100%; margin-left:2px; }
+        .sat-beam {
+            position:absolute; bottom:-30px; left:50%;
+            transform:translateX(-50%);
+            width:2px; height:30px;
+            background:linear-gradient(transparent, rgba(10,132,255,0.6));
+            animation:beamPulse 2s ease-in-out infinite;
+        }
+        @keyframes beamPulse {
+            0%,100% { opacity:0.3; }
+            50% { opacity:1; }
+        }
+
+        /* ── PHONE FLOAT ── */
+        .phone-wrap {
+            animation:phoneFloat 6s ease-in-out infinite;
+            will-change:transform;
+        }
+        @keyframes phoneFloat {
+            0%,100% { transform:translateY(0); }
+            50% { transform:translateY(-12px); }
+        }
+        @media (max-width:768px) { .phone-wrap { animation:none; } }
+
+        /* ── ROUTE DRAW ── */
+        .phone-route-container {
+            position:absolute; bottom:40%; left:10%;
+            width:45%; height:3px;
+        }
+        .phone-route-line {
+            height:100%;
+            background:linear-gradient(90deg, transparent, var(--blue), rgba(10,132,255,0.3));
+            border-radius:3px;
+            animation:routeDraw 4s ease-in-out infinite;
+            will-change:transform;
+        }
+        @keyframes routeDraw {
+            0%   { width:0%; opacity:0; }
+            20%  { opacity:1; }
+            80%  { width:100%; opacity:1; }
+            100% { width:100%; opacity:0.6; }
+        }
+        .route-dot-tip {
+            position:absolute; right:0; top:50%;
+            transform:translateY(-50%);
+            width:8px; height:8px; background:var(--blue);
+            border-radius:50%; border:2px solid #fff;
+            animation:routeDotPulse 1s ease-in-out infinite;
+        }
+        @keyframes routeDotPulse {
+            0%,100% { box-shadow:0 0 0 0 rgba(10,132,255,0.7); }
+            50% { box-shadow:0 0 0 5px transparent; }
+        }
+
+        /* ── PIN RIPPLE ── */
+        .pin-dot::before {
+            content:''; position:absolute;
+            inset:-8px; border-radius:50%;
+            border:2px solid rgba(10,132,255,0.5);
+            animation:pinRipple 2s infinite;
+        }
+        @keyframes pinRipple {
+            0% { transform:scale(1); opacity:1; }
+            100% { transform:scale(2); opacity:0; }
+        }
+
+        /* ── STATUS BADGE GLOW ── */
+        .status-badge {
+            animation:statusGlow 2s ease-in-out infinite;
+            will-change:box-shadow;
+        }
+        @keyframes statusGlow {
+            0%,100% { box-shadow:0 0 8px rgba(34,197,94,0.4); }
+            50% { box-shadow:0 0 18px rgba(34,197,94,0.8); }
+        }
+
+        /* ── COORD FLICKER (JetBrains Mono) ── */
+        .phone-coord {
+            font-family:'JetBrains Mono', monospace !important;
+            animation:coordFlicker 3s ease-in-out infinite;
+        }
+        @keyframes coordFlicker {
+            0%,90%,100% { opacity:1; }
+            95% { opacity:0.5; }
+        }
+
+        /* ── STAT ICON BOUNCE ── */
+        .stat-icon {
+            display:inline-block;
+            animation:statIconBounce 3s ease-in-out infinite;
+            will-change:transform;
+        }
+        @keyframes statIconBounce {
+            0%,100% { transform:translateY(0); }
+            50% { transform:translateY(-4px); }
+        }
+        .stat-item { transition:transform 0.25s ease; }
+        .stat-item:hover { transform:translateY(-4px); }
+
+        /* ── STEP NUMBER PULSE ── */
+        .step-number {
+            animation:stepNumberPulse 3s ease-in-out infinite;
+            will-change:box-shadow;
+        }
+        @keyframes stepNumberPulse {
+            0%,100% { box-shadow:0 0 10px rgba(10,132,255,0.4); }
+            50% { box-shadow:0 0 25px rgba(10,132,255,0.8); }
+        }
+
+        /* ── CONNECTOR TRAVELING DOT ── */
+        .connector-line { position:relative; overflow:visible; }
+        .connector-line:not(:last-child)::after {
+            content:''; position:absolute;
+            top:-5px; left:0;
+            width:10px; height:10px; border-radius:50%;
+            background:var(--blue);
+            box-shadow:0 0 8px var(--blue);
+            animation:connectorDotMove 3s linear infinite;
+            will-change:transform,opacity;
+        }
+        @keyframes connectorDotMove {
+            0%   { transform:translateX(0); opacity:0; }
+            10%  { opacity:1; }
+            90%  { opacity:1; }
+            100% { transform:translateX(200%); opacity:0; }
+        }
+        .step-card:hover .step-icon { display:inline-block; transform:scale(1.15) rotate(-5deg); transition:transform 0.3s; }
+
+        /* ── PRICING BADGE GLOW ── */
+        .price-badge {
+            animation:badgeGlow 3s ease-in-out infinite;
+            will-change:box-shadow;
+        }
+        @keyframes badgeGlow {
+            0%,100% { box-shadow:0 4px 16px rgba(10,132,255,0.35); }
+            50% { box-shadow:0 4px 30px rgba(10,132,255,0.7); }
+        }
+
+        /* ── SHIELD SCAN ── */
+        .shield-bg { position:relative; overflow:hidden; }
+        .shield-bg::before {
+            content:''; position:absolute;
+            left:0; right:0; height:3px;
+            background:linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation:shieldScan 3s linear infinite;
+            z-index:10;
+        }
+        @keyframes shieldScan {
+            0%   { top:-10%; }
+            100% { top:110%; }
+        }
+
+        /* ── WHY ITEM HOVER ── */
+        .why-item {
+            transition:padding-left 0.25s ease;
+            cursor:default;
+        }
+        .why-item:hover { padding-left:8px; }
+        .why-item:hover .why-icon { transform:scale(1.1) rotate(5deg); background:rgba(10,132,255,0.22); transition:all 0.25s; }
+
+        /* ── TESTIMONIAL BAR ── */
+        .testimonial-card::before {
+            animation:testimonialBar 3s ease-in-out infinite;
+        }
+        @keyframes testimonialBar {
+            0%,100% { opacity:0.5; }
+            50% { opacity:1; }
+        }
+        .testimonial-card:hover .author-avatar { transform:scale(1.1); transition:transform 0.3s; }
+
+        /* ── PHONE NUMBER GLOW ── */
+        .contact-phone {
+            animation:phoneGlow 3s ease-in-out infinite;
+        }
+        @keyframes phoneGlow {
+            0%,100% { text-shadow:0 0 8px rgba(255,255,255,0.3); }
+            50% { text-shadow:0 0 24px rgba(255,255,255,0.7); }
+        }
+
+        /* ── FORM BAR SHIMMER ── */
+        .contact-form-box::before {
+            background:linear-gradient(90deg, var(--blue), rgba(10,132,255,0.3), var(--blue));
+            background-size:200% 100%;
+            animation:formBarShimmer 3s linear infinite;
+        }
+        @keyframes formBarShimmer {
+            0%   { background-position:100% 0; }
+            100% { background-position:-100% 0; }
+        }
+
+        /* ── SUCCESS POP ── */
+        .form-success.show {
+            animation:successPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        }
+        @keyframes successPop {
+            0% { transform:scale(0.8); opacity:0; }
+            100% { transform:scale(1); opacity:1; }
+        }
+
+        /* ── BUTTON SHIMMER ── */
+        .btn-primary, .cta-nav, .price-btn-blue, .form-submit-btn {
+            position:relative; overflow:hidden;
+        }
+        .btn-primary::before, .cta-nav::before, .price-btn-blue::before, .form-submit-btn::before {
+            content:''; position:absolute;
+            top:0; left:-100%; width:100%; height:100%;
+            background:linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition:left 0.5s ease;
+        }
+        .btn-primary:hover::before, .cta-nav:hover::before, .price-btn-blue:hover::before, .form-submit-btn:hover::before {
+            left:100%;
+        }
+
+        /* ── NAV LINK UNDERLINE ── */
+        .nav-links a { position:relative; }
+        .nav-links a::after {
+            content:''; position:absolute;
+            bottom:-4px; left:0; right:0; height:2px;
+            background:var(--blue);
+            width:0; transition:width 0.3s ease;
+        }
+        .nav-links a:hover::after { width:100%; }
+
+        /* ── CONTACT INFO ITEM HOVER ── */
+        .contact-info-item {
+            transition:padding-left 0.25s ease;
+            cursor:default;
+        }
+        .contact-info-item:hover { padding-left:8px; }
+        .contact-info-item:hover .contact-info-icon { transform:scale(1.1) rotate(5deg); background:rgba(10,132,255,0.22); transition:all 0.25s; }
+
+        /* ── COUNT-UP STAT NUMBER ── */
+        .stat-number { will-change:contents; }
     </style>
 </head>
 <body>
@@ -1179,6 +1489,26 @@
 <section id="home" class="hero">
     <div class="hero-grid"></div>
     <div class="hero-orb"></div>
+    <div class="hero-radar"></div>
+
+    <!-- Data Nodes -->
+    <div class="data-node" style="top:15%;left:8%;animation-delay:0s;"></div>
+    <div class="data-node" style="top:30%;left:22%;animation-delay:0.5s;"></div>
+    <div class="data-node" style="top:65%;left:14%;animation-delay:1s;"></div>
+    <div class="data-node" style="top:20%;right:25%;animation-delay:1.5s;"></div>
+    <div class="data-node" style="top:75%;right:35%;animation-delay:2s;"></div>
+    <div class="data-node" style="top:50%;left:45%;animation-delay:2.5s;"></div>
+
+    <!-- Floating Satellites -->
+    <div class="satellite" style="top:12%;left:5%;animation-delay:0s;">
+        <div class="sat-body"></div>
+        <div class="sat-beam"></div>
+    </div>
+    <div class="satellite" style="top:60%;right:10%;animation-delay:-5s;animation-duration:25s;">
+        <div class="sat-body"></div>
+        <div class="sat-beam"></div>
+    </div>
+
     <div class="hero-rings">
         <div class="ring" style="animation-delay:0s;"></div>
         <div class="ring" style="animation-delay:1.5s;"></div>
@@ -1252,7 +1582,10 @@
                                 <div class="map-road-h" style="top:58%;"></div>
                                 <div class="map-road-v" style="left:33%;"></div>
                                 <div class="map-road-v" style="left:66%;"></div>
-                                <div class="phone-route"></div>
+                                <div class="phone-route-container">
+                                    <div class="phone-route-line"></div>
+                                    <div class="route-dot-tip"></div>
+                                </div>
                                 <div class="map-pin">
                                     <div class="pin-dot"></div>
                                 </div>
@@ -1309,24 +1642,24 @@
 <!-- ── STATS STRIP ─────────────────────────────────────── -->
 <div class="stats-strip">
     <div class="stats-grid">
-        <div class="stat-item">
+        <div class="stat-item reveal">
             <span class="stat-icon">🚗</span>
-            <div class="stat-number">500+</div>
+            <div class="stat-number" data-value="500" data-suffix="+">500+</div>
             <div class="stat-label" data-en="Vehicles Protected" data-fr="Véhicules Protégés">Vehicles Protected</div>
         </div>
-        <div class="stat-item">
+        <div class="stat-item reveal reveal-delay-1">
             <span class="stat-icon">📱</span>
-            <div class="stat-number">100%</div>
+            <div class="stat-number" data-value="100" data-suffix="%">100%</div>
             <div class="stat-label" data-en="Works on Any Phone" data-fr="Fonctionne sur tout téléphone">Works on Any Phone</div>
         </div>
-        <div class="stat-item">
+        <div class="stat-item reveal reveal-delay-2">
             <span class="stat-icon">⏱️</span>
-            <div class="stat-number">24/7</div>
+            <div class="stat-number" data-value="24" data-suffix="/7">24/7</div>
             <div class="stat-label" data-en="Live Monitoring" data-fr="Surveillance en direct">Live Monitoring</div>
         </div>
-        <div class="stat-item">
+        <div class="stat-item reveal reveal-delay-3">
             <span class="stat-icon">💬</span>
-            <div class="stat-number">2 min</div>
+            <div class="stat-number" data-text="2 min">2 min</div>
             <div class="stat-label" data-en="Average Response Time" data-fr="Temps de réponse moyen">Average Response Time</div>
         </div>
     </div>
@@ -1341,19 +1674,19 @@
             <p class="section-sub" data-en="From installation to live tracking in under an hour. No technical knowledge needed." data-fr="De l'installation au suivi en direct en moins d'une heure. Aucune connaissance technique requise.">From installation to live tracking in under an hour. No technical knowledge needed.</p>
         </div>
         <div class="steps">
-            <div class="step-card">
+            <div class="step-card reveal">
                 <div class="step-number">1</div>
                 <span class="step-icon">🔧</span>
                 <h3 data-en="We Install the Device" data-fr="Nous Installons l'Appareil">We Install the Device</h3>
                 <p data-en="Our team comes to you and installs the tracker hidden in your vehicle. Takes about 45–60 minutes. No disruption to your car." data-fr="Notre équipe vient chez vous et installe le traceur discrètement dans votre véhicule. Environ 45–60 minutes. Aucune modification visible.">Our team comes to you and installs the tracker hidden in your vehicle. Takes about 45–60 minutes. No disruption to your car.</p>
             </div>
-            <div class="step-card">
+            <div class="step-card reveal reveal-delay-1">
                 <div class="step-number">2</div>
                 <span class="step-icon">📲</span>
                 <h3 data-en="You Get Access on Your Phone" data-fr="Accès Sur Votre Téléphone">You Get Access on Your Phone</h3>
                 <p data-en="We set up your account and send you your login. Open the app on your Android or iPhone and your vehicle appears on the map instantly." data-fr="Nous créons votre compte et vous envoyons vos identifiants. Ouvrez l'application sur Android ou iPhone et votre véhicule apparaît immédiatement sur la carte.">We set up your account and send you your login. Open the app on your Android or iPhone and your vehicle appears on the map instantly.</p>
             </div>
-            <div class="step-card">
+            <div class="step-card reveal reveal-delay-2">
                 <div class="step-number">3</div>
                 <span class="step-icon">👁️</span>
                 <h3 data-en="Track Your Vehicle Live, Anytime" data-fr="Suivez en Direct, Partout">Track Your Vehicle Live, Anytime</h3>
@@ -1375,35 +1708,35 @@
             <p class="section-sub" data-en="Professional-grade GPS protection built for the roads of Guinea." data-fr="Protection GPS professionnelle conçue pour les routes de Guinée.">Professional-grade GPS protection built for the roads of Guinea.</p>
         </div>
         <div class="features-grid">
-            <div class="feature-card">
+            <div class="feature-card reveal">
                 <div class="feature-icon-wrap">👁️</div>
                 <h3><span class="live-dot"></span><span data-en="See Your Car Live" data-fr="Voyez Votre Voiture en Direct">See Your Car Live</span></h3>
                 <p data-en="Open your phone and see exactly where your vehicle is, right now. Moving or parked — you always know." data-fr="Ouvrez votre téléphone et voyez exactement où se trouve votre véhicule, maintenant. En mouvement ou garé — vous savez toujours.">Open your phone and see exactly where your vehicle is, right now. Moving or parked — you always know.</p>
             </div>
-            <div class="feature-card">
+            <div class="feature-card reveal reveal-delay-1">
                 <div class="feature-icon-wrap">🚨</div>
                 <h3 data-en="Instant Theft Alerts" data-fr="Alertes de Vol Instantanées">Instant Theft Alerts</h3>
                 <p data-en="If your car starts moving without you, your phone gets an alert immediately. React fast. Call the police with the exact location." data-fr="Si votre voiture démarre sans vous, votre téléphone reçoit une alerte immédiatement. Réagissez vite. Appelez la police avec l'emplacement exact.">If your car starts moving without you, your phone gets an alert immediately. React fast. Call the police with the exact location.</p>
                 <div class="alert-demo">🚨 <span data-en="Vehicle started — Kipé, Conakry" data-fr="Véhicule démarré — Kipé, Conakry">Vehicle started — Kipé, Conakry</span></div>
             </div>
-            <div class="feature-card">
+            <div class="feature-card reveal reveal-delay-2">
                 <div class="feature-icon-wrap">🗺️</div>
                 <h3 data-en="Trip History & Replay" data-fr="Historique & Relecture des Trajets">Trip History & Replay</h3>
                 <p data-en="See every journey your vehicle made — where it went, how long it stopped, and when it returned. Perfect for fleet owners." data-fr="Voyez chaque trajet effectué par votre véhicule — où il est allé, combien de temps il s'est arrêté, et quand il est revenu. Parfait pour les propriétaires de flotte.">See every journey your vehicle made — where it went, how long it stopped, and when it returned. Perfect for fleet owners.</p>
                 <div class="route-demo"><div class="route-progress"></div></div>
             </div>
-            <div class="feature-card">
+            <div class="feature-card reveal reveal-delay-1">
                 <div class="feature-icon-wrap">📍</div>
                 <h3 data-en="Zone Alerts (Geofencing)" data-fr="Alertes de Zone (Géofencing)">Zone Alerts (Geofencing)</h3>
                 <p data-en="Set a safe zone. If your vehicle leaves that area, you get notified immediately — day or night." data-fr="Définissez une zone sécurisée. Si votre véhicule quitte cette zone, vous êtes notifié immédiatement — jour et nuit.">Set a safe zone. If your vehicle leaves that area, you get notified immediately — day or night.</p>
                 <div class="geofence-demo"><div class="geo-pin"></div><span style="position:absolute;bottom:6px;font-size:10px;font-weight:700;" data-en="ZONE ACTIVE" data-fr="ZONE ACTIVE">ZONE ACTIVE</span></div>
             </div>
-            <div class="feature-card">
+            <div class="feature-card reveal reveal-delay-2">
                 <div class="feature-icon-wrap">⛽</div>
                 <h3 data-en="Fuel Monitoring" data-fr="Surveillance du Carburant">Fuel Monitoring</h3>
                 <p data-en="Track fuel levels in compatible vehicles. Know if fuel is being drained or misused. Protect your investment." data-fr="Suivez les niveaux de carburant dans les véhicules compatibles. Sachez si le carburant est drainé ou mal utilisé. Protégez votre investissement.">Track fuel levels in compatible vehicles. Know if fuel is being drained or misused. Protect your investment.</p>
             </div>
-            <div class="feature-card">
+            <div class="feature-card reveal reveal-delay-3">
                 <div class="feature-icon-wrap">🔋</div>
                 <h3 data-en="Device Health Monitoring" data-fr="Surveillance de l'Appareil">Device Health Monitoring</h3>
                 <p data-en="Get alerts if the tracker is disconnected or tampered with. A thief can't hide from us." data-fr="Recevez des alertes si le traceur est déconnecté ou altéré. Un voleur ne peut pas se cacher de nous.">Get alerts if the tracker is disconnected or tampered with. A thief can't hide from us.</p>
@@ -1551,7 +1884,7 @@
             <h2 class="section-title" data-en="What Our Clients Say" data-fr="Ce Que Disent Nos Clients">What Our Clients Say</h2>
         </div>
         <div class="testimonials-grid">
-            <div class="testimonial-card">
+            <div class="testimonial-card reveal">
                 <div class="stars">★★★★★</div>
                 <p class="testimonial-text" data-en='"I can now check my taxi from anywhere. If the driver takes a wrong route, I know immediately. Total peace of mind — I recommend Kallon GPS to every vehicle owner."' data-fr='"Je peux maintenant vérifier mon taxi de n'\''importe où. Si le chauffeur prend une mauvaise route, je le sais immédiatement. Tranquillité d'\''esprit totale — je recommande Kallon GPS à tout propriétaire de véhicule."'>"I can now check my taxi from anywhere. If the driver takes a wrong route, I know immediately. Total peace of mind — I recommend Kallon GPS to every vehicle owner."</p>
                 <div class="testimonial-author">
@@ -1562,7 +1895,7 @@
                     </div>
                 </div>
             </div>
-            <div class="testimonial-card">
+            <div class="testimonial-card reveal reveal-delay-1">
                 <div class="stars">★★★★★</div>
                 <p class="testimonial-text" data-en='"We installed Kallon GPS on our entire company fleet. Routes are more efficient, costs are down, and we always know where every vehicle is. Truly impressive service."' data-fr='"Nous avons installé Kallon GPS sur toute la flotte de notre entreprise. Les routes sont plus efficaces, les coûts ont baissé, et nous savons toujours où se trouve chaque véhicule. Un service vraiment impressionnant."'>"We installed Kallon GPS on our entire company fleet. Routes are more efficient, costs are down, and we always know where every vehicle is. Truly impressive service."</p>
                 <div class="testimonial-author">
@@ -1573,7 +1906,7 @@
                     </div>
                 </div>
             </div>
-            <div class="testimonial-card">
+            <div class="testimonial-card reveal reveal-delay-2">
                 <div class="stars">★★★★★</div>
                 <p class="testimonial-text" data-en='"My car was stolen. I opened the app and saw exactly where it was. Called the police and it was recovered within hours. This service saved me everything. Highly recommended."' data-fr='"Ma voiture a été volée. J'\''ai ouvert l'\''application et j'\''ai vu exactement où elle était. J'\''ai appelé la police et elle a été récupérée en quelques heures. Ce service m'\''a tout sauvé. Hautement recommandé."'>"My car was stolen. I opened the app and saw exactly where it was. Called the police and it was recovered within hours. This service saved me everything. Highly recommended."</p>
                 <div class="testimonial-author">
@@ -1596,23 +1929,23 @@
             <h2 class="section-title" data-en="Frequently Asked Questions" data-fr="Questions Fréquentes">Frequently Asked Questions</h2>
         </div>
         <div class="faq-grid">
-            <div class="faq-card">
+            <div class="faq-card reveal">
                 <h4>⚡ <span data-en="How long does installation take?" data-fr="Combien de temps dure l'installation ?">How long does installation take?</span> <span class="faq-arrow">▾</span></h4>
                 <p data-en="About 45 to 60 minutes. Our team can come to your home or office in Conakry. No mechanical changes to your vehicle." data-fr="Environ 45 à 60 minutes. Notre équipe peut se déplacer chez vous ou à votre bureau à Conakry. Aucune modification mécanique sur votre véhicule.">About 45 to 60 minutes. Our team can come to your home or office in Conakry. No mechanical changes to your vehicle.</p>
             </div>
-            <div class="faq-card">
+            <div class="faq-card reveal reveal-delay-1">
                 <h4>📶 <span data-en="Does it work outside Conakry?" data-fr="Fonctionne-t-il en dehors de Conakry ?">Does it work outside Conakry?</span> <span class="faq-arrow">▾</span></h4>
                 <p data-en="Yes. Coverage spans all major regions across Guinea, with no extra charges nationwide." data-fr="Oui. La couverture s'étend à toutes les grandes régions de Guinée, sans frais supplémentaires dans tout le pays.">Yes. Coverage spans all major regions across Guinea, with no extra charges nationwide.</p>
             </div>
-            <div class="faq-card">
+            <div class="faq-card reveal reveal-delay-2">
                 <h4>📱 <span data-en="Do I need a smartphone?" data-fr="Faut-il un smartphone ?">Do I need a smartphone?</span> <span class="faq-arrow">▾</span></h4>
                 <p data-en="Yes. The platform works on Android, iPhone, or any web browser. As long as you have internet, you can see your vehicle." data-fr="Oui. La plateforme fonctionne sur Android, iPhone ou tout navigateur Web. Tant que vous avez Internet, vous pouvez voir votre véhicule.">Yes. The platform works on Android, iPhone, or any web browser. As long as you have internet, you can see your vehicle.</p>
             </div>
-            <div class="faq-card">
+            <div class="faq-card reveal reveal-delay-1">
                 <h4>🔒 <span data-en="Is my data private?" data-fr="Mes données sont-elles privées ?">Is my data private?</span> <span class="faq-arrow">▾</span></h4>
                 <p data-en="Absolutely. Your vehicle data is encrypted and only you can access it. We never share your information with anyone." data-fr="Absolument. Les données de votre véhicule sont cryptées et seul vous pouvez y accéder. Nous ne partageons jamais vos informations.">Absolutely. Your vehicle data is encrypted and only you can access it. We never share your information with anyone.</p>
             </div>
-            <div class="faq-card">
+            <div class="faq-card reveal reveal-delay-2">
                 <h4>💳 <span data-en="How do I pay?" data-fr="Comment payer ?">How do I pay?</span> <span class="faq-arrow">▾</span></h4>
                 <p data-en="You can pay via Orange Money, MTN Mobile Money, bank transfer, or cash. Contact us on WhatsApp to arrange payment." data-fr="Vous pouvez payer via Orange Money, MTN Mobile Money, virement bancaire ou espèces. Contactez-nous sur WhatsApp pour organiser le paiement.">You can pay via Orange Money, MTN Mobile Money, bank transfer, or cash. Contact us on WhatsApp to arrange payment.</p>
             </div>
@@ -1969,6 +2302,17 @@
     const revealObserver = new IntersectionObserver(entries => {
         entries.forEach(e => {
             if (e.isIntersecting) {
+                e.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // Also animate sections (non-reveal ones) on scroll
+    const sectionObserver = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
                 e.target.style.opacity = '1';
                 e.target.style.transform = 'translateY(0)';
             }
@@ -1980,8 +2324,65 @@
         sec.style.opacity = '0';
         sec.style.transform = 'translateY(24px)';
         sec.style.transition = 'opacity 0.65s ease, transform 0.65s ease';
-        revealObserver.observe(sec);
+        sectionObserver.observe(sec);
     });
+
+    // ── COUNT-UP ANIMATION ────────────────────────────────────────────────────
+    const counterObserver = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                const el = e.target;
+                if (el.dataset.counted) return;
+                el.dataset.counted = 'true';
+                const target = parseInt(el.dataset.value);
+                const suffix = el.dataset.suffix || '';
+                if (!target) return;
+                const duration = 2000;
+                const start = performance.now();
+                function tick(now) {
+                    const elapsed = now - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    el.textContent = Math.round(eased * target) + suffix;
+                    if (progress < 1) requestAnimationFrame(tick);
+                }
+                requestAnimationFrame(tick);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.stat-number[data-value]').forEach(el => counterObserver.observe(el));
+
+    // ── REAL-TIME PHONE STATS ─────────────────────────────────────────────────
+    const speedEl = document.querySelector('.phone-stat-val');
+    const distEl = document.querySelectorAll('.phone-stat-val')[1];
+    const durEl  = document.querySelectorAll('.phone-stat-val')[2];
+
+    if (speedEl) {
+        setInterval(() => {
+            speedEl.textContent = Math.floor(Math.random() * 40 + 40);
+        }, 3000);
+    }
+
+    let distVal = 12.5, durSec = 18 * 60;
+    if (distEl && durEl) {
+        setInterval(() => {
+            distVal = Math.round((distVal + 0.1) * 10) / 10;
+            distEl.textContent = distVal.toFixed(1);
+            durSec += 2;
+            const mm = String(Math.floor(durSec / 60)).padStart(2, '0');
+            const ss = String(durSec % 60).padStart(2, '0');
+            durEl.textContent = mm + ':' + ss;
+        }, 2000);
+    }
+
+    // Also update float card speed/distance
+    const floatSpeed = document.getElementById('gps-speed');
+    if (floatSpeed) {
+        setInterval(() => {
+            floatSpeed.textContent = Math.floor(Math.random() * 40 + 40) + ' km/h';
+        }, 3000);
+    }
 
     // ── FAQ ACCORDION ─────────────────────────────────────────────────────────
     document.querySelectorAll('.faq-card').forEach(card => {
