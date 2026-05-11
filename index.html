@@ -10,8 +10,51 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://gps-tracking-service.vercel.app/">
     <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:image" content="https://gps-tracking-service.vercel.app/og-image.png">
+    <meta name="twitter:image" content="https://gps-tracking-service.vercel.app/og-image.png">
+    <link rel="canonical" href="https://gps-tracking-service.vercel.app/">
+
+    <!-- Non-blocking font loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Kallon GPS Solutions & Services",
+      "description": "Real-time vehicle tracking solutions for Guinea. Professional installation, live monitoring, instant theft alerts.",
+      "url": "https://gps-tracking-service.vercel.app/",
+      "telephone": "+224629255946",
+      "email": "sekoukallon2001@gmail.com",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Conakry",
+        "addressCountry": "GN"
+      },
+      "areaServed": "Guinea",
+      "priceRange": "$9–$46",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Monthly GPS Tracking Plan",
+          "price": "9",
+          "priceCurrency": "USD",
+          "description": "Live tracking, instant alerts, trip history & WhatsApp support"
+        },
+        {
+          "@type": "Offer",
+          "name": "GPS Device + Installation",
+          "price": "34",
+          "priceCurrency": "USD",
+          "description": "Professional GPS device with expert installation at your location"
+        }
+      ]
+    }
+    </script>
     <style>
         :root {
             --blue:      #0A84FF;
@@ -23,7 +66,7 @@
             --navy-card: #0F2033;
             --navy-2:    #1B263B;
             --white:     #F2F4F7;
-            --grey:      #6B7280;
+            --grey:      #8A94A6;
             --green:     #22C55E;
             --red:       #EF4444;
         }
@@ -1638,12 +1681,16 @@
 </head>
 <body>
 
+<!-- Skip to main content for keyboard users -->
+<a href="#home" style="position:absolute;top:-40px;left:0;background:var(--blue);color:#fff;padding:8px 16px;border-radius:0 0 8px 0;font-weight:700;font-size:14px;z-index:9999;text-decoration:none;transition:top 0.2s;" onfocus="this.style.top='0'" onblur="this.style.top='-40px'">Skip to main content</a>
+
 <!-- ── NAV ─────────────────────────────────────────────── -->
-<nav id="navbar">
+<nav id="navbar" role="navigation" aria-label="Main navigation">
     <div class="nav-content">
-        <a href="#home" class="logo">
+        <a href="#home" class="logo" aria-label="Kallon GPS - Home">
             <!-- Kallon GPS logo: car inside location pin with signal arcs -->
-            <svg width="42" height="42" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="42" height="42" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kallon GPS logo">
+                <title>Kallon GPS logo</title>
                 <!-- Signal arcs -->
                 <path d="M58 14 Q72 28 72 44" stroke="#0A84FF" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.6"/>
                 <path d="M52 19 Q63 30 63 44" stroke="#0A84FF" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.8"/>
@@ -1675,9 +1722,9 @@
             <li><a href="#contact" data-en="Contact" data-fr="Contact">Contact</a></li>
         </ul>
         <div class="nav-actions">
-            <button onclick="toggleLanguage()" id="lang-btn" class="lang-toggle">🇫🇷 FR</button>
-            <a href="https://wa.me/224629255946" class="cta-nav" target="_blank">📞 +224 629 255 946</a>
-            <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+            <button onclick="toggleLanguage()" id="lang-btn" class="lang-toggle" aria-label="Toggle language between English and French">🇫🇷 FR</button>
+            <a href="https://wa.me/224629255946" class="cta-nav" target="_blank" rel="noopener noreferrer" aria-label="Call Kallon GPS on WhatsApp: +224 629 255 946">📞 +224 629 255 946</a>
+            <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()" role="button" aria-label="Toggle mobile navigation menu" aria-expanded="false" tabindex="0">
                 <span></span><span></span><span></span>
             </div>
         </div>
@@ -1690,11 +1737,12 @@
         <a href="#faq" onclick="toggleMobileMenu()">FAQ</a>
         <a href="#contact-form-section" onclick="toggleMobileMenu()" data-en="Contact Form" data-fr="Formulaire">Contact Form</a>
         <a href="#contact" onclick="toggleMobileMenu()" data-en="Contact" data-fr="Contact">Contact</a>
-        <a href="https://wa.me/224629255946" target="_blank" onclick="toggleMobileMenu()" style="color:#25D366;font-weight:700;">💬 WhatsApp</a>
+        <a href="https://wa.me/224629255946" target="_blank" rel="noopener noreferrer" onclick="toggleMobileMenu()" style="color:#25D366;font-weight:700;">💬 WhatsApp</a>
     </div>
 </nav>
 
 <!-- ── HERO ─────────────────────────────────────────────── -->
+<main id="main-content">
 <section id="home" class="hero">
     <div class="hero-grid"></div>
     <div class="hero-orb"></div>
@@ -1750,8 +1798,34 @@
             </div>
 
             <div class="btn-row">
-                <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!%20I%20want%20to%20protect%20my%20vehicle." target="_blank" class="btn-primary">🚗 <span data-en="Protect My Vehicle Now" data-fr="Protéger Mon Véhicule">Protect My Vehicle Now</span></a>
-                <a href="#how" class="btn-outline">▶ <span data-en="See How It Works" data-fr="Voir comment ça marche">See How It Works</span></a>
+                <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!%20I%20want%20to%20protect%20my%20vehicle." target="_blank" rel="noopener noreferrer" class="btn-primary" aria-label="Protect my vehicle - contact Kallon GPS on WhatsApp">🚗 <span data-en="Protect My Vehicle Now" data-fr="Protéger Mon Véhicule">Protect My Vehicle Now</span></a>
+                <a href="#how" class="btn-outline" aria-label="See how Kallon GPS works">▶ <span data-en="See How It Works" data-fr="Voir comment ça marche">See How It Works</span></a>
+            </div>
+
+            <!-- Self-select: Individual vs Fleet -->
+            <div style="margin-top:20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <span style="font-size:13px;color:rgba(242,244,247,0.5);" data-en="Who are you?" data-fr="Qui êtes-vous ?">Who are you?</span>
+                <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!%20I%20want%20GPS%20tracking%20for%20my%20personal%20vehicle." target="_blank" rel="noopener noreferrer" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(242,244,247,0.85);padding:7px 14px;border-radius:50px;font-size:12px;font-weight:700;text-decoration:none;transition:all 0.2s;font-family:'Montserrat',sans-serif;" onmouseover="this.style.background='rgba(10,132,255,0.15)';this.style.borderColor='rgba(10,132,255,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.12)'">
+                    🚗 <span data-en="I own a car" data-fr="Je possède une voiture">I own a car</span>
+                </a>
+                <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!%20I%20manage%20a%20fleet%20of%20vehicles%20and%20I%27m%20interested%20in%20your%20fleet%20management%20solution.%20Can%20you%20tell%20me%20about%20pricing%20for%205%2B%20vehicles%3F" target="_blank" rel="noopener noreferrer" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(242,244,247,0.85);padding:7px 14px;border-radius:50px;font-size:12px;font-weight:700;text-decoration:none;transition:all 0.2s;font-family:'Montserrat',sans-serif;" onmouseover="this.style.background='rgba(10,132,255,0.15)';this.style.borderColor='rgba(10,132,255,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.12)'">
+                    🚛 <span data-en="I manage a fleet" data-fr="Je gère une flotte">I manage a fleet</span>
+                </a>
+            </div>
+
+            <!-- Trust badges -->
+            <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+                <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(242,244,247,0.45);font-weight:600;letter-spacing:0.5px;">
+                    🔒 <span data-en="Secure & Private" data-fr="Sécurisé & Privé">Secure & Private</span>
+                </div>
+                <div style="width:1px;height:14px;background:rgba(255,255,255,0.1);"></div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(242,244,247,0.45);font-weight:600;letter-spacing:0.5px;">
+                    🛡️ <span data-en="1-Year Warranty" data-fr="Garantie 1 An">1-Year Warranty</span>
+                </div>
+                <div style="width:1px;height:14px;background:rgba(255,255,255,0.1);"></div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(242,244,247,0.45);font-weight:600;letter-spacing:0.5px;">
+                    💬 <span data-en="24/7 WhatsApp Support" data-fr="Support WhatsApp 24h/7j">24/7 WhatsApp Support</span>
+                </div>
             </div>
         </div>
 
@@ -1903,7 +1977,7 @@
             </div>
         </div>
         <div style="text-align:center;margin-top:48px;">
-            <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!%20I%20want%20to%20get%20installed." target="_blank" class="btn-primary">💬 <span data-en="Get Installed Now" data-fr="Faire Installer Maintenant">Get Installed Now</span></a>
+            <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!%20I%20want%20to%20get%20installed." target="_blank" rel="noopener noreferrer" class="btn-primary">💬 <span data-en="Get Installed Now" data-fr="Faire Installer Maintenant">Get Installed Now</span></a>
         </div>
     </div>
 </section>
@@ -2010,7 +2084,7 @@
         </div>
 
         <div style="text-align:center;margin-top:44px;">
-            <a href="https://wa.me/224629255946" target="_blank" class="btn-primary">💬 <span data-en="Contact on WhatsApp" data-fr="Contacter sur WhatsApp">Contact on WhatsApp</span></a>
+            <a href="https://wa.me/224629255946" target="_blank" rel="noopener noreferrer" class="btn-primary">💬 <span data-en="Contact on WhatsApp" data-fr="Contacter sur WhatsApp">Contact on WhatsApp</span></a>
         </div>
     </div>
 </section>
@@ -2164,7 +2238,7 @@
             </div>
         </div>
         <div style="text-align:center;margin-top:44px;">
-            <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!%20I%20have%20a%20question." target="_blank" class="btn-primary">💬 <span data-en="Ask Us Anything" data-fr="Posez-nous n'importe quelle question">Ask Us Anything</span></a>
+            <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!%20I%20have%20a%20question." target="_blank" rel="noopener noreferrer" class="btn-primary">💬 <span data-en="Ask Us Anything" data-fr="Posez-nous n'importe quelle question">Ask Us Anything</span></a>
         </div>
     </div>
 </section>
@@ -2182,7 +2256,7 @@
             <div class="dash-card reveal">
                 <div class="dash-card-label">⚡ Speed</div>
                 <div class="speedo-wrap">
-                    <canvas id="speedoCanvas" width="280" height="160"></canvas>
+                    <canvas id="speedoCanvas" width="280" height="160" role="img" aria-label="Live speedometer display showing current vehicle speed"></canvas>
                     <div class="speedo-readout">
                         <span id="speedo-val">0</span>
                         <span class="speedo-unit">km/h</span>
@@ -2200,7 +2274,7 @@
                 <div class="dash-card-label">🧭 Heading</div>
                 <div class="compass-wrap">
                     <div class="compass-ring">
-                        <canvas id="compassCanvas" width="200" height="200"></canvas>
+                        <canvas id="compassCanvas" width="200" height="200" role="img" aria-label="Live compass showing vehicle heading direction"></canvas>
                         <div class="compass-center">
                             <div id="compass-dir">N</div>
                             <div id="compass-deg" style="font-size:11px;color:var(--grey);">0°</div>
@@ -2276,7 +2350,7 @@
                 <div class="geo-status" id="geo-status">Click the map to start drawing</div>
             </div>
             <div class="geo-canvas-wrap">
-                <canvas id="geoCanvas"></canvas>
+                <canvas id="geoCanvas" role="img" aria-label="Interactive geofence builder map. Use the buttons above to draw a safe zone for your vehicle." tabindex="0"></canvas>
                 <div class="geo-legend">
                     <div class="geo-legend-item"><span class="geo-dot blue"></span> Vehicle</div>
                     <div class="geo-legend-item"><span class="geo-dot green"></span> Inside Zone</div>
@@ -2299,7 +2373,7 @@
             <p class="section-sub">Our GPS satellites orbit at 20,200km altitude. At any moment, 6–12 satellites have a clear line of sight to your vehicle in Guinea.</p>
         </div>
         <div class="globe-wrap reveal">
-            <canvas id="globeCanvas"></canvas>
+            <canvas id="globeCanvas" role="img" aria-label="Interactive 3D satellite globe showing GPS satellite coverage over Guinea. Drag to rotate, scroll to zoom." tabindex="0"></canvas>
             <div class="globe-overlay-info">
                 <div class="globe-stat-pill"><span id="globe-sat-visible">9</span> Satellites Visible</div>
                 <div class="globe-stat-pill"><span id="globe-accuracy">±2.8m</span> Accuracy</div>
@@ -2317,7 +2391,7 @@
             <h3 data-en="Your vehicle is unprotected right now." data-fr="Votre véhicule n'est pas protégé en ce moment.">Your vehicle is unprotected right now.</h3>
             <p data-en="Every day without a tracker is a day your car could disappear — and you'd have no way to find it. One installation changes that." data-fr="Chaque jour sans traceur est un jour où votre voiture pourrait disparaître — et vous n'auriez aucun moyen de la retrouver. Une installation change tout ça.">Every day without a tracker is a day your car could disappear — and you'd have no way to find it. One installation changes that.</p>
             <div class="cta-btn-row">
-                <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!%20I%20want%20to%20protect%20my%20vehicle." target="_blank" class="btn-primary">🚗 <span data-en="Protect My Vehicle Now" data-fr="Protéger Mon Véhicule">Protect My Vehicle Now</span></a>
+                <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!%20I%20want%20to%20protect%20my%20vehicle." target="_blank" rel="noopener noreferrer" class="btn-primary">🚗 <span data-en="Protect My Vehicle Now" data-fr="Protéger Mon Véhicule">Protect My Vehicle Now</span></a>
                 <a href="tel:+224629255946" class="btn-outline">📞 <span data-en="Call Us" data-fr="Nous Appeler">Call Us</span></a>
             </div>
         </div>
@@ -2498,7 +2572,7 @@
     <div class="contact-phone">📞 +224 629 255 946</div>
     <div class="contact-btns">
         <a href="tel:+224629255946" class="contact-btn-dark" data-en="📞 Call Now" data-fr="📞 Appeler Maintenant">📞 Call Now</a>
-        <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!%20I%20want%20to%20protect%20my%20vehicle." target="_blank" class="contact-btn-white">💬 WhatsApp</a>
+        <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!%20I%20want%20to%20protect%20my%20vehicle." target="_blank" rel="noopener noreferrer" class="contact-btn-white">💬 WhatsApp</a>
     </div>
     <div style="margin-top:20px;position:relative;">
         <p class="contact-sub" data-en="Prefer email?" data-fr="Vous préférez un e-mail ?">Prefer email?</p>
@@ -2508,7 +2582,8 @@
 </section>
 
 <!-- ── FOOTER ─────────────────────────────────────────── -->
-<footer>
+</main>
+<footer role="contentinfo">
     <div class="footer-grid">
         <div>
             <div class="footer-logo-main">KALLON <span>GPS</span></div>
@@ -2526,14 +2601,14 @@
         </div>
         <div>
             <div class="footer-heading" data-en="Contact" data-fr="Contact">Contact</div>
-            <a href="https://wa.me/224629255946" class="footer-phone" target="_blank">📞 +224 629 255 946</a>
+            <a href="https://wa.me/224629255946" class="footer-phone" target="_blank" rel="noopener noreferrer">📞 +224 629 255 946</a>
             <a href="mailto:sekoukallon2001@gmail.com" class="footer-link">sekoukallon2001@gmail.com</a>
             <div style="color:rgba(255,255,255,0.25);font-size:12px;margin-top:8px;" data-en="Conakry, Guinea — Nationwide" data-fr="Conakry, Guinée — Partout en Guinée">Conakry, Guinea — Nationwide</div>
         </div>
         <div>
             <div class="footer-heading" data-en="Get in Touch" data-fr="Nous Contacter">Get in Touch</div>
             <p style="color:var(--grey);font-size:13px;margin-bottom:16px;line-height:1.7;" data-en="Message us directly on WhatsApp for the fastest response." data-fr="Envoyez-nous un message directement sur WhatsApp pour une réponse rapide.">Message us directly on WhatsApp for the fastest response.</p>
-            <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!" target="_blank" class="btn-primary" style="font-size:13px;padding:12px 20px;justify-content:center;">💬 <span data-en="Open WhatsApp" data-fr="Ouvrir WhatsApp">Open WhatsApp</span></a>
+            <a href="https://wa.me/224629255946?text=Hello%20Kallon%20GPS!" target="_blank" rel="noopener noreferrer" class="btn-primary" style="font-size:13px;padding:12px 20px;justify-content:center;">💬 <span data-en="Open WhatsApp" data-fr="Ouvrir WhatsApp">Open WhatsApp</span></a>
         </div>
     </div>
     <div class="footer-bottom">
@@ -2570,14 +2645,16 @@
 </div>
 
 <!-- ── MODAL ───────────────────────────────────────────── -->
-<div id="contact-modal" class="modal">
+<div id="contact-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-box">
-        <button class="modal-close-btn" onclick="closeModal()">&times;</button>
-        <h3 class="modal-title" data-en="Protect Your Vehicle" data-fr="Protéger Votre Véhicule">Protect Your Vehicle</h3>
+        <button class="modal-close-btn" onclick="closeModal()" aria-label="Close modal">&times;</button>
+        <h3 class="modal-title" id="modal-title" data-en="Protect Your Vehicle" data-fr="Protéger Votre Véhicule">Protect Your Vehicle</h3>
         <p class="modal-sub" data-en="Leave your details and we'll reach you on WhatsApp within minutes." data-fr="Laissez vos coordonnées et nous vous contacterons sur WhatsApp en quelques minutes.">Leave your details and we'll reach you on WhatsApp within minutes.</p>
-        <form onsubmit="submitProtectForm(event);">
-            <input type="text" id="name-input" class="modal-input" placeholder="Your Name" required>
-            <input type="tel" id="phone-input" class="modal-input" placeholder="+224 629 255 946" required>
+        <form onsubmit="submitProtectForm(event);" novalidate>
+            <label for="name-input" style="display:block;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;">Your Name</label>
+            <input type="text" id="name-input" class="modal-input" placeholder="Your Name" required aria-required="true" autocomplete="name">
+            <label for="phone-input" style="display:block;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;margin-top:10px;">Phone Number</label>
+            <input type="tel" id="phone-input" class="modal-input" placeholder="+224 629 255 946" required aria-required="true" autocomplete="tel" pattern="[\+\d\s\-]{7,20}">
             <button type="submit" class="modal-submit" data-en="💬 Send on WhatsApp" data-fr="💬 Envoyer sur WhatsApp">💬 Send on WhatsApp</button>
         </form>
     </div>
@@ -2596,7 +2673,18 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     // ── MOBILE MENU ───────────────────────────────────────────────────────────
-    function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobile-menu');
+        const hamburger = document.getElementById('hamburger');
+        const isOpen = menu.classList.toggle('active');
+        if (hamburger) hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }
+
+    // Allow keyboard activation of hamburger
+    document.addEventListener('DOMContentLoaded', () => {
+        const ham = document.getElementById('hamburger');
+        if (ham) ham.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMobileMenu(); } });
+    });
 
     // ── LANGUAGE ──────────────────────────────────────────────────────────────
     function toggleLanguage() {
@@ -2779,12 +2867,17 @@
     });
 
     // ── CONTACT FORM ─────────────────────────────────────────────────────────
-    // ⬇ Paste your Supabase project URL and anon key here after setup
-    const SUPABASE_URL = 'https://diubotswoxoxbhtlznnm.supabase.co';   // e.g. 'https://xxxx.supabase.co'
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpdWJvdHN3b3hveGJodGx6bm5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNjY0NzgsImV4cCI6MjA5Mzk0MjQ3OH0.NVkoIcO1cy-TqoIIi3gK3nGOIrPJMilRVqThyeCKu9U';   // e.g. 'eyJh...'
+    // ✅ SECURITY NOTE: The anon key below is safe to use in frontend code —
+    //    Supabase's security model is designed for this. Protect your data by:
+    //    1. Keeping Row Level Security (RLS) ENABLED on the 'leads' table
+    //    2. Setting an insert-only RLS policy (no public reads)
+    //    3. Restricting allowed origins in your Supabase dashboard
+    //    Never expose your service_role key — that one must stay server-side only.
+    const SUPABASE_URL = 'https://diubotswoxoxbhtlznnm.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpdWJvdHN3b3hveGJodGx6bm5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNjY0NzgsImV4cCI6MjA5Mzk0MjQ3OH0.NVkoIcO1cy-TqoIIi3gK3nGOIrPJMilRVqThyeCKu9U';
 
     async function saveLeadToSupabase(lead) {
-        if (!SUPABASE_URL || !SUPABASE_KEY) return; // skip if not configured
+        if (!SUPABASE_URL || !SUPABASE_KEY) return;
         try {
             await fetch(SUPABASE_URL + '/rest/v1/leads', {
                 method: 'POST',
@@ -2827,8 +2920,25 @@
         const interestText = interest.options[interest.selectedIndex].text;
         const message = document.getElementById('cf-message').value.trim();
 
-        if (!first || !phone) {
-            document.getElementById('cf-firstname').focus();
+        // Validation
+        let errors = [];
+        if (!first) errors.push('cf-firstname');
+        if (!phone || !/^[\+\d\s\-]{7,20}$/.test(phone)) errors.push('cf-phone');
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push('cf-email');
+
+        if (errors.length > 0) {
+            errors.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.borderColor = 'var(--red)';
+                    el.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.15)';
+                    el.addEventListener('input', () => {
+                        el.style.borderColor = '';
+                        el.style.boxShadow = '';
+                    }, { once: true });
+                }
+            });
+            document.getElementById(errors[0]).focus();
             return;
         }
 
@@ -3559,8 +3669,24 @@
             edgeGrd.addColorStop(1, 'rgba(10,132,255,0.25)');
             ctx.strokeStyle = 'rgba(10,132,255,0.3)'; ctx.lineWidth = 1.5; ctx.stroke();
 
-            requestAnimationFrame(drawGlobe);
+            if (globeVisible) requestAnimationFrame(drawGlobe);
         }
+
+        // Pause animation when globe is off-screen
+        let globeVisible = false;
+        let globeRAF = null;
+        const globeVisObserver = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                globeVisible = e.isIntersecting;
+                if (globeVisible && !globeRAF) {
+                    globeRAF = requestAnimationFrame(function loop() {
+                        globeRAF = null;
+                        drawGlobe();
+                    });
+                }
+            });
+        }, { threshold: 0.1 });
+        globeVisObserver.observe(canvas);
 
         // Mouse/touch rotate
         canvas.addEventListener('mousedown', e => { isDragging = true; lastMX = e.clientX; lastMY = e.clientY; });
@@ -3592,7 +3718,7 @@
         // Auto-rotate when not dragging
         setInterval(() => { if (!isDragging) rotY += 0.003; zoom += (targetZoom - zoom) * 0.08; }, 16);
 
-        drawGlobe();
+        // Initial draw will be triggered by IntersectionObserver above
     }
 
 </script>
