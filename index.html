@@ -1858,37 +1858,101 @@
         .region-pill.partial { background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.25); color:#F59E0B; }
 
         /* ══════════════════════════════════════════
-           REDESIGNED PRICING TABLE
+           PRICING CARDS — MOBILE FIRST
         ══════════════════════════════════════════ */
-        .pricing-compare-table {
-            width:100%; border-collapse:separate; border-spacing:0;
-            margin-top:40px; border-radius:16px; overflow:hidden;
-            border:1px solid rgba(10,132,255,0.15);
+        .pricing-cards {
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:20px;
+            max-width:860px;
+            margin:40px auto 0;
         }
-        .pricing-compare-table thead th {
-            background:var(--navy-card); padding:20px 24px;
-            font-family:'Montserrat',sans-serif; font-weight:800; font-size:14px;
-            border-bottom:2px solid rgba(10,132,255,0.2); text-align:left;
+        @media(max-width:600px){
+            .pricing-cards { grid-template-columns:1fr; }
         }
-        .pricing-compare-table thead th:first-child { color:var(--grey); font-size:11px; text-transform:uppercase; letter-spacing:1px; }
-        .pricing-compare-table thead th.col-popular { background:rgba(10,132,255,0.08); border-top:3px solid var(--blue); }
-        .pricing-compare-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.04); }
-        .pricing-compare-table tbody tr:last-child { border-bottom:none; }
-        .pricing-compare-table tbody tr:hover { background:rgba(255,255,255,0.02); }
-        .pricing-compare-table tbody td { padding:14px 24px; font-size:13px; vertical-align:middle; }
-        .pricing-compare-table tbody td:first-child { color:var(--grey); font-weight:500; }
-        .pricing-compare-table tbody td.col-popular { background:rgba(10,132,255,0.04); }
-        .pricing-compare-table tfoot td { padding:20px 24px; background:var(--navy-card); border-top:1px solid rgba(255,255,255,0.07); }
-        .pricing-compare-table tfoot td.col-popular { background:rgba(10,132,255,0.08); }
-        .check-yes { color:var(--green); font-size:16px; }
-        .check-no  { color:rgba(255,255,255,0.2); font-size:16px; }
-        .price-tag-big { font-size:28px; font-weight:900; font-family:'Montserrat',sans-serif; color:var(--white); }
-        .price-tag-per { font-size:11px; color:var(--grey); margin-top:2px; }
-        .price-badge-inline { display:inline-block; background:var(--blue); color:#fff; font-size:9px; font-weight:800; letter-spacing:1px; padding:3px 8px; border-radius:20px; margin-left:6px; vertical-align:middle; }
-        body.light-mode .pricing-compare-table thead th { background:#fff; }
-        body.light-mode .pricing-compare-table tfoot td { background:#fff; }
-        body.light-mode .pricing-compare-table thead th.col-popular,
-        body.light-mode .pricing-compare-table tfoot td.col-popular { background:rgba(10,132,255,0.06); }
+        .pc {
+            background:var(--navy-card);
+            border:1.5px solid rgba(255,255,255,0.07);
+            border-radius:20px;
+            padding:28px 24px 24px;
+            display:flex;
+            flex-direction:column;
+            position:relative;
+        }
+        .pc.popular {
+            border-color:var(--blue);
+            box-shadow:0 0 40px rgba(10,132,255,0.18);
+        }
+        .pc-badge {
+            position:absolute; top:-13px; left:50%; transform:translateX(-50%);
+            background:var(--blue); color:#fff;
+            padding:4px 18px; border-radius:20px;
+            font-size:10px; font-weight:800; letter-spacing:1px;
+            white-space:nowrap; font-family:'Montserrat',sans-serif;
+        }
+        .pc-title {
+            font-size:16px; font-weight:800;
+            font-family:'Montserrat',sans-serif;
+            margin-bottom:6px;
+        }
+        .pc-price {
+            font-size:36px; font-weight:900;
+            font-family:'Montserrat',sans-serif;
+            color:var(--blue); line-height:1.1;
+            margin:10px 0 2px;
+        }
+        .pc-per {
+            font-size:12px; color:var(--grey);
+            margin-bottom:20px;
+        }
+        .pc-divider {
+            height:1px; background:rgba(255,255,255,0.07);
+            margin:0 0 18px;
+        }
+        .pc-features {
+            list-style:none; margin:0 0 24px;
+            display:flex; flex-direction:column; gap:11px;
+            flex:1;
+        }
+        .pc-features li {
+            display:flex; align-items:flex-start; gap:10px;
+            font-size:13.5px; color:rgba(242,244,247,0.82);
+            line-height:1.4;
+        }
+        .pc-features li .fi {
+            flex-shrink:0; font-size:15px; margin-top:1px;
+        }
+        .pc-fleet {
+            background:rgba(10,132,255,0.08);
+            border:1px solid rgba(10,132,255,0.2);
+            border-radius:10px; padding:10px 14px;
+            font-size:12px; color:var(--blue);
+            font-weight:700; text-align:center;
+            margin-bottom:16px; cursor:pointer;
+        }
+        .pc-btn {
+            display:block; width:100%; text-align:center;
+            padding:13px; border-radius:12px;
+            font-weight:800; font-size:14px;
+            font-family:'Montserrat',sans-serif;
+            cursor:pointer; border:none;
+            transition:all 0.2s; text-decoration:none;
+        }
+        .pc-btn-primary {
+            background:var(--blue); color:#fff;
+            box-shadow:0 4px 20px rgba(10,132,255,0.35);
+        }
+        .pc-btn-primary:hover { background:#2693ff; transform:translateY(-2px); }
+        .pc-btn-outline {
+            background:transparent;
+            border:1.5px solid rgba(255,255,255,0.2);
+            color:var(--white);
+        }
+        .pc-btn-outline:hover { border-color:var(--blue); color:var(--blue); }
+        .check-yes { color:var(--green); }
+        .check-no  { color:rgba(255,255,255,0.2); }
+        body.light-mode .pc { background:#fff; }
+        body.light-mode .pc-btn-outline { color:#1a2332; }
     </style>
 </head>
 <body>
@@ -1940,7 +2004,7 @@
             <li><a href="#contact" data-en="Contact" data-fr="Contact">Contact</a></li>
         </ul>
         <div class="nav-actions">
-            <button onclick="toggleLanguage()" id="lang-btn" class="lang-toggle" aria-label="Toggle language between English and French">🇫🇷 FR</button>
+            <button onclick="toggleLanguage()" id="lang-btn" class="lang-toggle" aria-label="Toggle language between English and French">🇬🇧 EN</button>
             <button onclick="toggleTheme()" id="theme-btn" class="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
             <a href="https://wa.me/224629255946" class="cta-nav" target="_blank" rel="noopener noreferrer" aria-label="Call Kallon GPS on WhatsApp: +224 629 255 946">📞 +224 629 255 946</a>
             <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()" role="button" aria-label="Toggle mobile navigation menu" aria-expanded="false" tabindex="0">
@@ -2260,90 +2324,57 @@
             <label for="currency-select" data-en="Show prices in:" data-fr="Afficher les prix en:">Show prices in:</label>
             <select id="currency-select" class="currency-select" onchange="changeCurrency(this.value)">
                 <option value="USD">💵 USD — US Dollar</option>
-                <option value="GNF">🇬🇳 GNF — Franc Guinéen</option>
+                <option value="GNF" selected>🇬🇳 GNF — Franc Guinéen</option>
                 <option value="SLL" style="display:none"></option>
             </select>
         </div>
 
-        <!-- Comparison table -->
-        <table class="pricing-compare-table reveal">
-            <thead>
-                <tr>
-                    <th style="width:38%"></th>
-                    <th class="col-popular">
-                        <span class="price-badge-inline" data-en="MOST POPULAR" data-fr="LE PLUS POPULAIRE">MOST POPULAR</span><br>
-                        <span data-en="Monthly Protection" data-fr="Protection Mensuelle">Monthly Protection</span><br>
-                        <div class="price-tag-big" id="price-monthly">$9 – $11</div>
-                        <div class="price-tag-per" data-en="per vehicle / month" data-fr="par véhicule / mois">per vehicle / month</div>
-                    </th>
-                    <th>
-                        <span data-en="Device + Installation" data-fr="Appareil + Installation">Device + Installation</span><br>
-                        <div class="price-tag-big" id="price-install">$34 – $46</div>
-                        <div class="price-tag-per" data-en="one-time payment" data-fr="paiement unique">one-time payment</div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td data-en="Live vehicle tracking (phone)" data-fr="Suivi en direct (téléphone)">Live vehicle tracking (phone)</td>
-                    <td class="col-popular"><span class="check-yes">✅</span></td>
-                    <td><span class="check-no">—</span></td>
-                </tr>
-                <tr>
-                    <td data-en="Instant theft & movement alerts" data-fr="Alertes de vol et mouvement">Instant theft & movement alerts</td>
-                    <td class="col-popular"><span class="check-yes">✅</span></td>
-                    <td><span class="check-no">—</span></td>
-                </tr>
-                <tr>
-                    <td data-en="Trip history & reports" data-fr="Historique et rapports de trajets">Trip history & reports</td>
-                    <td class="col-popular"><span class="check-yes">✅</span></td>
-                    <td><span class="check-no">—</span></td>
-                </tr>
-                <tr>
-                    <td data-en="WhatsApp & phone support" data-fr="Support WhatsApp & téléphone">WhatsApp & phone support</td>
-                    <td class="col-popular"><span class="check-yes">✅</span></td>
-                    <td><span class="check-no">—</span></td>
-                </tr>
-                <tr>
-                    <td data-en="Professional GPS device" data-fr="Appareil GPS professionnel">Professional GPS device</td>
-                    <td class="col-popular"><span class="check-no">—</span></td>
-                    <td><span class="check-yes">✅</span></td>
-                </tr>
-                <tr>
-                    <td data-en="Expert installation at your location" data-fr="Installation par expert chez vous">Expert installation at your location</td>
-                    <td class="col-popular"><span class="check-no">—</span></td>
-                    <td><span class="check-yes">✅</span></td>
-                </tr>
-                <tr>
-                    <td data-en="1-year hardware warranty" data-fr="Garantie matérielle 1 an">1-year hardware warranty</td>
-                    <td class="col-popular"><span class="check-no">—</span></td>
-                    <td><span class="check-yes">✅</span></td>
-                </tr>
-                <tr>
-                    <td data-en="Clean hidden install — no visible wires" data-fr="Installation cachée — aucun fil visible">Clean hidden install — no visible wires</td>
-                    <td class="col-popular"><span class="check-no">—</span></td>
-                    <td><span class="check-yes">✅</span></td>
-                </tr>
-                <tr>
-                    <td style="color:var(--blue);font-weight:700;" data-en="Fleet discount (5+ vehicles)" data-fr="Remise flotte (5+ véhicules)">Fleet discount (5+ vehicles)</td>
-                    <td class="col-popular" style="color:var(--green);font-weight:700;" data-en="Ask us" data-fr="Nous demander">Ask us</td>
-                    <td style="color:var(--green);font-weight:700;" data-en="Ask us" data-fr="Nous demander">Ask us</td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td>
-                        <p style="font-size:12px;color:var(--grey);" data-en="💡 Most clients start with Installation then add a monthly plan." data-fr="💡 La plupart des clients commencent par l'Installation puis ajoutent un abonnement mensuel.">💡 Most clients start with Installation then add a monthly plan.</p>
-                    </td>
-                    <td class="col-popular" style="text-align:center;">
-                        <button onclick="openModal()" class="price-btn price-btn-blue" style="width:100%;" data-en="🚗 Protect My Vehicle" data-fr="🚗 Protéger Mon Véhicule">🚗 Protect My Vehicle</button>
-                    </td>
-                    <td style="text-align:center;">
-                        <button onclick="window.open('https://wa.me/224629255946?text=Hello%20Kallon%20GPS!%20I%20want%20installation%20for%20my%20vehicle.','_blank')" class="price-btn price-btn-outline" style="width:100%;" data-en="Get Started" data-fr="Démarrer">Get Started</button>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
+        <!-- Pricing cards — works on any screen size -->
+        <div class="pricing-cards reveal">
+
+            <!-- Card 1: Monthly Plan (Popular) -->
+            <div class="pc popular">
+                <div class="pc-badge" data-en="MOST POPULAR" data-fr="LE PLUS POPULAIRE">LE PLUS POPULAIRE</div>
+                <div class="pc-title" data-en="Monthly Protection" data-fr="Protection Mensuelle">Protection Mensuelle</div>
+                <div class="pc-price" id="price-monthly">80,000 – 100,000 GNF</div>
+                <div class="pc-per" data-en="per vehicle / month" data-fr="par véhicule / mois">par véhicule / mois</div>
+                <div class="pc-divider"></div>
+                <ul class="pc-features">
+                    <li><span class="fi check-yes">✅</span><span data-en="Live vehicle tracking on your phone" data-fr="Suivi en direct sur votre téléphone">Suivi en direct sur votre téléphone</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Instant theft & movement alerts" data-fr="Alertes instantanées de vol et mouvement">Alertes instantanées de vol et mouvement</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Trip history & reports" data-fr="Historique et rapports de trajets">Historique et rapports de trajets</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="WhatsApp & phone support" data-fr="Support WhatsApp & téléphone">Support WhatsApp & téléphone</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Cancel anytime" data-fr="Annulez à tout moment">Annulez à tout moment</span></li>
+                </ul>
+                <div class="pc-fleet" onclick="window.open('https://wa.me/224629255946?text=' + encodeURIComponent(currentLang==='fr' ? 'Bonjour, je gère une flotte. Quels sont vos tarifs pour 5+ véhicules ?' : 'Hi, I manage a fleet. What are your rates for 5+ vehicles?'), '_blank')">
+                    🚛 <span data-en="Fleet discount for 5+ vehicles — Ask us" data-fr="Remise flotte 5+ véhicules — Nous demander">Remise flotte 5+ véhicules — Nous demander</span>
+                </div>
+                <button onclick="openModal()" class="pc-btn pc-btn-primary">
+                    🚗 <span data-en="Protect My Vehicle" data-fr="Protéger Mon Véhicule">Protéger Mon Véhicule</span>
+                </button>
+            </div>
+
+            <!-- Card 2: Device + Installation -->
+            <div class="pc">
+                <div class="pc-title" data-en="Device + Installation" data-fr="Appareil + Installation">Appareil + Installation</div>
+                <div class="pc-price" id="price-install">300,000 – 400,000 GNF</div>
+                <div class="pc-per" data-en="one-time payment" data-fr="paiement unique">paiement unique</div>
+                <div class="pc-divider"></div>
+                <ul class="pc-features">
+                    <li><span class="fi check-yes">✅</span><span data-en="Professional GPS device included" data-fr="Appareil GPS professionnel inclus">Appareil GPS professionnel inclus</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Expert installation at your location" data-fr="Installation par expert chez vous">Installation par expert chez vous</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="1-year hardware warranty" data-fr="Garantie matérielle 1 an">Garantie matérielle 1 an</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Clean hidden install — no visible wires" data-fr="Installation cachée — aucun fil visible">Installation cachée — aucun fil visible</span></li>
+                    <li><span class="fi" style="color:var(--grey);">💡</span><span style="color:var(--grey);font-size:12px;" data-en="Add a monthly plan to activate tracking" data-fr="Ajoutez un abonnement mensuel pour activer le suivi">Ajoutez un abonnement mensuel pour activer le suivi</span></li>
+                </ul>
+                <div style="flex:1"></div>
+                <a href="#" onclick="window.open('https://wa.me/224629255946?text=' + encodeURIComponent(currentLang==='fr' ? 'Bonjour Kallon GPS ! Je souhaite réserver une installation GPS pour mon véhicule. Quelles sont vos disponibilités ?' : 'Hello Kallon GPS! I want to book a GPS installation for my vehicle. When are you available?'), '_blank'); return false;" class="pc-btn pc-btn-outline">
+                    <span data-en="Book Installation" data-fr="Réserver l'Installation">Réserver l'Installation</span>
+                </a>
+            </div>
+
+        </div>
+        <p style="text-align:center;font-size:12px;color:var(--grey);margin-top:20px;" data-en="💡 Most clients start with Installation then add a monthly plan." data-fr="💡 La plupart des clients commencent par l'Installation puis ajoutent un abonnement mensuel.">💡 La plupart des clients commencent par l'Installation puis ajoutent un abonnement mensuel.</p>
 
         <div style="text-align:center;margin-top:32px;">
             <a href="https://wa.me/224629255946" target="_blank" rel="noopener noreferrer" class="btn-primary">💬 <span data-en="Contact on WhatsApp" data-fr="Contacter sur WhatsApp">Contact on WhatsApp</span></a>
@@ -3152,8 +3183,8 @@
 
 <script>
     // ── STATE ────────────────────────────────────────────────────────────────
-    let currentLang = 'en';
-    let currentCurrency = 'USD';
+    let currentLang = 'fr';
+    let currentCurrency = 'GNF';
 
     const PRICES = {
         monthly: { USD:'$9 – $11', GNF:'80,000 – 100,000 GNF', SLL:'230,000 – 290,000 SLL' },
@@ -3200,7 +3231,11 @@
     // ── LANGUAGE ──────────────────────────────────────────────────────────────
     function toggleLanguage() {
         currentLang = currentLang === 'en' ? 'fr' : 'en';
-        document.getElementById('lang-btn').textContent = currentLang === 'en' ? '🇫🇷 FR' : '🇬🇧 EN';
+        const btn = document.getElementById('lang-btn');
+        if (btn) {
+            btn.textContent = currentLang === 'en' ? '🇫🇷 FR' : '🇬🇧 EN';
+            btn.setAttribute('aria-label', currentLang === 'en' ? 'Switch to French' : 'Passer en anglais');
+        }
         applyLanguage();
     }
 
@@ -3210,10 +3245,23 @@
             const val = currentLang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-fr');
             if (val) el.textContent = val;
         });
+        document.documentElement.lang = currentLang;
+        // Modal placeholders
         const ni = document.getElementById('name-input');
         const pi = document.getElementById('phone-input');
         if (ni) ni.placeholder = currentLang === 'en' ? 'Your Name' : 'Votre Nom';
         if (pi) pi.placeholder = '+224 629 255 946';
+        // Contact form placeholders
+        const fn = document.getElementById('cf-firstname');
+        const ln = document.getElementById('cf-lastname');
+        const ph = document.getElementById('cf-phone');
+        const em = document.getElementById('cf-email');
+        if (fn) fn.placeholder = currentLang === 'en' ? 'First Name' : 'Prénom';
+        if (ln) ln.placeholder = currentLang === 'en' ? 'Last Name' : 'Nom de famille';
+        if (em) em.placeholder = currentLang === 'en' ? 'email@example.com' : 'email@exemple.com';
+        // Refresh textarea default message to current language
+        const sel = document.getElementById('cf-interest');
+        if (sel) updateDefaultMessage(sel.value);
     }
 
     // ── CURRENCY ──────────────────────────────────────────────────────────────
@@ -3232,8 +3280,12 @@
         event.preventDefault();
         const name  = document.getElementById('name-input').value.trim() || 'Client';
         const phone = document.getElementById('phone-input').value.trim();
-        let msg = 'Hello Kallon GPS! My name is ' + name + ', number: ' + phone + '. I want to protect my vehicle.';
-        if (currentLang === 'fr') msg = 'Bonjour Kallon GPS! Mon nom est ' + name + ', numéro: ' + phone + '. Je veux protéger mon véhicule.';
+        let msg;
+        if (currentLang === 'fr') {
+            msg = 'Bonjour Kallon GPS ! Mon nom est ' + name + ', numéro : ' + phone + '. Je souhaite protéger mon véhicule. Pouvez-vous me contacter ?';
+        } else {
+            msg = 'Hello Kallon GPS! My name is ' + name + ', number: ' + phone + '. I want to protect my vehicle. Please contact me.';
+        }
         window.open('https://wa.me/224629255946?text=' + encodeURIComponent(msg), '_blank');
         closeModal();
     }
@@ -3412,23 +3464,32 @@
         }
     }
 
-    // ── INTEREST → DEFAULT MESSAGE ────────────────────────────────────────
+    // ── INTEREST → DEFAULT MESSAGE (bilingual) ────────────────────────────
     const DEFAULT_MESSAGES = {
-        tracking: "Hi, I want to install GPS tracking on my vehicle. Can you guide me?",
-        fleet:    "Hi, I manage a fleet of vehicles and I'm interested in your Fleet Management solution. Can you tell me more about pricing and features?",
-        quote:    "Hi, I'd like to get a price quote for GPS tracking. Can you send me the details?",
-        install:  "Hi, I'm ready to book a GPS installation. When are you available and where do you cover?",
-        other:    "Hi, I have a question about your GPS services. Can you help me?"
+        en: {
+            tracking: "Hi, I want to install GPS tracking on my vehicle. Can you guide me?",
+            fleet:    "Hi, I manage a fleet of vehicles and I'm interested in your Fleet Management solution. Can you tell me more about pricing and features?",
+            quote:    "Hi, I'd like to get a price quote for GPS tracking. Can you send me the details?",
+            install:  "Hi, I'm ready to book a GPS installation. When are you available and where do you cover?",
+            other:    "Hi, I have a question about your GPS services. Can you help me?"
+        },
+        fr: {
+            tracking: "Bonjour, je souhaite installer un suivi GPS sur mon véhicule. Pouvez-vous me guider ?",
+            fleet:    "Bonjour, je gère une flotte de véhicules et je suis intéressé par votre solution de gestion de flotte. Pouvez-vous me parler des tarifs pour 5+ véhicules ?",
+            quote:    "Bonjour, j'aimerais obtenir un devis pour le suivi GPS. Pouvez-vous m'envoyer les détails ?",
+            install:  "Bonjour, je suis prêt à réserver une installation GPS. Quelles sont vos disponibilités ?",
+            other:    "Bonjour, j'ai une question concernant vos services GPS. Pouvez-vous m'aider ?"
+        }
     };
 
     function updateDefaultMessage(value) {
         const textarea = document.getElementById('cf-message');
-        // Only auto-update if the user hasn't manually edited the message
+        if (!textarea) return;
+        const msgs = DEFAULT_MESSAGES[currentLang] || DEFAULT_MESSAGES.fr;
+        const allDefaults = [...Object.values(DEFAULT_MESSAGES.en), ...Object.values(DEFAULT_MESSAGES.fr)];
         const currentMsg = textarea.value.trim();
-        const isDefault = Object.values(DEFAULT_MESSAGES).some(m => m === currentMsg) || currentMsg === '';
-        if (isDefault) {
-            textarea.value = DEFAULT_MESSAGES[value] || DEFAULT_MESSAGES.other;
-        }
+        const isDefault = allDefaults.some(m => m === currentMsg) || currentMsg === '';
+        if (isDefault) textarea.value = msgs[value] || msgs.other;
     }
 
     async function submitContactForm() {
@@ -3481,13 +3542,21 @@
             console.warn('Supabase save failed. Check RLS policies and that the leads table columns match: name, phone, email, interest, message, status, source.');
         }
 
-        // 2. Open WhatsApp — always runs as backup delivery
-        let msg = `Hello Kallon GPS! My name is ${first} ${last}.`;
-        msg += `\n📞 Phone: ${phone}`;
-        if (email) msg += `\n✉️ Email: ${email}`;
-        msg += `\n🔖 Interest: ${interestText}`;
-        if (message) msg += `\n💬 Message: ${message}`;
-
+        // 2. Open WhatsApp — always runs as backup delivery (bilingual)
+        let msg;
+        if (currentLang === 'fr') {
+            msg = 'Bonjour Kallon GPS ! Mon nom est ' + first + ' ' + last + '.';
+            msg += '\nTel: ' + phone;
+            if (email) msg += '\nEmail: ' + email;
+            msg += '\nInteret: ' + interestText;
+            if (message) msg += '\nMessage: ' + message;
+        } else {
+            msg = 'Hello Kallon GPS! My name is ' + first + ' ' + last + '.';
+            msg += '\nPhone: ' + phone;
+            if (email) msg += '\nEmail: ' + email;
+            msg += '\nInterest: ' + interestText;
+            if (message) msg += '\nMessage: ' + message;
+        }
         window.open('https://wa.me/224629255946?text=' + encodeURIComponent(msg), '_blank');
 
         document.getElementById('cf-success').classList.add('show');
