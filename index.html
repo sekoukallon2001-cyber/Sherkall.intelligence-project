@@ -43,31 +43,24 @@
       "offers": [
         {
           "@type": "Offer",
-          "name": "Starter Tracking Plan",
-          "price": "9",
-          "priceCurrency": "USD",
-          "description": "Live GPS tracking, theft & movement alerts, 7-day route history, mobile app access, WhatsApp support"
-        },
-        {
-          "@type": "Offer",
-          "name": "Fleet Management Plan",
-          "price": "11",
-          "priceCurrency": "USD",
-          "description": "Full fleet dashboard, 30-day history, driver behavior scoring, geofence alerts, priority support"
-        },
-        {
-          "@type": "Offer",
-          "name": "Fuel Monitoring Pro",
-          "price": "25",
-          "priceCurrency": "USD",
-          "description": "Real-time fuel level sensor, siphoning detection, consumption analytics, 90-day archive, dedicated account manager"
-        },
-        {
-          "@type": "Offer",
-          "name": "GPS Device + Professional Installation",
+          "name": "Standard GPS Installation",
           "price": "34",
           "priceCurrency": "USD",
-          "description": "Professional-grade GPS hardware with covert installation at your location. 1-year warranty included."
+          "description": "GPS device + professional hidden installation for cars, motorcycles and business vehicles. Monthly tracking subscription: $11–$17/vehicle."
+        },
+        {
+          "@type": "Offer",
+          "name": "Fleet Tracking",
+          "price": "34",
+          "priceCurrency": "USD",
+          "description": "GPS tracking for multiple vehicles with fleet dashboard, geofence alerts, driver monitoring and route history. Fleet discount for 10+ vehicles."
+        },
+        {
+          "@type": "Offer",
+          "name": "GPS + Fuel Sensor Installation",
+          "price": "170",
+          "priceCurrency": "USD",
+          "description": "GPS tracker with ultrasonic ($170) or capacitive ($225) fuel level sensor. Suitable for trucks, tankers and generators. Includes all wiring and hardware."
         }
       ]
     }
@@ -2556,13 +2549,6 @@
         @media (max-width:600px) {
             #pricing-grid-main { grid-template-columns:1fr !important; }
         }
-
-        /* ── TRUST / INDUSTRIES RESPONSIVE (already defined, safety repeat) ── */
-        @media (max-width:1100px) {
-            .trust-grid { grid-template-columns:repeat(2,1fr); }
-            .industries-grid { grid-template-columns:repeat(2,1fr); }
-            .metrics-grid { grid-template-columns:repeat(2,1fr); }
-        }
         @media (max-width:1100px) {
             .trust-grid { grid-template-columns:repeat(2,1fr); }
             .industries-grid { grid-template-columns:repeat(2,1fr); }
@@ -3377,8 +3363,8 @@
     <div class="container">
         <div class="section-head">
             <div class="section-chip" data-en="Transparent Pricing" data-fr="Tarification Transparente">Transparent Pricing</div>
-            <h2 class="section-title" data-en="All Plans. All Prices. One Place." data-fr="Tous les Plans. Tous les Prix. Un Seul Endroit.">All Plans. All Prices. One Place.</h2>
-            <p class="section-sub" data-en="Every plan includes professional installation, 24/7 monitoring, and WhatsApp support. No hidden fees — cancel anytime." data-fr="Chaque plan inclut l'installation professionnelle, la surveillance 24h/7j et le support WhatsApp. Aucun frais caché — annulez à tout moment.">Every plan includes professional installation, 24/7 monitoring, and WhatsApp support. No hidden fees — cancel anytime.</p>
+            <h2 class="section-title" data-en="Simple, Honest Pricing" data-fr="Tarification Simple et Honnête">Simple, Honest Pricing</h2>
+            <p class="section-sub" data-en="No hidden fees. No complicated tiers. Just reliable GPS tracking at a fair price — with professional installation included." data-fr="Aucun frais caché. Pas de niveaux compliqués. Juste un suivi GPS fiable à un prix juste — avec installation professionnelle incluse.">No hidden fees. No complicated tiers. Just reliable GPS tracking at a fair price — with professional installation included.</p>
         </div>
 
         <!-- Currency Toggle -->
@@ -3391,121 +3377,143 @@
             </select>
         </div>
 
-        <!-- Hardware note -->
-        <div style="display:flex;justify-content:center;margin-bottom:36px;">
-            <div style="background:rgba(10,132,255,0.07);border:1px solid rgba(10,132,255,0.2);border-radius:14px;padding:14px 28px;display:flex;align-items:center;gap:12px;max-width:620px;text-align:left;">
-                <span style="font-size:22px;flex-shrink:0;">📦</span>
-                <div>
-                    <span style="font-size:13px;font-weight:700;color:#fff;" data-en="Device + Installation (one-time): " data-fr="Appareil + Installation (unique) : ">Device + Installation (one-time): </span>
-                    <span style="font-size:13px;font-weight:900;color:var(--blue);" id="price-install">300,000 – 400,000 GNF</span>
-                    <span style="font-size:12px;color:var(--grey);display:block;margin-top:2px;" data-en="Professional GPS hardware + covert installation at your location · 1-year warranty included" data-fr="Matériel GPS professionnel + installation discrète chez vous · Garantie 1 an incluse">Professional GPS hardware + covert installation at your location · 1-year warranty included</span>
-                </div>
-            </div>
-        </div>
+        <!-- 3-Plan Grid -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;width:100%;box-sizing:border-box;margin-top:8px;" id="pricing-grid-main">
 
-        <!-- 4-Plan Grid -->
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;width:100%;box-sizing:border-box;" id="pricing-grid-main">
-
-            <!-- TIER 1: Starter -->
+            <!-- PLAN 1: Standard GPS Install -->
             <div class="pc" style="border-radius:20px;">
-                <div class="pc-tier-label" style="font-size:9px;font-weight:800;letter-spacing:2.5px;color:var(--grey);text-transform:uppercase;font-family:'Montserrat',sans-serif;margin-bottom:10px;">TIER 1</div>
-                <div class="pc-title" data-en="Starter Tracking" data-fr="Suivi Essentiel">Starter Tracking</div>
-                <div class="pc-price" id="price-starter">80,000 GNF</div>
-                <div class="pc-per" data-en="per vehicle / month" data-fr="par véhicule / mois">per vehicle / month</div>
+                <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(10,132,255,0.08);border:1px solid rgba(10,132,255,0.2);border-radius:50px;padding:4px 12px;font-size:9px;font-weight:800;letter-spacing:2px;color:var(--blue);text-transform:uppercase;margin-bottom:14px;font-family:'Montserrat',sans-serif;">📍 <span data-en="STANDARD" data-fr="STANDARD">STANDARD</span></div>
+                <div class="pc-title" data-en="GPS Installation" data-fr="Installation GPS">GPS Installation</div>
+                <div style="font-size:12px;color:var(--grey);margin-bottom:16px;line-height:1.6;" data-en="Cars, motorcycles, trucks & business vehicles" data-fr="Voitures, motos, camions & véhicules professionnels">Cars, motorcycles, trucks & business vehicles</div>
+
+                <!-- One-time install price -->
+                <div style="background:rgba(10,132,255,0.06);border:1px solid rgba(10,132,255,0.15);border-radius:14px;padding:16px;margin-bottom:14px;">
+                    <div style="font-size:10px;font-weight:800;color:var(--grey);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;" data-en="ONE-TIME INSTALLATION" data-fr="INSTALLATION UNIQUE">ONE-TIME INSTALLATION</div>
+                    <div class="pc-price" id="price-install" style="font-size:28px;">300,000 – 400,000 GNF</div>
+                    <div style="font-size:11px;color:var(--grey);margin-top:4px;" data-en="GPS device + professional installation included" data-fr="Appareil GPS + installation professionnelle inclus">GPS device + professional installation included</div>
+                </div>
+
+                <!-- Monthly fee -->
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:16px;margin-bottom:20px;">
+                    <div style="font-size:10px;font-weight:800;color:var(--grey);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;" data-en="MONTHLY SUBSCRIPTION" data-fr="ABONNEMENT MENSUEL">MONTHLY SUBSCRIPTION</div>
+                    <div class="pc-price" id="price-starter" style="font-size:28px;">100,000 – 150,000 GNF</div>
+                    <div style="font-size:11px;color:var(--grey);margin-top:4px;" data-en="per vehicle / month · cancel anytime" data-fr="par véhicule / mois · annulez à tout moment">per vehicle / month · cancel anytime</div>
+                </div>
+
                 <div class="pc-divider"></div>
                 <ul class="pc-features">
-                    <li><span class="fi check-yes">✅</span><span data-en="Live GPS tracking (30s update)" data-fr="Suivi GPS en direct (30s)">Live GPS tracking (30s update)</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Live GPS tracking on your phone" data-fr="Suivi GPS en direct sur votre téléphone">Live GPS tracking on your phone</span></li>
                     <li><span class="fi check-yes">✅</span><span data-en="Theft & movement alerts" data-fr="Alertes vol & mouvement">Theft & movement alerts</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="7-day route history" data-fr="7 jours d'historique">7-day route history</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="Mobile app access" data-fr="Accès app mobile">Mobile app access</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Route history & playback" data-fr="Historique d'itinéraires">Route history & playback</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Works on cars, bikes & trucks" data-fr="Fonctionne sur voitures, motos & camions">Works on cars, bikes & trucks</span></li>
                     <li><span class="fi check-yes">✅</span><span data-en="WhatsApp support" data-fr="Support WhatsApp">WhatsApp support</span></li>
-                    <li><span class="fi" style="color:rgba(255,255,255,0.2)">⬜</span><span style="color:var(--grey)" data-en="Fuel monitoring" data-fr="Contrôle carburant">Fuel monitoring</span></li>
-                    <li><span class="fi" style="color:rgba(255,255,255,0.2)">⬜</span><span style="color:var(--grey)" data-en="Driver behavior scoring" data-fr="Score conducteur">Driver behavior scoring</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Professional hidden installation" data-fr="Installation professionnelle discrète">Professional hidden installation</span></li>
                 </ul>
-                <div style="flex:1"></div>
-                <a href="https://wa.me/224629255946?text=Hello%20Sherkall%20Intelligence!%20I%27m%20interested%20in%20the%20Starter%20Tracking%20plan." target="_blank" rel="noopener noreferrer" class="pc-btn pc-btn-outline">
-                    <span data-en="Get Started" data-fr="Commencer">Get Started</span>
+                <div style="flex:1;"></div>
+                <a href="https://wa.me/224629255946?text=Hello%20Sherkall%20Intelligence!%20I%27m%20interested%20in%20Standard%20GPS%20installation%20for%20my%20vehicle." target="_blank" rel="noopener noreferrer" class="pc-btn pc-btn-outline">
+                    <span data-en="Get a Quote" data-fr="Obtenir un Devis">Get a Quote</span>
                 </a>
             </div>
 
-            <!-- TIER 2: Fleet Management (POPULAR) -->
+            <!-- PLAN 2: Fleet Plan (POPULAR) -->
             <div class="pc popular" style="border-radius:20px;">
                 <div class="pc-badge" data-en="MOST POPULAR" data-fr="LE PLUS POPULAIRE">MOST POPULAR</div>
-                <div class="pc-tier-label" style="font-size:9px;font-weight:800;letter-spacing:2.5px;color:var(--grey);text-transform:uppercase;font-family:'Montserrat',sans-serif;margin-bottom:10px;">TIER 2</div>
-                <div class="pc-title" data-en="Fleet Management" data-fr="Gestion de Flotte">Fleet Management</div>
-                <div class="pc-price" id="price-fleet">100,000 GNF</div>
-                <div class="pc-per" data-en="per vehicle / month" data-fr="par véhicule / mois">per vehicle / month</div>
+                <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(10,132,255,0.12);border:1px solid rgba(10,132,255,0.3);border-radius:50px;padding:4px 12px;font-size:9px;font-weight:800;letter-spacing:2px;color:var(--blue);text-transform:uppercase;margin-bottom:14px;font-family:'Montserrat',sans-serif;">🚛 <span data-en="FLEET" data-fr="FLOTTE">FLEET</span></div>
+                <div class="pc-title" data-en="Fleet Tracking" data-fr="Suivi de Flotte">Fleet Tracking</div>
+                <div style="font-size:12px;color:var(--grey);margin-bottom:16px;line-height:1.6;" data-en="For businesses managing multiple vehicles" data-fr="Pour les entreprises gérant plusieurs véhicules">For businesses managing multiple vehicles</div>
+
+                <!-- One-time install price -->
+                <div style="background:rgba(10,132,255,0.06);border:1px solid rgba(10,132,255,0.15);border-radius:14px;padding:16px;margin-bottom:14px;">
+                    <div style="font-size:10px;font-weight:800;color:var(--grey);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;" data-en="ONE-TIME INSTALLATION" data-fr="INSTALLATION UNIQUE">ONE-TIME INSTALLATION</div>
+                    <div class="pc-price" id="price-fleet-install" style="font-size:28px;">300,000 – 400,000 GNF</div>
+                    <div style="font-size:11px;color:var(--grey);margin-top:4px;" data-en="per vehicle · GPS device + installation" data-fr="par véhicule · appareil GPS + installation">per vehicle · GPS device + installation</div>
+                </div>
+
+                <!-- Monthly fee -->
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:16px;margin-bottom:20px;">
+                    <div style="font-size:10px;font-weight:800;color:var(--grey);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;" data-en="MONTHLY SUBSCRIPTION" data-fr="ABONNEMENT MENSUEL">MONTHLY SUBSCRIPTION</div>
+                    <div class="pc-price" id="price-fleet" style="font-size:28px;">100,000 – 150,000 GNF</div>
+                    <div style="font-size:11px;color:var(--grey);margin-top:4px;" data-en="per vehicle / month" data-fr="par véhicule / mois">per vehicle / month</div>
+                </div>
+
                 <div class="pc-divider"></div>
                 <ul class="pc-features">
-                    <li><span class="fi check-yes">✅</span><span data-en="Everything in Starter" data-fr="Tout le Starter">Everything in Starter</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Everything in Standard" data-fr="Tout ce qui est dans Standard">Everything in Standard</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Monitor all vehicles in one dashboard" data-fr="Surveillez tous les véhicules dans un tableau de bord">Monitor all vehicles in one dashboard</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Geofence zone alerts" data-fr="Alertes géofence de zone">Geofence zone alerts</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Driver behavior monitoring" data-fr="Surveillance comportement conducteur">Driver behavior monitoring</span></li>
                     <li><span class="fi check-yes">✅</span><span data-en="30-day route history" data-fr="30 jours d'historique">30-day route history</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="Driver behavior scoring" data-fr="Score comportement conducteur">Driver behavior scoring</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="Geofence zone alerts" data-fr="Alertes géofence">Geofence zone alerts</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="Fleet dashboard & reports" data-fr="Tableau de bord & rapports">Fleet dashboard & reports</span></li>
                     <li><span class="fi check-yes">✅</span><span data-en="Priority WhatsApp support" data-fr="Support WhatsApp prioritaire">Priority WhatsApp support</span></li>
-                    <li><span class="fi" style="color:rgba(255,255,255,0.2)">⬜</span><span style="color:var(--grey)" data-en="Fuel sensor monitoring" data-fr="Capteur carburant">Fuel sensor monitoring</span></li>
                 </ul>
-                <div class="pc-fleet" onclick="window.open('https://wa.me/224629255946?text=' + encodeURIComponent(currentLang==='fr' ? 'Bonjour, je gère une flotte et je veux le plan Gestion de Flotte. Quels sont vos tarifs pour 5+ véhicules ?' : 'Hi, I manage a fleet and want the Fleet Management plan. What are rates for 5+ vehicles?'), '_blank')">
-                    🚛 <span data-en="Volume discount for 5+ vehicles" data-fr="Remise volume pour 5+ véhicules">Volume discount for 5+ vehicles</span>
+                <!-- Fleet discount note -->
+                <div class="pc-fleet" onclick="window.open('https://wa.me/224629255946?text=' + encodeURIComponent(currentLang==='fr' ? 'Bonjour Sherkall Intelligence ! Je gère une flotte de 10+ véhicules. Quelles sont vos remises volume ?' : 'Hello Sherkall Intelligence! I manage 10+ vehicles. What volume discounts do you offer?'), '_blank')">
+                    🚛 <span data-en="Managing 10+ vehicles? Ask about our fleet discount" data-fr="Vous gérez 10+ véhicules ? Renseignez-vous sur notre remise flotte">Managing 10+ vehicles? Ask about our fleet discount</span>
                 </div>
                 <button onclick="openModal()" class="pc-btn pc-btn-primary">
-                    🚗 <span data-en="Deploy Fleet Plan" data-fr="Déployer Plan Flotte">Deploy Fleet Plan</span>
+                    🚗 <span data-en="Start Fleet Tracking" data-fr="Démarrer le Suivi Flotte">Start Fleet Tracking</span>
                 </button>
             </div>
 
-            <!-- TIER 3: Fuel Monitoring Pro -->
-            <div class="pc" style="border-radius:20px;">
-                <div class="pc-tier-label" style="font-size:9px;font-weight:800;letter-spacing:2.5px;color:var(--grey);text-transform:uppercase;font-family:'Montserrat',sans-serif;margin-bottom:10px;">TIER 3</div>
-                <div class="pc-title" data-en="Fuel Monitoring Pro" data-fr="Contrôle Carburant Pro">Fuel Monitoring Pro</div>
-                <div class="pc-price" id="price-fuel">215,000 GNF</div>
-                <div class="pc-per" data-en="per vehicle / month" data-fr="par véhicule / mois">per vehicle / month</div>
-                <div class="pc-divider"></div>
-                <ul class="pc-features">
-                    <li><span class="fi check-yes">✅</span><span data-en="Everything in Fleet Mgmt" data-fr="Tout la Gestion Flotte">Everything in Fleet Mgmt</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="Real-time fuel level sensor" data-fr="Capteur niveau carburant temps réel">Real-time fuel level sensor</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="Siphoning detection alerts" data-fr="Alertes détection siphonage">Siphoning detection alerts</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="Fuel consumption analytics" data-fr="Analytique consommation carburant">Fuel consumption analytics</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="90-day archive history" data-fr="Archive 90 jours">90-day archive history</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="Dedicated account manager" data-fr="Gestionnaire de compte dédié">Dedicated account manager</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="Fuel sensor hardware included" data-fr="Capteur carburant inclus">Fuel sensor hardware included</span></li>
-                </ul>
-                <div style="flex:1"></div>
-                <a href="https://wa.me/224629255946?text=Hello%20Sherkall%20Intelligence!%20I%27m%20interested%20in%20Fuel%20Monitoring%20Pro%20for%20my%20fleet." target="_blank" rel="noopener noreferrer" class="pc-btn pc-btn-outline">
-                    <span data-en="Get Fuel Pro" data-fr="Obtenir Fuel Pro">Get Fuel Pro</span>
-                </a>
-            </div>
+            <!-- PLAN 3: Advanced Sensor Installation -->
+            <div class="pc" style="border-radius:20px;border-color:rgba(201,162,39,0.25);background:linear-gradient(180deg,rgba(201,162,39,0.04) 0%,var(--navy-card) 40%);">
+                <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(201,162,39,0.1);border:1px solid rgba(201,162,39,0.3);border-radius:50px;padding:4px 12px;font-size:9px;font-weight:800;letter-spacing:2px;color:#C9A227;text-transform:uppercase;margin-bottom:14px;font-family:'Montserrat',sans-serif;">⚙️ <span data-en="ADVANCED" data-fr="AVANCÉ">ADVANCED</span></div>
+                <div class="pc-title" data-en="GPS + Sensor Install" data-fr="GPS + Installation Capteur">GPS + Sensor Install</div>
+                <div style="font-size:12px;color:var(--grey);margin-bottom:16px;line-height:1.6;" data-en="GPS with ultrasonic or capacitive fuel sensor" data-fr="GPS avec capteur de carburant ultrasonique ou capacitif">GPS with ultrasonic or capacitive fuel sensor</div>
 
-            <!-- TIER 4: Enterprise Command -->
-            <div class="pc" style="border-radius:20px;border-color:rgba(10,132,255,0.3);background:linear-gradient(180deg,rgba(10,132,255,0.06) 0%,var(--navy-card) 40%);">
-                <div class="pc-tier-label" style="font-size:9px;font-weight:800;letter-spacing:2.5px;color:var(--blue);text-transform:uppercase;font-family:'Montserrat',sans-serif;margin-bottom:10px;">TIER 4 — ENTERPRISE</div>
-                <div class="pc-title" data-en="Enterprise Command" data-fr="Commandement Entreprise">Enterprise Command</div>
-                <div class="pc-price" id="price-enterprise" style="font-size:22px;padding-top:4px;" data-en="Custom Quote" data-fr="Devis Personnalisé">Custom Quote</div>
-                <div class="pc-per" data-en="20+ vehicles · tailored per deployment" data-fr="20+ véhicules · adapté par déploiement">20+ vehicles · tailored per deployment</div>
+                <!-- One-time install price — two options -->
+                <div style="background:rgba(201,162,39,0.05);border:1px solid rgba(201,162,39,0.2);border-radius:14px;padding:16px;margin-bottom:14px;">
+                    <div style="font-size:10px;font-weight:800;color:#C9A227;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;" data-en="ONE-TIME INSTALLATION" data-fr="INSTALLATION UNIQUE">ONE-TIME INSTALLATION</div>
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <div>
+                            <div style="font-size:10px;color:var(--grey);font-weight:700;margin-bottom:3px;" data-en="With Ultrasonic Sensor" data-fr="Avec Capteur Ultrasonique">With Ultrasonic Sensor</div>
+                            <div class="pc-price" id="price-ultrasonic" style="font-size:24px;color:#C9A227;">1,500,000 GNF</div>
+                            <div style="font-size:10px;color:var(--grey);" data-en="GPS + ultrasonic sensor + full installation" data-fr="GPS + capteur ultrasonique + installation complète">GPS + ultrasonic sensor + full installation</div>
+                        </div>
+                        <div style="height:1px;background:rgba(255,255,255,0.06);"></div>
+                        <div>
+                            <div style="font-size:10px;color:var(--grey);font-weight:700;margin-bottom:3px;" data-en="With Capacitive Sensor" data-fr="Avec Capteur Capacitif">With Capacitive Sensor</div>
+                            <div class="pc-price" id="price-capacitive" style="font-size:24px;color:#C9A227;">2,000,000 GNF</div>
+                            <div style="font-size:10px;color:var(--grey);" data-en="GPS + capacitive sensor + full installation" data-fr="GPS + capteur capacitif + installation complète">GPS + capacitive sensor + full installation</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly fee -->
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:16px;margin-bottom:20px;">
+                    <div style="font-size:10px;font-weight:800;color:var(--grey);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;" data-en="MONTHLY SUBSCRIPTION" data-fr="ABONNEMENT MENSUEL">MONTHLY SUBSCRIPTION</div>
+                    <div class="pc-price" id="price-sensor-monthly" style="font-size:28px;">100,000 – 150,000 GNF</div>
+                    <div style="font-size:11px;color:var(--grey);margin-top:4px;" data-en="per vehicle / month" data-fr="par véhicule / mois">per vehicle / month</div>
+                </div>
+
                 <div class="pc-divider"></div>
                 <ul class="pc-features">
-                    <li><span class="fi check-yes">✅</span><span data-en="Everything in Fuel Pro" data-fr="Tout le Fuel Pro">Everything in Fuel Pro</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="Unlimited vehicles" data-fr="Véhicules illimités">Unlimited vehicles</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="White-label dashboard" data-fr="Tableau de bord marque blanche">White-label dashboard</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="Custom API integrations" data-fr="Intégrations API personnalisées">Custom API integrations</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="SLA support (2hr response)" data-fr="Support SLA (réponse 2h)">SLA support (2hr response)</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="On-site training & onboarding" data-fr="Formation sur site">On-site training & onboarding</span></li>
-                    <li><span class="fi check-yes">✅</span><span data-en="Volume pricing discounts" data-fr="Remises volume">Volume pricing discounts</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Everything in Fleet Tracking" data-fr="Tout ce qui est dans Suivi Flotte">Everything in Fleet Tracking</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Fuel level monitoring (ultrasonic or capacitive)" data-fr="Surveillance niveau carburant (ultrasonique ou capacitif)">Fuel level monitoring (ultrasonic or capacitive)</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Fuel theft / siphoning alerts" data-fr="Alertes vol / siphonage carburant">Fuel theft / siphoning alerts</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="All wiring & hardware included" data-fr="Tout le câblage & matériel inclus">All wiring & hardware included</span></li>
+                    <li><span class="fi check-yes">✅</span><span data-en="Suitable for trucks, tankers & generators" data-fr="Adapté aux camions, citernes & générateurs">Suitable for trucks, tankers & generators</span></li>
                 </ul>
-                <div style="flex:1"></div>
-                <a href="https://wa.me/224629255946?text=Hello%20Sherkall%20Intelligence!%20I%27m%20interested%20in%20Enterprise%20Command%20for%2020%2B%20vehicles.%20Can%20you%20send%20a%20custom%20quote%3F" target="_blank" rel="noopener noreferrer" class="pc-btn pc-btn-primary">
-                    <span data-en="Request Enterprise Quote" data-fr="Demander un Devis Entreprise">Request Enterprise Quote</span>
+                <div style="flex:1;"></div>
+                <a href="https://wa.me/224629255946?text=Hello%20Sherkall%20Intelligence!%20I%27m%20interested%20in%20GPS%20with%20fuel%20sensor%20installation.%20Can%20you%20tell%20me%20more%3F" target="_blank" rel="noopener noreferrer" class="pc-btn pc-btn-outline" style="border-color:rgba(201,162,39,0.4);color:#C9A227;">
+                    <span data-en="Ask About This" data-fr="Renseignez-vous">Ask About This</span>
                 </a>
             </div>
 
         </div>
 
-        <!-- Bottom note -->
-        <div style="margin-top:28px;display:flex;flex-wrap:wrap;justify-content:center;gap:20px;align-items:center;">
-            <p style="font-size:12px;color:var(--grey);text-align:center;" data-en="💡 All monthly plans require the one-time device + installation. Volume discounts available for 5+ vehicles." data-fr="💡 Tous les plans mensuels nécessitent l'appareil + installation unique. Remises volume disponibles pour 5+ véhicules.">💡 All monthly plans require the one-time device + installation. Volume discounts available for 5+ vehicles.</p>
-        </div>
-        <div style="text-align:center;margin-top:24px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
-            <a href="https://wa.me/224629255946?text=Hello%20Sherkall%20Intelligence!%20I%27d%20like%20a%20quote%20for%20fleet%20GPS%20monitoring." target="_blank" rel="noopener noreferrer" class="btn-primary">💬 <span data-en="Get a Custom Quote" data-fr="Obtenir un Devis Personnalisé">Get a Custom Quote</span></a>
-            <a href="tel:+224629255946" class="btn-outline">📞 <span data-en="Call Us" data-fr="Nous Appeler">Call Us</span></a>
+        <!-- Bottom notes -->
+        <div style="margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;">
+            <div style="background:rgba(10,132,255,0.06);border:1px solid rgba(10,132,255,0.15);border-radius:12px;padding:14px 24px;max-width:580px;">
+                <p style="font-size:12.5px;color:rgba(242,244,247,0.8);line-height:1.7;">
+                    💡 <span data-en="All plans include the GPS device and professional installation as a one-time cost. The monthly fee keeps your tracking platform active. Managing" data-fr="Tous les plans incluent l'appareil GPS et l'installation professionnelle en coût unique. L'abonnement mensuel maintient votre plateforme de suivi active. Vous gérez">All plans include the GPS device and professional installation as a one-time cost. The monthly fee keeps your tracking platform active. Managing</span>
+                    <strong style="color:var(--blue);" data-en=" 10+ vehicles?" data-fr=" 10+ véhicules ?"> 10+ vehicles?</strong>
+                    <span data-en=" Contact us — fleet discounts apply." data-fr=" Contactez-nous — des remises flotte s'appliquent."> Contact us — fleet discounts apply.</span>
+                </p>
+            </div>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
+                <a href="https://wa.me/224629255946?text=Hello%20Sherkall%20Intelligence!%20I%27d%20like%20a%20quote%20for%20GPS%20tracking." target="_blank" rel="noopener noreferrer" class="btn-primary">💬 <span data-en="Get a Quote on WhatsApp" data-fr="Obtenir un Devis sur WhatsApp">Get a Quote on WhatsApp</span></a>
+                <a href="tel:+224629255946" class="btn-outline">📞 <span data-en="Call Us" data-fr="Nous Appeler">Call Us</span></a>
+            </div>
         </div>
     </div>
 </section>
@@ -4377,16 +4385,17 @@
     let currentCurrency = 'GNF';
 
     const PRICES = {
-        // Device + Installation (one-time)
-        install:    { GNF:'300,000 – 400,000 GNF', USD:'$34 – $46',  EUR:'€32 – €43'  },
-        // Tier 1: Starter Tracking / month
-        starter:    { GNF:'80,000 GNF',             USD:'$9',         EUR:'€8'          },
-        // Tier 2: Fleet Management / vehicle / month
-        fleet:      { GNF:'100,000 GNF',            USD:'$11',        EUR:'€10'         },
-        // Tier 3: Fuel Monitoring Pro / vehicle / month
-        fuel:       { GNF:'215,000 GNF',            USD:'$25',        EUR:'€23'         },
-        // Tier 4: Enterprise — always "Custom Quote"
-        enterprise: { GNF:'Devis Personnalisé',     USD:'Custom Quote', EUR:'Devis Sur Mesure' }
+        // Standard GPS install (one-time)
+        install:          { GNF:'300,000 – 400,000 GNF',  USD:'$34 – $46',   EUR:'€32 – €43'   },
+        // Fleet plan install (same device, per vehicle)
+        'fleet-install':  { GNF:'300,000 – 400,000 GNF',  USD:'$34 – $46',   EUR:'€32 – €43'   },
+        // Monthly subscription — same for all plans
+        starter:          { GNF:'100,000 – 150,000 GNF',  USD:'$11 – $17',   EUR:'€10 – €16'   },
+        fleet:            { GNF:'100,000 – 150,000 GNF',  USD:'$11 – $17',   EUR:'€10 – €16'   },
+        'sensor-monthly': { GNF:'100,000 – 150,000 GNF',  USD:'$11 – $17',   EUR:'€10 – €16'   },
+        // Sensor install (one-time)
+        ultrasonic:       { GNF:'1,500,000 GNF',           USD:'~$170',        EUR:'~€158'        },
+        capacitive:       { GNF:'2,000,000 GNF',           USD:'~$225',        EUR:'~€210'        },
     };
 
     document.getElementById('year').textContent = new Date().getFullYear();
@@ -4464,18 +4473,17 @@
         if (sel) updateDefaultMessage(sel.value);
     }
 
-    // ── CURRENCY ──────────────────────────────────────────────────────────────
     function changeCurrency(cur) { currentCurrency = cur; updatePriceDisplay(); }
     function updatePriceDisplay() {
         const cur = currentCurrency;
         const els = {
-            'price-install':    PRICES.install[cur],
-            'price-starter':    PRICES.starter[cur],
-            'price-fleet':      PRICES.fleet[cur],
-            'price-fuel':       PRICES.fuel[cur],
-            'price-enterprise': PRICES.enterprise[cur],
-            // legacy id kept for safety
-            'price-monthly':    PRICES.starter[cur],
+            'price-install':         PRICES.install[cur],
+            'price-fleet-install':   PRICES['fleet-install'][cur],
+            'price-starter':         PRICES.starter[cur],
+            'price-fleet':           PRICES.fleet[cur],
+            'price-sensor-monthly':  PRICES['sensor-monthly'][cur],
+            'price-ultrasonic':      PRICES.ultrasonic[cur],
+            'price-capacitive':      PRICES.capacitive[cur],
         };
         Object.entries(els).forEach(([id, val]) => {
             const el = document.getElementById(id);
@@ -4679,8 +4687,8 @@
         en: {
             tracking:    "Hi, I want to install GPS tracking on my personal vehicle. Can you guide me?",
             fleet:       "Hi, I manage a fleet of vehicles and I'm interested in your Fleet Management solution. Can you tell me more about pricing and features for 2–20 vehicles?",
-            fuel:        "Hi, I'm interested in the Fuel Monitoring Pro plan. I operate fuel tankers and need consumption analytics and theft detection. Can you send details?",
-            enterprise:  "Hi, I'm interested in Enterprise Command monitoring for 20+ vehicles. Can you send me a custom quote and schedule a consultation?",
+            fuel:        "Hi, I'm interested in GPS installation with a fuel sensor (ultrasonic or capacitive). Can you send me details and pricing?",
+            enterprise:  "Hi, I manage 10+ vehicles and I'm interested in a fleet discount. Can you send me a custom quote?",
             quote:       "Hi, I'd like to get a custom price quote for fleet GPS monitoring. Can you send me the details?",
             install:     "Hi, I'm ready to schedule a GPS installation. When are you available and what are your coverage areas?",
             other:       "Hi, I have a question about your fleet monitoring services. Can you help me?"
