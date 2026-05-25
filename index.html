@@ -817,7 +817,7 @@
            TESTIMONIALS
         ────────────────────────────────────────── */
         #testimonials { background:var(--navy-deep); }
-        .testimonials-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+        .testimonials-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; align-items:start; }
         .testimonial-card {
             background:var(--navy-card);
             border:1px solid rgba(255,255,255,0.06);
@@ -835,6 +835,8 @@
             font-style:italic; line-height:1.8;
             color:rgba(242,244,247,0.75); margin-bottom:22px; font-size:14px;
             flex:1;
+            overflow:visible;
+            word-wrap:break-word;
         }
         .testimonial-author { display:flex; align-items:center; gap:12px; }
         .author-avatar {
@@ -880,7 +882,7 @@
             opacity:0; margin-top:0;
             color:rgba(242,244,247,0.65); font-size:14px; line-height:1.75;
         }
-        .faq-card.open p { max-height:200px; opacity:1; margin-top:14px; }
+        .faq-card.open p { max-height:500px; opacity:1; margin-top:14px; }
 
         /* ──────────────────────────────────────────
            CTA BAND
@@ -1164,6 +1166,9 @@
         @media (max-width: 1024px) {
             .footer-grid { grid-template-columns:1fr 1fr; }
             .features-grid { grid-template-columns:repeat(2,1fr); }
+            .testimonials-grid { grid-template-columns:repeat(2,1fr); }
+        }
+        @media (max-width: 640px) {
             .testimonials-grid { grid-template-columns:1fr; }
         }
         @media (max-width: 900px) {
@@ -3634,6 +3639,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const ham = document.getElementById('hamburger');
         if (ham) ham.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMobileMenu(); } });
+        applyLanguage();
     });
 
 
@@ -3731,6 +3737,11 @@
             if (val !== null) el.textContent = val;
         });
         document.documentElement.lang = currentLang;
+        const langBtn = document.getElementById('lang-btn');
+        if (langBtn) {
+            langBtn.textContent = currentLang === 'en' ? '🇫🇷 FR' : '🇬🇧 EN';
+            langBtn.setAttribute('aria-label', currentLang === 'en' ? 'Switch to French' : 'Passer en anglais');
+        }
         // Modal placeholders
         const ni = document.getElementById('name-input');
         const pi = document.getElementById('phone-input');
