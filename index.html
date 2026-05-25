@@ -8,11 +8,11 @@
     <meta property="og:title" content="Sherkall Intelligence | GPS Fleet Intelligence & Fuel Monitoring">
     <meta property="og:description" content="Monitor fleet movement, fuel consumption, and operational activity from a centralized intelligence platform. Track · Protect · Command — GPS Intelligence for Guinea's leading businesses.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://gps-tracking-service.vercel.app/">
+    <meta property="og:url" content="https://sherkallintel.vercel.app/">
     <meta name="twitter:card" content="summary_large_image">
-    <meta property="og:image" content="https://gps-tracking-service.vercel.app/og-image.png">
-    <meta name="twitter:image" content="https://gps-tracking-service.vercel.app/og-image.png">
-    <link rel="canonical" href="https://gps-tracking-service.vercel.app/">
+    <meta property="og:image" content="https://sherkallintel.vercel.app/og-image.png">
+    <meta name="twitter:image" content="https://sherkallintel.vercel.app/og-image.png">
+    <link rel="canonical" href="https://sherkallintel.vercel.app/">
 
     <!-- Non-blocking font loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +28,7 @@
       "name": "Sherkall Intelligence",
       "alternateName": "Sherkall GPS Intelligence Service",
       "description": "Enterprise GPS fleet intelligence and fuel monitoring platform for Guinea. Real-time tracking, anti-theft protection, driver behavior analytics, and fuel theft detection. Track · Protect · Command.",
-      "url": "https://gps-tracking-service.vercel.app/",
+      "url": "https://sherkallintel.vercel.app/",
       "telephone": "+224629255946",
       "email": "sekoukallon2001@gmail.com",
       "address": {
@@ -3832,11 +3832,7 @@
             const attr = currentLang === 'en' ? 'data-en' : 'data-fr';
                 const val = el.getAttribute(attr);
                 if (val !== null && val !== '') {
-                    let sanitized = val;
-                    if (sanitized.length >= 2 && ((sanitized[0] === '"' && sanitized[sanitized.length-1] === '"') || (sanitized[0] === "'" && sanitized[sanitized.length-1] === "'"))) {
-                        sanitized = sanitized.slice(1, -1);
-                    }
-                    el.textContent = sanitized;
+                    el.textContent = val;
                 }
         });
 
