@@ -1801,8 +1801,7 @@
         }
         .float-wa-label::after { content:''; position:absolute; left:100%; top:50%; transform:translateY(-50%); border:5px solid transparent; border-left-color:#1A202C; }
         .float-wa:hover .float-wa-label { opacity:1; }
-        /* Show only on mobile + tablet */
-        @media (min-width:1024px) { .float-wa { display:none; } }
+        /* Float WA visible on all sizes (desktop previously hid it) */
 
         /* ══════════════════════════════════════════
            DEVICE SHOWCASE SECTION
@@ -2801,12 +2800,13 @@
 </section>
 
 <!-- ── 3D SATELLITE GLOBE ─────────────────────────────────── -->
+<div id="coverage"></div>
 <section id="globe-section" style="background:var(--navy-deep);padding:96px 0;">
     <div class="container">
         <div class="section-head">
-            <div class="section-chip">🛰️ Satellite Network</div>
-            <h2 class="section-title">Global <span style="color:var(--blue)">Coverage</span></h2>
-            <p class="section-sub">Our GPS satellites orbit at 20,200km altitude. At any moment, 6–12 satellites have a clear line of sight to your vehicle in Guinea.</p>
+            <div class="section-chip" data-en="🛰️ Satellite Network" data-fr="🛰️ Réseau Satellite">🛰️ Satellite Network</div>
+            <h2 class="section-title" data-en="Global Coverage" data-fr="Couverture Globale">Global <span style="color:var(--blue)">Coverage</span></h2>
+            <p class="section-sub" data-en="Our GPS satellites orbit at 20,200km altitude. At any moment, 6–12 satellites have a clear line of sight to your vehicle in Guinea." data-fr="Nos satellites GPS orbitent à 20 200 km d'altitude. À tout moment, 6 à 12 satellites ont une ligne de visée sur votre véhicule en Guinée.">Our GPS satellites orbit at 20,200km altitude. At any moment, 6–12 satellites have a clear line of sight to your vehicle in Guinea.</p>
         </div>
         <div class="globe-wrap reveal">
             <canvas id="globeCanvas" role="img" aria-label="Interactive 3D satellite globe showing GPS satellite coverage over Guinea. Drag to rotate, scroll to zoom." tabindex="0"></canvas>
@@ -2821,13 +2821,51 @@
 </section>
 
 
+<!-- ── INDUSTRIES SECTION ─────────────────────────────────── -->
+<section id="industries">
+    <div class="container">
+        <div class="section-head">
+            <div class="section-chip" data-en="Industries We Serve" data-fr="Secteurs que Nous Servons">Industries We Serve</div>
+            <h2 class="section-title" data-en="Trusted by Businesses Across Guinea" data-fr="Approuvé par des Entreprises à Travers la Guinée">Trusted by Businesses Across Guinea</h2>
+            <p class="section-sub" data-en="From fleets to farms, our GPS and fuel monitoring solutions keep vehicles moving safely and efficiently." data-fr="Des flottes aux fermes, nos solutions GPS et de contrôle de carburant maintiennent les véhicules en mouvement de manière sûre et efficace.">From fleets to farms, our GPS and fuel monitoring solutions keep vehicles moving safely and efficiently.</p>
+        </div>
+        <div class="industries-grid">
+            <div class="industry-card">
+                <div class="industry-icon">🚚</div>
+                <h4 data-en="Logistics & Delivery" data-fr="Logistique & Livraison">Logistics & Delivery</h4>
+                <p data-en="Track trucks, vans, and riders in real time across Conakry and nationwide." data-fr="Suivez les camions, fourgons et livreurs en temps réel à Conakry et dans tout le pays.">Track trucks, vans, and riders in real time across Conakry and nationwide.</p>
+                <div class="industry-tag" data-en="Fuel Efficiency" data-fr="Efficacité Carburant">Fuel Efficiency</div>
+            </div>
+            <div class="industry-card">
+                <div class="industry-icon">🛻</div>
+                <h4 data-en="Construction & Fleet" data-fr="BTP & Flotte">Construction & Fleet</h4>
+                <p data-en="Monitor heavy equipment, trucks, and field teams with accurate location and status updates." data-fr="Surveillez les équipements lourds, camions et équipes sur le terrain avec des mises à jour précises de position et de statut.">Monitor heavy equipment, trucks, and field teams with accurate location and status updates.</p>
+                <div class="industry-tag" data-en="Asset Protection" data-fr="Protection des Actifs">Asset Protection</div>
+            </div>
+            <div class="industry-card">
+                <div class="industry-icon">🚖</div>
+                <h4 data-en="Taxi & Passenger Services" data-fr="Taxi & Services Passagers">Taxi & Passenger Services</h4>
+                <p data-en="Improve driver accountability, route compliance, and passenger safety with live tracking." data-fr="Améliorez la responsabilité des chauffeurs, la conformité des itinéraires et la sécurité des passagers avec le suivi en direct.">Improve driver accountability, route compliance, and passenger safety with live tracking.</p>
+                <div class="industry-tag" data-en="Driver Control" data-fr="Contrôle Chauffeur">Driver Control</div>
+            </div>
+            <div class="industry-card">
+                <div class="industry-icon">🏍️</div>
+                <h4 data-en="Motorcycle & Personal Vehicles" data-fr="Moto & Véhicules Personnels">Motorcycle & Personal Vehicles</h4>
+                <p data-en="Protect family cars, motorcycles, and small business vehicles with affordable GPS monitoring." data-fr="Protégez les voitures familiales, motos et petits véhicules professionnels avec un suivi GPS abordable.">Protect family cars, motorcycles, and small business vehicles with affordable GPS monitoring.</p>
+                <div class="industry-tag" data-en="Affordable" data-fr="Abordable">Affordable</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
 <!-- ── LIVE DASHBOARD: SPEEDOMETER + COMPASS ─────────────── -->
 <section id="live-demo" style="background:var(--navy-deep);padding:96px 0;">
     <div class="container">
         <div class="section-head">
-            <div class="section-chip">🎮 Live Demo</div>
-            <h2 class="section-title">Your Dashboard, <span style="color:var(--blue)">In Real Time</span></h2>
-            <p class="section-sub">Interact with the same data your GPS tracker sends — speed, heading, signal strength, and live coordinates, all updating in real time.</p>
+            <div class="section-chip" data-en="🎮 Live Demo" data-fr="🎮 Démo en direct">🎮 Live Demo</div>
+            <h2 class="section-title" data-en="Your Dashboard, In Real Time" data-fr="Votre tableau de bord, en temps réel">Your Dashboard, <span style="color:var(--blue)">In Real Time</span></h2>
+            <p class="section-sub" data-en="Interact with the same data your GPS tracker sends — speed, heading, signal strength, and live coordinates, all updating in real time." data-fr="Interagissez avec les mêmes données envoyées par votre traceur GPS — vitesse, cap, signal et coordonnées en direct, toutes mises à jour en temps réel.">Interact with the same data your GPS tracker sends — speed, heading, signal strength, and live coordinates, all updating in real time.</p>
         </div>
         <div class="dashboard-demo-grid">
             <!-- Speedometer -->
@@ -2841,9 +2879,9 @@
                     </div>
                 </div>
                 <div class="dash-controls">
-                    <button class="dash-btn" onclick="setDemoSpeed(0)">STOP</button>
-                    <button class="dash-btn active" onclick="setDemoSpeed(60)">CITY</button>
-                    <button class="dash-btn" onclick="setDemoSpeed(110)">HIGHWAY</button>
+                    <button class="dash-btn" onclick="setDemoSpeed(event,0)">STOP</button>
+                    <button class="dash-btn active" onclick="setDemoSpeed(event,60)">CITY</button>
+                    <button class="dash-btn" onclick="setDemoSpeed(event,110)">HIGHWAY</button>
                 </div>
             </div>
 
@@ -3046,6 +3084,7 @@
 <!-- ── FEATURES ─────────────────────────────────────────── -->
 <section id="features">
     <div class="container">
+        <div id="platform"></div>
         <div class="section-head">
             <div class="section-chip" data-en="Platform Capabilities" data-fr="Capacités Plateforme">Platform Capabilities</div>
             <h2 class="section-title" data-en="What You Get" data-fr="Ce Que Vous Obtenez">What You Get</h2>
@@ -3333,11 +3372,7 @@
             <!-- Testimonial 1 -->
             <div class="testimonial-card reveal">
                 <div class="stars">★★★★★</div>
-                <p class="testimonial-text"
-                   data-en='"Before Sherkall Intelligence, I had no idea what my taxi driver was doing with my car all day. He was taking passengers on routes I never authorized, burning extra fuel and putting mileage on the vehicle I was paying for. After the installation, I opened the app the very first day and saw him 15 kilometers from where he was supposed to be. I called him immediately. Since then, the routes have been correct, fuel costs dropped, and he knows I can check at any time. This is not just GPS — it is control over my own business."'
-                   data-fr='"Avant Sherkall Intelligence, je n'avais aucune idée de ce que mon chauffeur de taxi faisait avec ma voiture toute la journée. Il prenait des passagers sur des routes que je n'avais jamais autorisées, brûlait du carburant supplémentaire et ajoutait des kilomètres au véhicule que je payais. Après l'installation, j'ai ouvert l'application le premier jour même et je l'ai vu à 15 kilomètres de l'endroit où il était censé être. Je l'ai appelé immédiatement. Depuis, les itinéraires sont corrects, les coûts de carburant ont baissé, et il sait que je peux vérifier à tout moment. Ce n'est pas juste un GPS — c'est le contrôle de ma propre affaire."'>
-                    "Before Sherkall Intelligence, I had no idea what my taxi driver was doing with my car all day. He was taking passengers on routes I never authorized, burning extra fuel and putting mileage on the vehicle I was paying for. After the installation, I opened the app the very first day and saw him 15 kilometers from where he was supposed to be. I called him immediately. Since then, the routes have been correct, fuel costs dropped, and he knows I can check at any time. This is not just GPS — it is control over my own business."
-                </p>
+                <p class="testimonial-text" data-en="Great GPS tracking — I regained control of routes and cut fuel costs." data-fr="Excellent suivi GPS — j'ai retrouvé le contrôle des trajets et réduit la consommation.">Great GPS tracking — I regained control of routes and cut fuel costs.</p>
                 <div class="testimonial-author">
                     <div class="author-avatar">MD</div>
                     <div>
@@ -3350,11 +3385,7 @@
             <!-- Testimonial 2 -->
             <div class="testimonial-card reveal reveal-delay-1">
                 <div class="stars">★★★★★</div>
-                <p class="testimonial-text"
-                   data-en='"We run a delivery business with six vehicles across Conakry. Before, we had no visibility — drivers would say they were stuck in traffic but we never knew if that was true. After Sherkall Intelligence installed GPS on all six vehicles, everything changed. We can see every vehicle live, replay any route from any day, and we caught one driver who was using the company van for personal trips on weekends. We confronted him with the route history on the app — he could not deny it. Our fuel bill dropped by almost 30 percent in the first month. Worth every franc."'
-                   data-fr='"Nous gérons une entreprise de livraison avec six véhicules à Conakry. Avant, nous n'avions aucune visibilité — les chauffeurs disaient qu'ils étaient coincés dans les embouteillages mais nous ne savions jamais si c'était vrai. Après que Sherkall Intelligence a installé le GPS sur les six véhicules, tout a changé. Nous pouvons voir chaque véhicule en direct, rejouer n'importe quel itinéraire de n'importe quel jour, et nous avons surpris un chauffeur qui utilisait le fourgon de l'entreprise pour des trajets personnels le week-end. Nous l'avons confronté avec l'historique des itinéraires sur l'application — il ne pouvait pas le nier. Notre facture de carburant a baissé de près de 30 % le premier mois. Ça vaut chaque franc."'>
-                    "We run a delivery business with six vehicles across Conakry. Before, we had no visibility — drivers would say they were stuck in traffic but we never knew if that was true. After Sherkall Intelligence installed GPS on all six vehicles, everything changed. We can see every vehicle live, replay any route from any day, and we caught one driver who was using the company van for personal trips on weekends. We confronted him with the route history on the app — he could not deny it. Our fuel bill dropped by almost 30 percent in the first month. Worth every franc."
-                </p>
+                <p class="testimonial-text" data-en="Live tracking transformed our delivery fleet; fuel costs fell significantly." data-fr="Le suivi en direct a transformé notre flotte de livraison ; carburant réduit de manière significative.">Live tracking transformed our delivery fleet; fuel costs fell significantly.</p>
                 <div class="testimonial-author">
                     <div class="author-avatar">AS</div>
                     <div>
@@ -3367,11 +3398,7 @@
             <!-- Testimonial 3 -->
             <div class="testimonial-card reveal reveal-delay-2">
                 <div class="stars">★★★★★</div>
-                <p class="testimonial-text"
-                   data-en='"My car was stolen from outside my house at night. I was devastated — it was a Toyota Hilux, not easy to replace. My neighbor told me about Sherkall Intelligence and I remembered I had installed the GPS two months earlier. I opened the app shaking, not even sure it would work. The car appeared on the map immediately. It was moving toward Coyah. I called the police, gave them the live location from my phone, and they intercepted the vehicle on the road. I had my car back before sunrise. Without that GPS, I would have lost everything. I have already told fifteen people about this service."'
-                   data-fr='"Ma voiture a été volée devant ma maison la nuit. J'étais dévasté — c'était un Toyota Hilux, pas facile à remplacer. Mon voisin m'a parlé de Sherkall Intelligence et je me suis souvenu que j'avais installé le GPS deux mois plus tôt. J'ai ouvert l'application en tremblant, pas même sûr que ça fonctionnerait. La voiture est apparue sur la carte immédiatement. Elle se dirigeait vers Coyah. J'ai appelé la police, leur ai donné la position en direct depuis mon téléphone, et ils ont intercepté le véhicule sur la route. J'ai récupéré ma voiture avant le lever du soleil. Sans ce GPS, j'aurais tout perdu. J'ai déjà parlé de ce service à quinze personnes."'>
-                    "My car was stolen from outside my house at night. I was devastated — it was a Toyota Hilux, not easy to replace. My neighbor told me about Sherkall Intelligence and I remembered I had installed the GPS two months earlier. I opened the app shaking, not even sure it would work. The car appeared on the map immediately. It was moving toward Coyah. I called the police, gave them the live location from my phone, and they intercepted the vehicle on the road. I had my car back before sunrise. Without that GPS, I would have lost everything. I have already told fifteen people about this service."
-                </p>
+                <p class="testimonial-text" data-en="GPS helped recover my stolen car — incredible service." data-fr="Le GPS a permis de retrouver ma voiture volée — service incroyable.">GPS helped recover my stolen car — incredible service.</p>
                 <div class="testimonial-author">
                     <div class="author-avatar">FK</div>
                     <div>
@@ -3384,11 +3411,7 @@
             <!-- Testimonial 4 -->
             <div class="testimonial-card reveal">
                 <div class="stars">★★★★★</div>
-                <p class="testimonial-text"
-                   data-en='"I manage a construction company with heavy equipment and vehicles spread across three sites in Guinea. The problem was always the same — vehicles would disappear for hours and we could never account for where they were or what they were doing. Fuel was going missing from the tanks constantly. After Sherkall Intelligence installed GPS with fuel sensors on our trucks, we identified the problem within one week. Two vehicles were being driven to unauthorized locations during lunch breaks, and fuel was being siphoned at one of the sites. We addressed both issues immediately. The system paid for itself in the first month from fuel savings alone."'
-                   data-fr='"Je gère une entreprise de construction avec des équipements lourds et des véhicules répartis sur trois chantiers en Guinée. Le problème était toujours le même — les véhicules disparaissaient pendant des heures et nous ne pouvions jamais savoir où ils étaient ni ce qu'ils faisaient. Le carburant disparaissait constamment des réservoirs. Après que Sherkall Intelligence a installé le GPS avec des capteurs de carburant sur nos camions, nous avons identifié le problème en une semaine. Deux véhicules étaient conduits vers des endroits non autorisés pendant les pauses déjeuner, et du carburant était siphonné sur l'un des chantiers. Nous avons résolu les deux problèmes immédiatement. Le système s'est remboursé le premier mois rien qu'avec les économies de carburant."'>
-                    "I manage a construction company with heavy equipment and vehicles spread across three sites in Guinea. The problem was always the same — vehicles would disappear for hours and we could never account for where they were or what they were doing. Fuel was going missing from the tanks constantly. After Sherkall Intelligence installed GPS with fuel sensors on our trucks, we identified the problem within one week. Two vehicles were being driven to unauthorized locations during lunch breaks, and fuel was being siphoned at one of the sites. We addressed both issues immediately. The system paid for itself in the first month from fuel savings alone."
-                </p>
+                <p class="testimonial-text" data-en="Fuel sensors + GPS stopped thefts and paid for themselves quickly." data-fr="Les capteurs de carburant + GPS ont stoppé les vols et se sont rapidement amortis.">Fuel sensors + GPS stopped thefts and paid for themselves quickly.</p>
                 <div class="testimonial-author">
                     <div class="author-avatar">IB</div>
                     <div>
@@ -3401,11 +3424,7 @@
             <!-- Testimonial 5 -->
             <div class="testimonial-card reveal reveal-delay-1">
                 <div class="stars">★★★★★</div>
-                <p class="testimonial-text"
-                   data-en='"As a mother, knowing where my children are is everything. My son drives to university every day and I used to worry constantly — the roads in Conakry are not always safe. After installing Sherkall Intelligence on the family car, I can check the app at any moment. I know when he leaves, which route he takes, when he arrives, and when he starts driving back home. When he was late one evening, I checked the app instead of panicking and saw the car was parked at a friend's house in Ratoma — I called him and everything was fine. This GPS is not just for business. It is for peace of mind as a parent."'
-                   data-fr='"En tant que mère, savoir où sont mes enfants est primordial. Mon fils conduit à l'université chaque jour et je m'inquiétais constamment — les routes à Conakry ne sont pas toujours sûres. Après avoir installé Sherkall Intelligence sur la voiture familiale, je peux vérifier l'application à tout moment. Je sais quand il part, quel itinéraire il prend, quand il arrive, et quand il reprend la route pour rentrer. Un soir où il était en retard, j'ai vérifié l'application au lieu de paniquer et j'ai vu que la voiture était garée chez un ami à Ratoma — je l'ai appelé et tout allait bien. Ce GPS n'est pas seulement pour les affaires. C'est pour la tranquillité d'esprit d'une mère."'>
-                    "As a mother, knowing where my children are is everything. My son drives to university every day and I used to worry constantly — the roads in Conakry are not always safe. After installing Sherkall Intelligence on the family car, I can check the app at any moment. I know when he leaves, which route he takes, when he arrives, and when he starts driving back home. When he was late one evening, I checked the app instead of panicking and saw the car was parked at a friend's house in Ratoma — I called him and everything was fine. This GPS is not just for business. It is for peace of mind as a parent."
-                </p>
+                <p class="testimonial-text" data-en="I can check my family's trips anytime — peace of mind." data-fr="Je peux vérifier les trajets de ma famille à tout moment — tranquillité d'esprit.">I can check my family's trips anytime — peace of mind.</p>
                 <div class="testimonial-author">
                     <div class="author-avatar">MB</div>
                     <div>
@@ -3418,11 +3437,7 @@
             <!-- Testimonial 6 -->
             <div class="testimonial-card reveal reveal-delay-2">
                 <div class="stars">★★★★★</div>
-                <p class="testimonial-text"
-                   data-en='"I drive a moto-taxi and was skeptical at first — I thought GPS was only for big companies with many vehicles. But a colleague convinced me to try it after his motorcycle was stolen. The installation was quick, they came to me, and the monthly cost is manageable. Three weeks after installation, someone tried to steal my motorcycle at night. The movement alert woke me up on my phone. I saw on the map it was being moved two streets away. I ran out immediately and found it. The thief had not gone far yet. I recovered it myself. Tell every moto-taxi driver in Conakry — this is not optional anymore."'
-                   data-fr='"Je conduis un moto-taxi et j'étais sceptique au début — je pensais que le GPS était réservé aux grandes entreprises avec beaucoup de véhicules. Mais un collègue m'a convaincu d'essayer après que sa moto a été volée. L'installation a été rapide, ils sont venus chez moi, et le coût mensuel est abordable. Trois semaines après l'installation, quelqu'un a essayé de voler ma moto la nuit. L'alerte de mouvement m'a réveillé sur mon téléphone. J'ai vu sur la carte qu'elle était déplacée à deux rues de là. Je suis sorti immédiatement et je l'ai trouvée. Le voleur n'était pas encore loin. Je l'ai récupérée moi-même. Dites à chaque conducteur de moto-taxi à Conakry — ce n'est plus facultatif."'>
-                    "I drive a moto-taxi and was skeptical at first — I thought GPS was only for big companies with many vehicles. But a colleague convinced me to try it after his motorcycle was stolen. The installation was quick, they came to me, and the monthly cost is manageable. Three weeks after installation, someone tried to steal my motorcycle at night. The movement alert woke me up on my phone. I saw on the map it was being moved two streets away. I ran out immediately and found it. The thief had not gone far yet. I recovered it myself. Tell every moto-taxi driver in Conakry — this is not optional anymore."
-                </p>
+                <p class="testimonial-text" data-en="Quick install and affordable — the GPS saved my motorcycle." data-fr="Installation rapide et abordable — le GPS a sauvé ma moto.">Quick install and affordable — the GPS saved my motorcycle.</p>
                 <div class="testimonial-author">
                     <div class="author-avatar">SC</div>
                     <div>
@@ -3474,6 +3489,88 @@
         </div>
     </div>
 </section>
+
+<!-- ── CONTACT SECTION ───────────────────────────────────── -->
+<section id="contact" style="background:var(--navy-deep);padding:100px 0;">
+    <div class="container">
+        <div class="section-head">
+            <div class="section-chip" data-en="Contact Us" data-fr="Contactez-nous">Contact Us</div>
+            <h2 class="section-title" data-en="Ready to Protect Your Vehicles?" data-fr="Prêt à Protéger Vos Véhicules ?">Ready to Protect Your Vehicles?</h2>
+            <p class="section-sub" data-en="Send us a message and we will reply fast via WhatsApp or email. Get a free quote in minutes." data-fr="Envoyez-nous un message et nous répondrons rapidement via WhatsApp ou email. Obtenez un devis gratuit en quelques minutes.">Send us a message and we will reply fast via WhatsApp or email. Get a free quote in minutes.</p>
+        </div>
+        <div id="contact-form-section" class="contact-form-grid">
+            <div class="contact-form-info">
+                <h2 data-en="Let's get you protected." data-fr="Protégeons votre véhicule.">Let's get you protected.</h2>
+                <p data-en="Our team is available to schedule installation, answer questions, and build the right GPS package for your business or personal vehicle." data-fr="Notre équipe est disponible pour planifier l'installation, répondre à vos questions et créer le bon pack GPS pour votre entreprise ou véhicule personnel.">Our team is available to schedule installation, answer questions, and build the right GPS package for your business or personal vehicle.</p>
+                <div class="contact-info-item">
+                    <div class="contact-info-icon">💬</div>
+                    <div>
+                        <div class="contact-info-label" data-en="WhatsApp" data-fr="WhatsApp">WhatsApp</div>
+                        <div class="contact-info-val">+224 629 255 946</div>
+                    </div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-info-icon">✉️</div>
+                    <div>
+                        <div class="contact-info-label" data-en="Email" data-fr="Email">Email</div>
+                        <div class="contact-info-val">sekoukallon2001@gmail.com</div>
+                    </div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-info-icon">📍</div>
+                    <div>
+                        <div class="contact-info-label" data-en="Location" data-fr="Emplacement">Location</div>
+                        <div class="contact-info-val" data-en="Conakry, Guinea" data-fr="Conakry, Guinée">Conakry, Guinea</div>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-form-box">
+                <form onsubmit="submitContactForm(); return false;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cf-firstname" data-en="First Name" data-fr="Prénom">First Name</label>
+                            <input id="cf-firstname" class="form-input" type="text" placeholder="First Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cf-lastname" data-en="Last Name" data-fr="Nom de famille">Last Name</label>
+                            <input id="cf-lastname" class="form-input" type="text" placeholder="Last Name">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cf-phone" data-en="Phone" data-fr="Téléphone">Phone</label>
+                            <input id="cf-phone" class="form-input" type="tel" placeholder="+224 629 255 946" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cf-email" data-en="Email" data-fr="Email">Email</label>
+                            <input id="cf-email" class="form-input" type="email" placeholder="email@example.com">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cf-interest" data-en="I'm interested in" data-fr="Je suis intéressé par">I'm interested in</label>
+                        <select id="cf-interest" class="form-select" onchange="updateDefaultMessage(this.value)">
+                            <option value="tracking" data-en="Personal GPS Tracking" data-fr="Suivi GPS Personnel">Personal GPS Tracking</option>
+                            <option value="fleet" data-en="Fleet Management" data-fr="Gestion de Flotte">Fleet Management</option>
+                            <option value="fuel" data-en="Fuel Monitoring" data-fr="Surveillance Carburant">Fuel Monitoring</option>
+                            <option value="install" data-en="GPS Installation" data-fr="Installation GPS">GPS Installation</option>
+                            <option value="other" data-en="Other" data-fr="Autre">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cf-message" data-en="Message" data-fr="Message">Message</label>
+                        <textarea id="cf-message" class="form-textarea" placeholder="Write a short message..."></textarea>
+                    </div>
+                    <button type="submit" class="form-submit-btn">💬 <span data-en="Send on WhatsApp" data-fr="Envoyer sur WhatsApp">Send on WhatsApp</span></button>
+                </form>
+                <div id="cf-success" class="form-success" aria-hidden="true" style="margin-top:12px;padding:12px;border-radius:8px;background:rgba(16,185,129,0.08);color:var(--green);">
+                    <strong data-en="Message sent!" data-fr="Message envoyé !">Message sent!</strong>
+                    <div data-en="We'll reply on WhatsApp shortly." data-fr="Nous répondrons sur WhatsApp sous peu.">We'll reply on WhatsApp shortly.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 
 <!-- ── FOOTER ─────────────────────────────────────────── -->
 </main>
@@ -3729,40 +3826,33 @@
     }
 
     function applyLanguage() {
-    document.querySelectorAll('[data-en]').forEach(el => {
-        const childrenHaveDataEn = Array.from(el.children).some(ch => ch.hasAttribute('data-en'));
-        if (childrenHaveDataEn) return;
-        const attr = currentLang === 'en' ? 'data-en' : 'data-fr';
-        const val = el.getAttribute(attr);
-        if (val !== null && val !== '') {
-            el.innerHTML = '';
-            el.appendChild(document.createTextNode(val));
-        }
-    });
-    document.documentElement.lang = currentLang;
-    const ni = document.getElementById('name-input');
-    const pi = document.getElementById('phone-input');
-    if (ni) ni.placeholder = currentLang === 'en' ? 'Your Name' : 'Votre Nom';
-    if (pi) pi.placeholder = '+224 629 255 946';
-    const fn = document.getElementById('cf-firstname');
-    const ln = document.getElementById('cf-lastname');
-    const em = document.getElementById('cf-email');
-    if (fn) fn.placeholder = currentLang === 'en' ? 'First Name' : 'Prénom';
-    if (ln) ln.placeholder = currentLang === 'en' ? 'Last Name' : 'Nom de famille';
-    if (em) em.placeholder = currentLang === 'en' ? 'email@example.com' : 'email@exemple.com';
-    const btn = document.getElementById('lang-btn');
-    if (btn) {
-        btn.textContent = currentLang === 'en' ? '🇫🇷 FR' : '🇬🇧 EN';
+        document.querySelectorAll('[data-en]').forEach(el => {
+            const childrenHaveDataEn = Array.from(el.children).some(ch => ch.hasAttribute('data-en'));
+            if (childrenHaveDataEn) return;
+            const attr = currentLang === 'en' ? 'data-en' : 'data-fr';
+                const val = el.getAttribute(attr);
+                if (val !== null && val !== '') {
+                    let sanitized = val;
+                    if (sanitized.length >= 2 && ((sanitized[0] === '"' && sanitized[sanitized.length-1] === '"') || (sanitized[0] === "'" && sanitized[sanitized.length-1] === "'"))) {
+                        sanitized = sanitized.slice(1, -1);
+                    }
+                    el.textContent = sanitized;
+                }
+        });
 
+        document.documentElement.lang = currentLang;
+
+        const btn = document.getElementById('lang-btn');
+        if (btn) {
+            btn.textContent = currentLang === 'en' ? '🇫🇷 FR' : '🇬🇧 EN';
+            btn.setAttribute('aria-label', currentLang === 'en' ? 'Switch to French' : 'Passer en anglais');
         }
-        
-    }
-        // Modal placeholders
+
         const ni = document.getElementById('name-input');
         const pi = document.getElementById('phone-input');
         if (ni) ni.placeholder = currentLang === 'en' ? 'Your Name' : 'Votre Nom';
         if (pi) pi.placeholder = '+224 629 255 946';
-        // Contact form placeholders
+
         const fn = document.getElementById('cf-firstname');
         const ln = document.getElementById('cf-lastname');
         const ph = document.getElementById('cf-phone');
@@ -3770,7 +3860,7 @@
         if (fn) fn.placeholder = currentLang === 'en' ? 'First Name' : 'Prénom';
         if (ln) ln.placeholder = currentLang === 'en' ? 'Last Name' : 'Nom de famille';
         if (em) em.placeholder = currentLang === 'en' ? 'email@example.com' : 'email@exemple.com';
-        // Refresh textarea default message to current language
+
         const sel = document.getElementById('cf-interest');
         if (sel) updateDefaultMessage(sel.value);
     }
@@ -4086,8 +4176,15 @@
         }
         window.open('https://wa.me/224629255946?text=' + encodeURIComponent(msg), '_blank');
 
-        document.getElementById('cf-success').classList.add('show');
-        setTimeout(() => document.getElementById('cf-success').classList.remove('show'), 6000);
+        const cfSuccess = document.getElementById('cf-success');
+        if (cfSuccess) {
+            cfSuccess.classList.add('show');
+            cfSuccess.setAttribute('aria-hidden', 'false');
+            setTimeout(() => {
+                cfSuccess.classList.remove('show');
+                cfSuccess.setAttribute('aria-hidden', 'true');
+            }, 6000);
+        }
     }
 
 
@@ -4117,11 +4214,11 @@
         }, 2000);
     }
 
-    function setDemoSpeed(v) {
+    function setDemoSpeed(evt, v) {
         targetSpeed = v + (Math.random() * 10 - 5);
         targetSpeed = Math.max(0, Math.min(130, targetSpeed));
         document.querySelectorAll('#live-demo .dash-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
+        if (evt && evt.target) evt.target.classList.add('active');
         const statusEl = document.getElementById('vehicle-status');
         if (statusEl) {
             statusEl.textContent = v === 0 ? 'STOPPED' : 'MOVING';
