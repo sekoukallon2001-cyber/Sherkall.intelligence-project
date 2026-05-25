@@ -3729,19 +3729,34 @@
     }
 
     function applyLanguage() {
-        document.querySelectorAll('[data-en]').forEach(el => {
-            // Skip elements whose children also have data-en (nested translatable)
-            const childrenHaveDataEn = Array.from(el.children).some(ch => ch.hasAttribute('data-en'));
-            if (childrenHaveDataEn) return;
-            const val = currentLang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-fr');
-            if (val !== null) el.textContent = val;
-        });
-        document.documentElement.lang = currentLang;
-        const langBtn = document.getElementById('lang-btn');
-        if (langBtn) {
-            langBtn.textContent = currentLang === 'en' ? '🇫🇷 FR' : '🇬🇧 EN';
-            langBtn.setAttribute('aria-label', currentLang === 'en' ? 'Switch to French' : 'Passer en anglais');
+    document.querySelectorAll('[data-en]').forEach(el => {
+        const childrenHaveDataEn = Array.from(el.children).some(ch => ch.hasAttribute('data-en'));
+        if (childrenHaveDataEn) return;
+        const attr = currentLang === 'en' ? 'data-en' : 'data-fr';
+        const val = el.getAttribute(attr);
+        if (val !== null && val !== '') {
+            el.innerHTML = '';
+            el.appendChild(document.createTextNode(val));
         }
+    });
+    document.documentElement.lang = currentLang;
+    const ni = document.getElementById('name-input');
+    const pi = document.getElementById('phone-input');
+    if (ni) ni.placeholder = currentLang === 'en' ? 'Your Name' : 'Votre Nom';
+    if (pi) pi.placeholder = '+224 629 255 946';
+    const fn = document.getElementById('cf-firstname');
+    const ln = document.getElementById('cf-lastname');
+    const em = document.getElementById('cf-email');
+    if (fn) fn.placeholder = currentLang === 'en' ? 'First Name' : 'Prénom';
+    if (ln) ln.placeholder = currentLang === 'en' ? 'Last Name' : 'Nom de famille';
+    if (em) em.placeholder = currentLang === 'en' ? 'email@example.com' : 'email@exemple.com';
+    const btn = document.getElementById('lang-btn');
+    if (btn) {
+        btn.textContent = currentLang === 'en' ? '🇫🇷 FR' : '🇬🇧 EN';
+
+        }
+        
+    }
         // Modal placeholders
         const ni = document.getElementById('name-input');
         const pi = document.getElementById('phone-input');
