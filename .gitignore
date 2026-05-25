@@ -1,0 +1,4 @@
+.tmp/
+lighthouse-temp/
+node_modules/
+*.log
