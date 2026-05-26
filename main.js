@@ -333,33 +333,10 @@ const BACKEND_URL = 'https://sherkall-backend-production.up.railway.app';
     //    1. Keeping Row Level Security (RLS) ENABLED on the 'leads' table
     //    2. Setting an insert-only RLS policy (no public reads)
     //    3. Restricting allowed origins in your Supabase dashboard
-    //    Never expose your service_role key — that one must stay server-side only.
-    const SUPABASE_URL = 'https://diubotswoxoxbhtlznnm.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpdWJvdHN3b3hveGJodGx6bm5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNjY0NzgsImV4cCI6MjA5Mzk0MjQ3OH0.NVkoIcO1cy-TqoIIi3gK3nGOIrPJMilRVqThyeCKu9U';
+    //    Supabase is no longer used in the frontend; backend handles database writes securely.
 
     async function saveLeadToSupabase(lead) {
-        if (!SUPABASE_URL || !SUPABASE_KEY) return false;
-        try {
-            const res = await fetch(SUPABASE_URL + '/rest/v1/leads', {
-                method: 'POST',
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': 'Bearer ' + SUPABASE_KEY,
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=minimal'
-                },
-                body: JSON.stringify(lead)
-            });
-            if (!res.ok) {
-                const err = await res.text();
-                console.error('Supabase error', res.status, err);
-                return false;
-            }
-            return true;
-        } catch(e) {
-            console.error('Supabase fetch failed:', e);
-            return false;
-        }
+        return false;
     }
 
     // ── INTEREST → DEFAULT MESSAGE (bilingual) ────────────────────────────
