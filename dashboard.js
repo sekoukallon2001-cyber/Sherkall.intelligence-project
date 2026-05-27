@@ -128,9 +128,11 @@ async function refreshPositions() {
 // CONNECT TRACCAR WEBSOCKET
 // ============================================
 function connectTraccar() {
-  const wsUrl = `wss://demo4.traccar.org/api/socket`;
-
-  try {
+  // Traccar WebSocket requires Basic Auth
+  // Use polling instead for demo4 shared server
+  console.log('Using polling for Traccar data');
+  startPolling();
+}
     ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
