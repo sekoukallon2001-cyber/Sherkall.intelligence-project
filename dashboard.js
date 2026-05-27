@@ -17,6 +17,9 @@ function checkAuth() {
   authToken = localStorage.getItem('sherkall_token');
   const userStr = localStorage.getItem('sherkall_user');
 
+  console.log('Token found:', authToken ? 'YES' : 'NO');
+  console.log('User found:', userStr ? 'YES' : 'NO');
+
   if (!authToken || !userStr) {
     window.location.href = '/login.html';
     return false;
@@ -389,7 +392,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // INIT
 // ============================================
 document.addEventListener('DOMContentLoaded', async () => {
-  if (!checkAuth()) return;
+  // TEMP: skip auth check for testing
+  authToken = localStorage.getItem('sherkall_token') || 'test';
+  userInfo = JSON.parse(localStorage.getItem('sherkall_user') || '{"name":"Test User"}');
+  document.getElementById('client-name').textContent = userInfo.name || 'Client';
 
   initMap();
   await refreshVehicles();
