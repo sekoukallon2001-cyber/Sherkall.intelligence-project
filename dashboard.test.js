@@ -99,29 +99,29 @@ function testGetVehicleStatus() {
       description: 'Returns offline when no timestamp'
     },
     {
-      vehicle: { ts: new Date(now - 10 * 60 * 1000).toISOString(), speed: 0 }, // 10 min ago
+      vehicle: { ts: new Date(now - 30 * 1000).toISOString(), speed: 0 }, // 30s ago, parked
       expected: 'idle',
-      description: 'Returns idle when recent but not moving'
+      description: 'Returns idle when recent (within 90s) but not moving'
     },
     {
-      vehicle: { ts: new Date(now - 2 * 60 * 1000).toISOString(), speed: 20 }, // 2 min ago, moving
+      vehicle: { ts: new Date(now - 20 * 1000).toISOString(), speed: 10 }, // 20s ago, moving
       expected: 'online',
-      description: 'Returns online when recent and moving'
+      description: 'Returns online when recent and moving (speed > 3 km/h)'
     },
     {
-      vehicle: { ts: new Date(now - 20 * 60 * 1000).toISOString(), speed: 50 }, // 20 min ago (expired)
+      vehicle: { ts: new Date(now - 120 * 1000).toISOString(), speed: 50 }, // 120s ago — past 90s window
       expected: 'offline',
-      description: 'Returns offline when data is stale (> 15 min)'
+      description: 'Returns offline when data is stale (> 90 seconds)'
     },
     {
-      vehicle: { ts: new Date(now - 5 * 1000).toISOString(), speed: 3 }, // 5 sec ago, moving slowly
+      vehicle: { ts: new Date(now - 5 * 1000).toISOString(), speed: 2 }, // 5s ago, speed below threshold
       expected: 'idle',
-      description: 'Returns idle when speed below threshold (5 km/h)'
+      description: 'Returns idle when speed below threshold (3 km/h)'
     },
     {
-      vehicle: { ts: new Date(now - 5 * 1000).toISOString(), speed: 5 }, // exactly at threshold
+      vehicle: { ts: new Date(now - 5 * 1000).toISOString(), speed: 4 }, // above 3 km/h threshold
       expected: 'online',
-      description: 'Returns online when speed equals threshold'
+      description: 'Returns online when speed above threshold (> 3 km/h)'
     }
   ];
 
