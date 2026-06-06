@@ -467,12 +467,9 @@
           showSuccess('Connexion réussie! Redirection...');
 
           // Redirect based on role
+          // Admin panel (/admin.html) will be built next — for now admin uses dashboard
           setTimeout(() => {
-            if (data.user.role === 'admin' && currentTab === 'admin') {
-  window.location.href = '/admin.html';
-} else {
-  window.location.href = '/dashboard.html';
-}
+            window.location.href = '/dashboard.html';
           }, 1000);
 
         } else {
