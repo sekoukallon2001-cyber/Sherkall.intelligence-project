@@ -1,93 +1,23 @@
 // =====================================================
 // SHERKALL INTELLIGENCE — DASHBOARD JS
 // =====================================================
-// Enhanced with security hardening & performance optimizations
-
-// ── CONFIG ───────────────────────────────────────────
-const CONFIG = {
-  SPEED_THRESHOLD: 3,              // km/h — separates moving from idle
-  ONLINE_WINDOW_MS: 90 * 1000, // 90 seconds — GPS freshness threshold
-  SPEEDING_THRESHOLD: 90,          // km/h — alert trigger
-  POLLING_INTERVAL: 3000,          // ms — fallback polling rate
-  RETRY_DELAY: 3000,               // ms — SSE reconnection delay
-  RENDER_DEBOUNCE: 100,            // ms — batch UI updates
-  MAX_VEHICLES_VIRTUAL_SCROLL: 50  // Virtual scroll threshold
-};
 
 const BACKEND_URL = 'https://sherkall-backend-production.up.railway.app';
 
 const TILE_LAYERS = {
-  street: {
-    url:     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    options: { maxZoom: 19, attribution: '© OpenStreetMap', subdomains: 'abc' }
-  },
-  satellite: {
-    url:     'https://mt{s}.google.com/vt/lyrs=y&hl=fr&x={x}&y={y}&z={z}',
-    options: { maxZoom: 20, attribution: '© Google', subdomains: ['0','1','2','3'] }
-  }
+  street:    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  dark:      'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png'
 };
 
 // ── STATE ────────────────────────────────────────────
 let map, tileLayer;
 let vehicleStore  = {};
 let markers       = {};
-let markerIconCache = {};  // NEW: Cache icons by color to avoid rebuilding
 let selectedId    = null;
 let authToken     = null;
 let userInfo      = null;
-let csrfToken     = null;  // NEW: CSRF token for API calls
 let pollingTimer  = null;
-let sseConnection = null;
-let renderTimeout = null;
-
-// ── DOM CACHE ────────────────────────────────────────
-const DOM = {
-  vehicleList: null,
-  vehicleFilter: null,
-  vehicleSheet: null,
-  sheetBackdrop: null,
-  sheetBody: null,
-  alertsFeed: null,
-  connIndicator: null,
-  connLabel: null,
-  alertsContainer: null,
-
-  init() {
-    this.vehicleList = document.getElementById('vehicle-list');
-    this.vehicleFilter = document.getElementById('vehicle-filter');
-    this.vehicleSheet = document.getElementById('vehicle-sheet');
-    this.sheetBackdrop = document.getElementById('sheet-backdrop');
-    this.sheetBody = document.getElementById('sheet-body');
-    this.alertsFeed = document.getElementById('alerts-feed');
-    this.connIndicator = document.getElementById('conn-indicator');
-    this.connLabel = document.getElementById('conn-label');
-    this.alertsContainer = document.getElementById('alerts');
-
-    // Set up vehicle list event delegation ONCE here, not inside renderVehicleList()
-    // Prevents hundreds of duplicate listeners building up over time
-    if (this.vehicleList) {
-      this.vehicleList.addEventListener('click', (e) => {
-        const li = e.target.closest('li.veh-item');
-        if (!li) return;
-        const vehicleId = li.dataset.vehicleId;
-        if (e.target.closest('.locate-btn')) {
-          e.stopPropagation();
-          locateVehicleOnMap(vehicleId);
-        } else if (e.target.closest('.history-btn')) {
-          e.stopPropagation();
-          openHistory(vehicleId);
-        } else {
-          selectVehicle(vehicleId);
-        }
-      });
-    }
-  },
-
-  setElement(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
-  }
-};
 
 // ── INIT ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -99,44 +29,16 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  try {
   userInfo = JSON.parse(userStr);
-
-  if (!userInfo || typeof userInfo !== 'object') {
-    throw new Error('Invalid user structure');
-  }
-
-} catch (err) {
-  console.error('Failed to parse user info:', err);
-  logout();
-  return;
-}
-  
-  // NEW: Retrieve CSRF token from meta tag or request it from backend
-  const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-  if (csrfMeta) {
-    csrfToken = csrfMeta.getAttribute('content');
-  } else {
-    console.warn('CSRF token not found. Add <meta name="csrf-token" content="..."> to HTML head.');
-  }
-
-  DOM.init();
   applyUserInfo();
 
-  // Wire up vehicle search filter with debouncing to prevent excessive renders
-  if (DOM.vehicleFilter) {
-    let filterTimeout;
-    DOM.vehicleFilter.addEventListener('input', () => {
-      clearTimeout(filterTimeout);
-      filterTimeout = setTimeout(() => {
-        renderVehicleList();
-      }, 300); // 300ms debounce for filter input
-    });
-  }
+  // Wire up vehicle search filter
+  const vf = document.getElementById('vehicle-filter');
+  if (vf) vf.addEventListener('input', renderVehicleList);
 
   initMap();
   loadAll();
-  startRealtime(); // SSE push — replaces polling
+  startPolling();
 });
 
 // ── USER INFO ─────────────────────────────────────────
@@ -145,20 +47,16 @@ function applyUserInfo() {
   const email = userInfo?.email || '—';
   const init  = name.charAt(0).toUpperCase();
 
-  DOM.setElement('account-avatar', init);
-  DOM.setElement('profile-avatar', init);
-  DOM.setElement('profile-name', name);
-  DOM.setElement('profile-email', email);
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('account-avatar', init);
+  set('profile-avatar', init);
+  set('profile-name',   name);
+  set('profile-email',  email);
 }
 
 // ── AUTH ──────────────────────────────────────────────
 function logout() {
   clearInterval(pollingTimer);
-  clearTimeout(renderTimeout);
-  if (sseConnection) { 
-    sseConnection.close(); 
-    sseConnection = null; 
-  }
   localStorage.removeItem('sherkall_token');
   localStorage.removeItem('sherkall_user');
   window.location.href = '/login.html';
@@ -191,115 +89,46 @@ function initMap() {
     attributionControl: true
   }).setView([9.538, -13.677], 12);
 
-  const layer = TILE_LAYERS.street;
-  tileLayer = L.tileLayer(layer.url, layer.options).addTo(map);
+  tileLayer = L.tileLayer(TILE_LAYERS.street, {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
 }
 
 function setMapLayer(type, btn) {
   if (tileLayer) map.removeLayer(tileLayer);
-  const layer = TILE_LAYERS[type];
-  if (!layer) return;
-  tileLayer = L.tileLayer(layer.url, layer.options).addTo(map);
+  tileLayer = L.tileLayer(TILE_LAYERS[type], {
+    maxZoom: 19,
+    attribution: type === 'street' ? '© OpenStreetMap' : '© Esri / Stadia'
+  }).addTo(map);
+
   document.querySelectorAll('.layer-fab').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
-}
-
-// ── STATUS COMPUTATION ───────────────────────────────
-// Single source of truth for vehicle status
-function getVehicleStatus(v) {
-  if (!v.ts) return 'offline';
-  
-  const ageMs = Date.now() - new Date(v.ts).getTime();
-  const isRecent = ageMs < CONFIG.ONLINE_WINDOW_MS;
-  
-  if (!isRecent) return 'offline';
-  return v.speed > CONFIG.SPEED_THRESHOLD ? 'online' : 'idle';
-}
-
-// ── REALTIME — SSE PUSH ───────────────────────────────
-// Railway polls Traccar every 5s and pushes updates here instantly.
-// Dashboard holds one persistent connection — no repeated API calls.
-
-function startRealtime() {
-  const url = `${BACKEND_URL}/api/vehicles/stream?token=${encodeURIComponent(authToken)}`;
-
-  try {
-    sseConnection = new EventSource(url);
-
-    sseConnection.onopen = () => {
-      console.log('✅ SSE realtime connected');
-      setConnected(true);
-    };
-
-    sseConnection.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.positions) processPositions(data);
-      } catch (err) {
-        console.warn('Failed to parse SSE message:', err);
-      }
-    };
-
-    sseConnection.onerror = () => {
-  console.warn('SSE connection lost');
-
-  setConnected(false);
-
-  if (sseConnection) {
-    sseConnection.close();
-    sseConnection = null;
-  }
-
-  setTimeout(() => {
-    if (!sseConnection) {
-      startRealtime();
-    }
-  }, CONFIG.RETRY_DELAY);
-};
-
-  } catch (err) {
-    console.error('EventSource not supported:', err);
-    startPolling(); // Fallback
-  }
-}
-
-// Polling fallback (used only if SSE fails)
-function startPolling() {
-  if (sseConnection) return;
-
-  pollingTimer = setInterval(async () => {
-    await refreshPositions();
-  }, CONFIG.POLLING_INTERVAL);
 }
 
 // ── DATA LOADING ──────────────────────────────────────
 async function loadAll() {
   await refreshVehicles();
-  await refreshPositions(); // initial load before SSE connects
+  await refreshPositions();
   setConnected(true);
 }
 
-// ── API HELPER — CSRF PROTECTION ──────────────────────
-// NEW: Helper function to add CSRF token to fetch requests
-function createFetchHeaders() {
-  const headers = {
-    'Authorization': `Bearer ${authToken}`,
-    'Content-Type': 'application/json'
-  };
-  
-  // Add CSRF token if available (should be sent by backend on initial page load)
-  if (csrfToken) {
-    headers['X-CSRF-Token'] = csrfToken;
-  }
-  
-  return headers;
+async function refreshAll() {
+  await loadAll();
+  showAlert('✅ Données actualisées', 'success');
+}
+
+function startPolling() {
+  pollingTimer = setInterval(async () => {
+    await refreshPositions();
+  }, 30000); // poll every 30s
 }
 
 // ── VEHICLES ──────────────────────────────────────────
 async function refreshVehicles() {
   try {
     const res = await fetch(`${BACKEND_URL}/api/vehicles`, {
-      headers: createFetchHeaders()
+      headers: { 'Authorization': `Bearer ${authToken}` }
     });
 
     if (res.status === 401) { logout(); return; }
@@ -313,11 +142,14 @@ async function refreshVehicles() {
       vehicleStore[d.id] = Object.assign(vehicleStore[d.id] || {}, {
         id:         d.id,
         name:       d.name || `Véhicule ${d.id}`,
+        // ── FIX: preserve backend's offline status exactly ──
+        status:     d.status || 'offline',
         lastUpdate: d.lastUpdate
       });
     });
 
-    queueRender();
+    renderVehicleList();
+    updateTopStats();
 
   } catch (err) {
     console.error('refreshVehicles:', err);
@@ -327,104 +159,91 @@ async function refreshVehicles() {
 }
 
 // ── POSITIONS ─────────────────────────────────────────
-// processPositions: shared handler for both SSE push and polling fallback
-function processPositions(data) {
-  (data.positions || []).forEach(pos => {
-    const v = vehicleStore[pos.deviceId];
-    if (!v) return;
-
-    v.lat     = pos.latitude;
-    v.lon     = pos.longitude;
-    v.speed   = Math.round(pos.speed  || 0);
-    v.heading = Math.round(pos.course || 0);
-    v.ts      = pos.fixTime;
-
-    updateMarker(v);
-  });
-
-  setConnected(true);
-  queueRender();
-}
-
 async function refreshPositions() {
   try {
     const res = await fetch(`${BACKEND_URL}/api/vehicles/positions`, {
-      headers: createFetchHeaders()
+      headers: { 'Authorization': `Bearer ${authToken}` }
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    if (!res.ok) return;
+
     const data = await res.json();
-    if (!data.success) throw new Error(data.message);
-    processPositions(data);
+    if (!data.success) return;
+
+    (data.positions || []).forEach(pos => {
+      const v = vehicleStore[pos.deviceId];
+      if (!v) return;
+
+      v.lat     = pos.latitude;
+      v.lon     = pos.longitude;
+      v.speed   = Math.round(pos.speed  || 0);
+      v.heading = Math.round(pos.course || 0);
+      v.ts      = pos.fixTime;
+
+      // ══════════════════════════════════════════════════
+      // BUG FIX: NEVER override 'offline' from speed.
+      //
+      // Old code:
+      //   if (v.speed > 2) v.status = 'online';
+      //   else if (v.status !== 'offline') v.status = 'idle';
+      //
+      // The old code promoted an offline device to 'online'
+      // if it had stale speed > 2 still sitting in the DB.
+      //
+      // Fix: only update moving/idle if backend says online.
+      // ══════════════════════════════════════════════════
+      if (v.status !== 'offline') {
+        v.status = v.speed > 2 ? 'online' : 'idle';
+      }
+
+      updateMarker(v);
+    });
+
+    renderVehicleList();
+    updateTopStats();
+    setConnected(true);
+
+    // Refresh open bottom sheet if vehicle is selected
+    if (selectedId) refreshSheetContent(selectedId);
+
   } catch (err) {
     console.error('refreshPositions:', err);
     setConnected(false);
   }
 }
 
-// ── RENDER DEBOUNCING ────────────────────────────────
-// Batch UI updates to avoid excessive reflows
-function queueRender() {
-  clearTimeout(renderTimeout);
-  renderTimeout = setTimeout(() => {
-    renderVehicleList();
-    updateTopStats();
-    if (selectedId) refreshSheetContent(selectedId);
-  }, CONFIG.RENDER_DEBOUNCE);
-}
-
 // ── MARKERS ───────────────────────────────────────────
 function vehicleColor(v) {
   if (!v) return '#8892A4';
-  const status = getVehicleStatus(v);
-  if (v.speed > CONFIG.SPEED_THRESHOLD) return '#10B981'; // moving  — green
-  if (status === 'online' || status === 'idle')  return '#F59E0B'; // parked  — amber
-  return '#EF4444';                                                   // offline — red
+  if (v.speed > 2)           return '#10B981'; // moving — green
+  if (v.status === 'online') return '#F59E0B'; // idle   — amber
+  return '#EF4444';                             // offline — red
 }
 
-// NEW: Build marker icon with caching to avoid rebuilding identical icons
 function buildMarkerIcon(v) {
   const color      = vehicleColor(v);
   const isSelected = v.id === selectedId;
-  const size       = isSelected ? 44 : 36;
-  
-  // NEW: Check cache first
-  const cacheKey = `${color}-${isSelected}`;
-  if (markerIconCache[cacheKey]) {
-    return markerIconCache[cacheKey];
-  }
-
-  const shadow     = isSelected
-    ? `0 0 0 3px ${color}, 0 4px 14px rgba(0,0,0,0.4)`
-    : `0 2px 10px rgba(0,0,0,0.3)`;
-  const glow = v.speed > CONFIG.SPEED_THRESHOLD
+  const size       = isSelected ? 38 : 32;
+  const ring       = isSelected
+    ? `border:3px solid ${color};`
+    : `border:2px solid rgba(255,255,255,0.9);`;
+  const pulse = v.speed > 2
     ? `<div style="position:absolute;inset:-6px;border-radius:50%;background:${color};opacity:0.15;animation:markerPulse 2s ease-in-out infinite;"></div>`
     : '';
-  const iconSize = Math.round(size * 0.52);
 
-  const icon = L.divIcon({
+  return L.divIcon({
     className: '',
     html: `<div style="position:relative;width:${size}px;height:${size}px;">
-      ${glow}
-      <div style="
-        position:absolute;inset:0;
-        background:#ffffff;
-        border:2.5px solid ${color};
-        border-radius:50%;
-        display:flex;align-items:center;justify-content:center;
-        box-shadow:${shadow};
-      ">
-        <svg viewBox="0 0 24 24" width="${iconSize}" height="${iconSize}" fill="${color}">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-        </svg>
-      </div>
-    </div>`,
+             ${pulse}
+             <div style="position:relative;width:${size}px;height:${size}px;
+                         background:${color};${ring}border-radius:50%;
+                         display:flex;align-items:center;justify-content:center;
+                         font-size:${isSelected ? 17 : 14}px;
+                         box-shadow:0 3px 10px rgba(0,0,0,0.45);">🚗</div>
+           </div>`,
     iconSize:   [size, size],
     iconAnchor: [size / 2, size / 2]
   });
-
-  // NEW: Cache the icon
-  markerIconCache[cacheKey] = icon;
-  return icon;
 }
 
 function updateMarker(v) {
@@ -438,38 +257,34 @@ function updateMarker(v) {
   } else {
     const m = L.marker(latlng, { icon }).addTo(map);
     m.on('click', () => selectVehicle(v.id));
-    // NEW: Escape vehicle name in tooltip
-    m.bindTooltip(escapeHtml(v.name), { sticky: false });
+    m.bindTooltip(`<strong>${v.name}</strong>`, { sticky: false });
     markers[v.id] = m;
   }
 }
 
 // ── VEHICLE LIST (Vehicles tab) ───────────────────────
 function renderVehicleList() {
-  if (!DOM.vehicleList) return;
+  const ul = document.getElementById('vehicle-list');
+  if (!ul) return;
 
-  const q = (DOM.vehicleFilter?.value || '').toLowerCase();
-  DOM.vehicleList.innerHTML = '';
+  const q = (document.getElementById('vehicle-filter')?.value || '').toLowerCase();
+  ul.innerHTML = '';
 
   const vehicles = Object.values(vehicleStore)
     .filter(v => !q || v.name.toLowerCase().includes(q))
     .sort((a, b) => {
       const order = { online:0, idle:1, offline:2 };
-      return (order[getVehicleStatus(a)] ?? 2) - (order[getVehicleStatus(b)] ?? 2);
+      return (order[a.status] ?? 2) - (order[b.status] ?? 2);
     });
 
   if (!vehicles.length) {
-    DOM.vehicleList.innerHTML = '<li style="padding:24px;text-align:center;color:var(--grey);font-size:13px;">Aucun véhicule trouvé</li>';
+    ul.innerHTML = '<li style="padding:24px;text-align:center;color:var(--grey);font-size:13px;">Aucun véhicule trouvé</li>';
     return;
   }
 
-  // NEW: Use DocumentFragment for better performance
-  const fragment = document.createDocumentFragment();
-
   vehicles.forEach(v => {
-    const status    = getVehicleStatus(v);
-    const isMoving  = v.speed > CONFIG.SPEED_THRESHOLD;
-    const isOnline  = status === 'online' || status === 'idle';
+    const isMoving  = v.speed > 2;
+    const isOnline  = v.status === 'online' || isMoving;
     const statusCls = isMoving ? 'status-moving' : isOnline ? 'status-idle' : 'status-offline';
     const statusTxt = isMoving ? `Moving · ${v.speed} km/h` : isOnline ? 'Parked' : 'Offline';
 
@@ -479,17 +294,14 @@ function renderVehicleList() {
 
     const li = document.createElement('li');
     li.className = `veh-item ${statusCls}${v.id === selectedId ? ' selected' : ''}`;
-    li.dataset.vehicleId = v.id; // NEW: Store ID in data attribute for event delegation
-    
-    // Build HTML safely
     li.innerHTML = `
       <div class="veh-item-top">
-        <span class="veh-name"></span>
-        <span class="veh-ts">${escapeHtml(ts)}</span>
+        <span class="veh-name">${v.name}</span>
+        <span class="veh-ts">${ts}</span>
       </div>
       <div class="veh-status-row">
         <span class="veh-status-dot"></span>
-        <span class="veh-status-text">${escapeHtml(statusTxt)}</span>
+        <span class="veh-status-text">${statusTxt}</span>
       </div>
       <div class="veh-item-bottom">
         <div class="veh-meta">
@@ -499,17 +311,19 @@ function renderVehicleList() {
           </div>
           <div class="veh-meta-item">
             <span class="veh-meta-label">Signal</span>
-            <span class="veh-meta-value">${status === 'offline' ? '—' : 'OK'}</span>
+            <span class="veh-meta-value">${v.status === 'offline' ? '—' : 'OK'}</span>
           </div>
         </div>
         <div class="veh-actions">
-          <button class="veh-action-btn locate-btn" title="Locate on map">
+          <button class="veh-action-btn" title="Locate on map"
+            onclick="event.stopPropagation(); locateVehicleOnMap('${v.id}')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="10" r="3"/>
               <path d="M12 2a8 8 0 010 16m0 0v4"/>
             </svg>
           </button>
-          <button class="veh-action-btn history-btn" title="History">
+          <button class="veh-action-btn" title="History"
+            onclick="event.stopPropagation(); openHistory('${v.id}')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="23 4 23 10 17 10"/>
               <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
@@ -517,21 +331,16 @@ function renderVehicleList() {
           </button>
         </div>
       </div>`;
-    
-    // Set vehicle name safely
-    li.querySelector('.veh-name').textContent = v.name;
-    
-    fragment.appendChild(li);
+    li.onclick = () => selectVehicle(v.id);
+    ul.appendChild(li);
   });
 
-  // Append all at once for better performance
-  DOM.vehicleList.appendChild(fragment);
-
   // Update KPI counters
-  const active  = vehicles.filter(v => getVehicleStatus(v) !== 'offline').length;
-  const alertCt = vehicles.filter(v => v.speed > CONFIG.SPEEDING_THRESHOLD).length;
-  DOM.setElement('kpi-active', active);
-  DOM.setElement('kpi-alerts', alertCt);
+  const active  = vehicles.filter(v => v.status !== 'offline').length;
+  const alertCt = vehicles.filter(v => v.speed > 90).length;
+  const setEl   = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl('kpi-active', active);
+  setEl('kpi-alerts', alertCt);
 }
 
 // ── VEHICLE SELECTION ─────────────────────────────────
@@ -555,35 +364,34 @@ function selectVehicle(id) {
 
 // ── BOTTOM SHEET ──────────────────────────────────────
 function openSheet(id) {
-  if (DOM.vehicleSheet)    DOM.vehicleSheet.classList.add('open');
-  if (DOM.sheetBackdrop)   DOM.sheetBackdrop.classList.add('show');
+  const sheet    = document.getElementById('vehicle-sheet');
+  const backdrop = document.getElementById('sheet-backdrop');
+  if (sheet)    sheet.classList.add('open');
+  if (backdrop) backdrop.classList.add('show');
   refreshSheetContent(id);
 }
 
 function closeSheet() {
-  if (DOM.vehicleSheet)    DOM.vehicleSheet?.classList.remove('open');
-  if (DOM.sheetBackdrop)   DOM.sheetBackdrop?.classList.remove('show');
+  document.getElementById('vehicle-sheet')?.classList.remove('open');
+  document.getElementById('sheet-backdrop')?.classList.remove('show');
 }
 
 function refreshSheetContent(id) {
-  if (!DOM.sheetBody) return;
+  const el = document.getElementById('sheet-body');
   const v  = vehicleStore[id];
-  if (!v) return;
+  if (!el || !v) return;
 
-  const status    = getVehicleStatus(v);
-  const isMoving  = v.speed > CONFIG.SPEED_THRESHOLD;
-  // Fix: getVehicleStatus returns 'online'=moving, 'idle'=parked, 'offline'=stale
-  // Map cleanly: online→moving, idle→idle, offline→offline
-  const statusKey = status === 'online' ? 'moving' : status;
+  const isMoving  = v.speed > 2;
+  const statusKey = isMoving ? 'moving' : (v.status === 'online' ? 'idle' : 'offline');
   const statusLbl = statusKey === 'moving' ? 'En mouvement' : statusKey === 'idle' ? 'En veille' : 'Hors ligne';
   const ts = v.ts
     ? new Date(v.ts).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit' })
     : '—';
 
-  DOM.sheetBody.innerHTML = `
+  el.innerHTML = `
     <div class="vehicle-card-header">
-      <div class="vehicle-card-name"></div>
-      <span class="status-badge status-${statusKey}">${escapeHtml(statusLbl)}</span>
+      <div class="vehicle-card-name">${v.name}</div>
+      <span class="status-badge status-${statusKey}">${statusLbl}</span>
     </div>
 
     <div class="telem-grid">
@@ -615,20 +423,20 @@ function refreshSheetContent(id) {
 
     <div class="last-update-row">
       <span>Dernière mise à jour</span>
-      <span>${escapeHtml(ts)}</span>
+      <span>${ts}</span>
     </div>
 
     <div class="detail-actions">
-      <button class="detail-action-btn" data-action="center">
+      <button class="detail-action-btn" onclick="centerVehicle('${id}')">
         <span class="btn-icon">📍</span>Centrer
       </button>
-      <button class="detail-action-btn" data-action="history">
+      <button class="detail-action-btn" onclick="openHistory('${id}')">
         <span class="btn-icon">📜</span>Historique
       </button>
-      <button class="detail-action-btn support" data-action="support">
+      <button class="detail-action-btn support" onclick="contactSupport()">
         <span class="btn-icon">💬</span>Support
       </button>
-      <button class="detail-action-btn danger" data-action="report">
+      <button class="detail-action-btn danger" onclick="reportAlert('${id}')">
         <span class="btn-icon">🚨</span>Signaler
       </button>
     </div>
@@ -639,22 +447,6 @@ function refreshSheetContent(id) {
         <div style="font-size:12px;color:var(--grey);padding:6px 0;">Chargement...</div>
       </div>
     </div>`;
-
-  // Set vehicle name safely
-  const nameEl = DOM.sheetBody.querySelector('.vehicle-card-name');
-  if (nameEl) nameEl.textContent = v.name;
-
-  // Attach event listeners (not inline onclick)
-  const actions = {
-    center: () => centerVehicle(id),
-    history: () => openHistory(id),
-    support: () => contactSupport(),
-    report: () => reportAlert(id)
-  };
-
-  DOM.sheetBody.querySelectorAll('[data-action]').forEach(btn => {
-    btn.onclick = () => actions[btn.dataset.action]?.();
-  });
 
   loadHistory(id);
 }
@@ -669,8 +461,8 @@ function loadHistory(id) {
 
   if (v?.ts) {
     const diffMin = Math.round((Date.now() - new Date(v.ts)) / 60000);
-    const label   = v.speed > CONFIG.SPEED_THRESHOLD ? 'En mouvement' : 'Arrêt détecté';
-    const cls     = v.speed > CONFIG.SPEED_THRESHOLD ? 'event-move' : 'event-stop';
+    const label   = v.speed > 2 ? 'En mouvement' : 'Arrêt détecté';
+    const cls     = v.speed > 2 ? 'event-move' : 'event-stop';
     entries.push({ cls, text: label, time: `il y a ${diffMin < 1 ? '<1' : diffMin} min` });
   }
 
@@ -683,49 +475,40 @@ function loadHistory(id) {
     <div class="history-item">
       <div class="history-dot ${e.cls}"></div>
       <div>
-        <div class="history-text">${escapeHtml(e.text)}</div>
-        <div class="history-time">${escapeHtml(e.time)}</div>
+        <div class="history-text">${e.text}</div>
+        <div class="history-time">${e.time}</div>
       </div>
     </div>`).join('');
 }
 
 // ── ALERTS FEED ───────────────────────────────────────
 function renderAlertsFeed() {
-  if (!DOM.alertsFeed) return;
+  const feed = document.getElementById('alerts-feed');
+  if (!feed) return;
 
   const items = [];
 
   Object.values(vehicleStore).forEach(v => {
-    const status = getVehicleStatus(v);
     const ts = v.ts
       ? new Date(v.ts).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit' })
       : '--:--:--';
 
-    if (v.speed > CONFIG.SPEEDING_THRESHOLD) {
-      items.push({ 
-        type:'critical', icon:'⚡', badge:'Critical', ts,
+    if (v.speed > 90) {
+      items.push({ type:'critical', icon:'⚡', badge:'Critical', ts,
         title: `Speeding: ${v.name}`,
-        desc:  `Detected at ${v.speed} km/h.`, 
-        id: v.id 
-      });
+        desc:  `Detected at ${v.speed} km/h.`, id: v.id });
     }
 
-    if (status === 'offline') {
-      items.push({ 
-        type:'system', icon:'📡', badge:'System', ts,
+    if (v.status === 'offline') {
+      items.push({ type:'system', icon:'📡', badge:'System', ts,
         title: `Signal Lost: ${v.name}`,
-        desc:  'Telemetry signal lost. Last known position on map.', 
-        id: v.id 
-      });
+        desc:  'Telemetry signal lost. Last known position on map.', id: v.id });
     }
 
-    if (v.speed > CONFIG.SPEED_THRESHOLD && v.speed <= CONFIG.SPEEDING_THRESHOLD) {
-      items.push({ 
-        type:'info', icon:'🚗', badge:'Movement', ts,
+    if (v.speed > 2 && v.speed <= 90) {
+      items.push({ type:'info', icon:'🚗', badge:'Movement', ts,
         title: `Moving: ${v.name}`,
-        desc:  `Currently at ${v.speed} km/h.`, 
-        id: v.id 
-      });
+        desc:  `Currently at ${v.speed} km/h.`, id: v.id });
     }
   });
 
@@ -738,7 +521,7 @@ function renderAlertsFeed() {
   }
 
   if (!items.length) {
-    DOM.alertsFeed.innerHTML = `
+    feed.innerHTML = `
       <div class="alerts-empty">
         <div class="alerts-empty-icon">🔔</div>
         <p>No recent alerts.<br>All systems normal.</p>
@@ -746,18 +529,18 @@ function renderAlertsFeed() {
     return;
   }
 
-  DOM.alertsFeed.innerHTML = items.map(a => `
+  feed.innerHTML = items.map(a => `
     <div class="alert-card alert-${a.type}">
       <div class="alert-card-top">
         <div class="alert-icon-wrap">${a.icon}</div>
         <div class="alert-meta">
-          <span class="alert-badge">${escapeHtml(a.badge)}</span>
-          <div class="alert-ts">${escapeHtml(a.ts)}</div>
+          <span class="alert-badge">${a.badge}</span>
+          <div class="alert-ts">${a.ts}</div>
         </div>
       </div>
-      <div class="alert-title">${escapeHtml(a.title)}</div>
-      <div class="alert-desc">${escapeHtml(a.desc)}</div>
-      <button class="alert-view-btn" data-vehicle-id="${escapeHtml(String(a.id))}">
+      <div class="alert-title">${a.title}</div>
+      <div class="alert-desc">${a.desc}</div>
+      <button class="alert-view-btn" onclick="viewAlertOnMap('${a.id}')">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
           <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
@@ -765,11 +548,6 @@ function renderAlertsFeed() {
         View on Map
       </button>
     </div>`).join('');
-
-  // Attach event listeners
-  DOM.alertsFeed.querySelectorAll('.alert-view-btn').forEach(btn => {
-    btn.onclick = () => viewAlertOnMap(btn.dataset.vehicleId);
-  });
 }
 
 function viewAlertOnMap(id) {
@@ -781,21 +559,23 @@ function viewAlertOnMap(id) {
 function updateTopStats() {
   let moving = 0, idle = 0, offline = 0;
   Object.values(vehicleStore).forEach(v => {
-    const status = getVehicleStatus(v);
-    if (v.speed > CONFIG.SPEED_THRESHOLD)       moving++;
-    else if (status === 'online' || status === 'idle') idle++;
-    else                                          offline++;
+    if (v.speed > 2)           moving++;
+    else if (v.status === 'online') idle++;
+    else                            offline++;
   });
-  DOM.setElement('stat-moving',  moving);
-  DOM.setElement('stat-idle',    idle);
-  DOM.setElement('stat-offline', offline);
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('stat-moving',  moving);
+  set('stat-idle',    idle);
+  set('stat-offline', offline);
 }
 
 // ── CONNECTION ────────────────────────────────────────
 function setConnected(connected) {
-  if (!DOM.connIndicator || !DOM.connLabel) return;
-  DOM.connIndicator.className = `conn-pill ${connected ? 'connected' : 'error'}`;
-  DOM.connLabel.textContent = connected ? 'En ligne' : 'Hors ligne';
+  const pill  = document.getElementById('conn-indicator');
+  const label = document.getElementById('conn-label');
+  if (!pill || !label) return;
+  pill.className = `conn-pill ${connected ? 'connected' : 'error'}`;
+  label.textContent = connected ? 'En ligne' : 'Hors ligne';
 }
 
 // ── MAP ACTIONS ───────────────────────────────────────
@@ -836,12 +616,13 @@ function contactSupport() {
 
 // ── TOAST ALERTS ──────────────────────────────────────
 function showAlert(msg, type) {
-  if (!DOM.alertsContainer) return;
+  const container = document.getElementById('alerts');
+  if (!container) return;
 
   const toast = document.createElement('div');
   toast.className = `alert-toast ${type || ''}`;
   toast.textContent = msg;
-  DOM.alertsContainer.appendChild(toast);
+  container.appendChild(toast);
 
   setTimeout(() => {
     toast.style.opacity   = '0';
@@ -849,17 +630,4 @@ function showAlert(msg, type) {
     toast.style.transition = 'all 0.3s ease';
     setTimeout(() => toast.remove(), 300);
   }, 4000);
-}
-
-// ── SECURITY: HTML ESCAPING ──────────────────────────
-function escapeHtml(text) {
-  if (typeof text !== 'string') return '';
-  const map = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;'
-  };
-  return text.replace(/[&<>"']/g, m => map[m]);
 }
