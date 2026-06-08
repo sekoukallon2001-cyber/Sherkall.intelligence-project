@@ -6,6 +6,7 @@
   <title>Sherkall Intel | Admin</title>
   <meta name="theme-color" content="#07111C">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
     /* ── VARIABLES ─────────────────────────────────── */
     :root {
@@ -336,6 +337,123 @@
       animation:spin 0.7s linear infinite;
     }
     @keyframes spin { to{transform:rotate(360deg)} }
+    /* ── ADMIN TABS ────────────────────────────────── */
+    .admin-tabs {
+      display: flex; align-items: center; gap: 4px;
+      padding: 10px 20px 0;
+      background: rgba(7,17,28,0.97);
+      border-bottom: 1px solid var(--navy-line);
+      position: sticky; top: 56px; z-index: 90;
+    }
+    .admin-tab {
+      padding: 8px 16px; border-radius: 8px 8px 0 0;
+      background: none; border: none;
+      color: var(--grey); font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      border-bottom: 2px solid transparent;
+      transition: var(--tr);
+    }
+    .admin-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .admin-tab:hover:not(.active) { color: var(--grey-lt); }
+
+    /* ── TAB CONTENT ───────────────────────────────── */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── FLEET VIEW ────────────────────────────────── */
+    .filter-row {
+      display: flex; gap: 8px; padding: 0 0 14px; flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 6px 14px; border-radius: 20px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--navy-line);
+      color: var(--grey); font-size: 11px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: var(--tr);
+    }
+    .filter-btn.active { background: var(--gold-dim); border-color: var(--gold-bdr); color: var(--gold); }
+    .fleet-card {
+      background: var(--navy-card); border: 1px solid var(--navy-line);
+      border-radius: var(--radius); padding: 14px 14px 14px 18px;
+      margin-bottom: 10px; position: relative; overflow: hidden;
+    }
+    .fleet-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    }
+    .fleet-card.fc-moving::before { background: var(--green); }
+    .fleet-card.fc-idle::before   { background: var(--amber); }
+    .fleet-card.fc-offline::before{ background: var(--red); }
+    .fleet-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 8px; }
+    .fleet-veh-name { font-size: 14px; font-weight: 700; }
+    .fleet-client-tag {
+      font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px;
+      background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-bdr);
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .fleet-card-meta { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+    .fleet-meta-item { display: flex; flex-direction: column; gap: 2px; }
+    .fleet-meta-lbl { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--grey); text-transform: uppercase; }
+    .fleet-meta-val { font-size: 12px; font-weight: 600; }
+    .fleet-status-dot {
+      width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 5px;
+    }
+    .dot-green { background: var(--green); box-shadow: 0 0 5px var(--green); }
+    .dot-amber { background: var(--amber); }
+    .dot-red   { background: var(--red); }
+
+    /* ── MAP TAB ───────────────────────────────────── */
+    #admin-map-container {
+      height: calc(100vh - 130px);
+      border-radius: var(--radius); overflow: hidden;
+      border: 1px solid var(--navy-line);
+    }
+    #admin-map { height: 100%; width: 100%; }
+
+    /* ── GEOFENCES TAB ─────────────────────────────── */
+    .zone-card {
+      background: var(--navy-card); border: 1px solid var(--navy-line);
+      border-radius: var(--radius); padding: 16px; margin-bottom: 10px;
+    }
+    .zone-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .zone-color-dot {
+      width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+    }
+    .zone-name { font-size: 15px; font-weight: 700; flex: 1; }
+    .zone-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+    .zone-type-badge {
+      font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 20px;
+      background: rgba(255,255,255,0.05); color: var(--grey-lt); letter-spacing: 1px; text-transform: uppercase;
+    }
+    .zone-card-meta { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+    .zone-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-sm {
+      padding: 6px 14px; border-radius: var(--radius-sm);
+      font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: var(--tr);
+    }
+    .btn-sm-gold { background: var(--gold-dim); border: 1px solid var(--gold-bdr); color: var(--gold); }
+    .btn-sm-ghost { background: rgba(255,255,255,0.04); border: 1px solid var(--navy-line); color: var(--grey-lt); }
+    .btn-sm-red { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: var(--red); }
+    .btn-sm-green { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: var(--green); }
+    .btn-sm:hover { opacity: 0.85; }
+    .events-list { margin-top: 12px; display: none; }
+    .events-list.open { display: block; }
+    .event-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--navy-line);
+      font-size: 12px;
+    }
+    .event-row:last-child { border-bottom: none; }
+    .event-badge {
+      padding: 2px 8px; border-radius: 20px; font-size: 9px; font-weight: 700; flex-shrink: 0;
+    }
+    .ev-entered { background: rgba(16,185,129,0.12); color: var(--green); }
+    .ev-exited  { background: rgba(239,68,68,0.1); color: var(--red); }
+    .leaflet-control-attribution { font-size:9px!important; opacity:0.4; }
+    .leaflet-control-zoom { display:none!important; }
+    .admin-map-tooltip {
+      background: rgba(7,17,28,0.96)!important; border: 1px solid rgba(201,162,39,0.25)!important;
+      color: #F2F4F7!important; border-radius: 8px!important;
+      font-family: 'Space Grotesk',sans-serif!important; font-size:12px!important; font-weight:600!important;
+    }
   </style>
 </head>
 <body>
@@ -358,6 +476,16 @@
     </div>
   </header>
 
+  <!-- ══ TAB NAVIGATION ════════════════════════════ -->
+  <nav class="admin-tabs">
+    <button class="admin-tab active" id="tab-btn-clients"   onclick="switchTab('clients')">👥 Clients</button>
+    <button class="admin-tab"        id="tab-btn-fleet"     onclick="switchTab('fleet')">🚗 Fleet</button>
+    <button class="admin-tab"        id="tab-btn-map"       onclick="switchTab('map')">🗺 Map</button>
+    <button class="admin-tab"        id="tab-btn-geofences" onclick="switchTab('geofences')">🚧 Zones</button>
+  </nav>
+
+  <!-- ══ TAB: CLIENTS ═══════════════════════════════ -->
+  <div id="tab-clients" class="tab-content active">
   <!-- ══ MAIN ════════════════════════════════════════ -->
   <main class="main">
 
@@ -403,6 +531,125 @@
     </div>
 
   </main>
+  </div><!-- /#tab-clients -->
+
+  <!-- ══ TAB: FLEET ═════════════════════════════════ -->
+  <div id="tab-fleet" class="tab-content">
+    <main class="main">
+      <div class="section-header">
+        <h2 class="section-title">Live Fleet</h2>
+        <div class="search-wrap">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="fleet-search" placeholder="Search vehicle..." oninput="filterFleet()">
+        </div>
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active" data-filter="all"     onclick="setFleetFilter('all',this)">All</button>
+        <button class="filter-btn"        data-filter="moving"  onclick="setFleetFilter('moving',this)">● Moving</button>
+        <button class="filter-btn"        data-filter="idle"    onclick="setFleetFilter('idle',this)">● Idle</button>
+        <button class="filter-btn"        data-filter="offline" onclick="setFleetFilter('offline',this)">● Offline</button>
+      </div>
+      <div id="fleet-list">
+        <div class="empty-state"><div class="empty-icon">🚗</div><p class="empty-text">Loading fleet...</p></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ══ TAB: MAP ════════════════════════════════════ -->
+  <div id="tab-map" class="tab-content">
+    <div style="padding:12px 20px 0;display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:11px;color:var(--grey)">
+          <span style="color:var(--green)">●</span> Moving &nbsp;
+          <span style="color:var(--amber)">●</span> Idle &nbsp;
+          <span style="color:var(--red)">●</span> Offline
+        </span>
+      </div>
+      <button class="filter-btn" onclick="centerAdminMap()">⊙ Center All</button>
+    </div>
+    <div style="padding:12px 20px 20px">
+      <div id="admin-map-container"><div id="admin-map"></div></div>
+    </div>
+  </div>
+
+  <!-- ══ TAB: ZONES (GEOFENCES) ═════════════════════ -->
+  <div id="tab-geofences" class="tab-content">
+    <main class="main">
+      <div class="section-header">
+        <h2 class="section-title">Zones</h2>
+        <button class="btn-primary" onclick="openCreateZoneModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Zone
+        </button>
+      </div>
+      <div id="zones-list">
+        <div class="empty-state"><div class="empty-icon">🚧</div><p class="empty-text">Loading zones...</p></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ══ CREATE ZONE MODAL ═══════════════════════════ -->
+  <div class="modal-overlay" id="zone-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Create Zone</h3>
+        <button class="so-close" onclick="closeCreateZoneModal()">✕</button>
+      </div>
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+        <div class="form-group">
+          <label class="form-label">Zone Name *</label>
+          <input class="form-input" id="z-name" type="text" placeholder="e.g. Warehouse Conakry">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select class="form-select" id="z-type" onchange="toggleZoneFields()">
+              <option value="circle">Circle</option>
+              <option value="polygon">Polygon</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Color</label>
+            <select class="form-select" id="z-color">
+              <option value="#C9A227">Gold</option>
+              <option value="#10B981">Green</option>
+              <option value="#EF4444">Red</option>
+              <option value="#3B82F6">Blue</option>
+              <option value="#8B5CF6">Purple</option>
+            </select>
+          </div>
+        </div>
+        <div id="z-circle-fields">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Center Latitude *</label>
+              <input class="form-input" id="z-lat" type="number" step="0.000001" placeholder="9.538000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Center Longitude *</label>
+              <input class="form-input" id="z-lng" type="number" step="0.000001" placeholder="-13.677000">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Radius (metres) *</label>
+            <input class="form-input" id="z-radius" type="number" placeholder="500" min="50">
+          </div>
+          <p style="font-size:11px;color:var(--grey)">💡 Tip: Open the Map tab, find the location you want, and read the coordinates from a vehicle marker popup.</p>
+        </div>
+        <div style="display:flex;gap:16px;align-items:center">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+            <input type="checkbox" id="z-notify-enter" checked style="width:16px;height:16px">
+            Notify on Enter
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+            <input type="checkbox" id="z-notify-exit" style="width:16px;height:16px">
+            Notify on Exit
+          </label>
+        </div>
+        <button class="btn-assign" id="z-create-btn" onclick="createZone()">Create Zone</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ══ CLIENT DETAIL SLIDE-OVER ════════════════════ -->
   <div class="overlay" id="overlay" onclick="closeDetail()"></div>
@@ -490,6 +737,7 @@
     </div>
   </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ══════════════════════════════════════════════════════
 // CONFIG
@@ -979,9 +1227,407 @@ function showToast(msg, type='') {
 }
 
 // ══════════════════════════════════════════════════════
-// INIT
+// TAB SWITCHING
 // ══════════════════════════════════════════════════════
-loadAll();
+function switchTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  document.getElementById(`tab-btn-${name}`).classList.add('active');
+
+  if (name === 'fleet')     loadFleet();
+  if (name === 'map')       { initAdminMap(); loadAdminMap(); }
+  if (name === 'geofences') loadZones();
+}
+
+// ══════════════════════════════════════════════════════
+// FLEET TAB
+// ══════════════════════════════════════════════════════
+let allFleet = [], fleetFilter = 'all';
+
+function getFleetStatus(device) {
+  if (!device.ts) return 'offline';
+  const age = Date.now() - new Date(device.ts).getTime();
+  if (age >= 90000) return 'offline';
+  return device.speed > 3 ? 'moving' : 'idle';
+}
+
+async function loadFleet() {
+  try {
+    // Make sure clients are loaded (need device→client mapping)
+    if (!allClients.length) await loadClients();
+
+    // Build deviceId → client name map
+    const deviceClientMap = {};
+    allClients.forEach(c => {
+      (c.client_devices || []).forEach(d => {
+        deviceClientMap[String(d.traccar_device_id)] = {
+          clientName: c.name,
+          deviceName: d.device_name,
+          plate: d.vehicle_plate
+        };
+      });
+    });
+
+    // Fetch devices + positions
+    const [devRes, posRes] = await Promise.all([
+      fetch(`${BACKEND}/api/vehicles`,          { headers: authHeaders() }),
+      fetch(`${BACKEND}/api/vehicles/positions`, { headers: authHeaders() })
+    ]);
+
+    const devData = await devRes.json();
+    const posData = await posRes.json();
+
+    const posMap = {};
+    (posData.positions || []).forEach(p => { posMap[p.deviceId] = p; });
+
+    allFleet = (devData.devices || []).map(d => {
+      const pos    = posMap[d.id] || {};
+      const info   = deviceClientMap[String(d.id)] || {};
+      return {
+        id:         d.id,
+        name:       info.deviceName || d.name,
+        plate:      info.plate || '',
+        clientName: info.clientName || '—',
+        speed:      Math.round(pos.speed || 0),
+        lat:        pos.latitude,
+        lng:        pos.longitude,
+        ts:         pos.fixTime || null
+      };
+    });
+
+    renderFleet();
+  } catch (err) {
+    document.getElementById('fleet-list').innerHTML =
+      `<div class="empty-state"><div class="empty-icon">⚠️</div><p class="empty-text">${err.message}</p></div>`;
+  }
+}
+
+function renderFleet() {
+  const q      = (document.getElementById('fleet-search')?.value || '').toLowerCase();
+  const list   = document.getElementById('fleet-list');
+  const vehicles = allFleet.filter(v => {
+    if (q && !v.name.toLowerCase().includes(q) && !v.clientName.toLowerCase().includes(q)) return false;
+    if (fleetFilter !== 'all' && getFleetStatus(v) !== fleetFilter) return false;
+    return true;
+  }).sort((a,b) => {
+    const o = { moving:0, idle:1, offline:2 };
+    return (o[getFleetStatus(a)]||2) - (o[getFleetStatus(b)]||2);
+  });
+
+  if (!vehicles.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><p class="empty-text">No vehicles match.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = vehicles.map(v => {
+    const status = getFleetStatus(v);
+    const dotCls = status === 'moving' ? 'dot-green' : status === 'idle' ? 'dot-amber' : 'dot-red';
+    const label  = status === 'moving' ? `Moving · ${v.speed} km/h` : status === 'idle' ? 'Parked' : 'Offline';
+    const ts     = v.ts ? new Date(v.ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '—';
+    return `
+      <div class="fleet-card fc-${status}">
+        <div class="fleet-card-top">
+          <div>
+            <div class="fleet-veh-name">${escHtml(v.name)}</div>
+            ${v.plate ? `<div style="font-size:11px;color:var(--grey);margin-top:2px">${escHtml(v.plate)}</div>` : ''}
+          </div>
+          <span class="fleet-client-tag">${escHtml(v.clientName)}</span>
+        </div>
+        <div class="fleet-card-meta">
+          <div class="fleet-meta-item">
+            <span class="fleet-meta-lbl">Status</span>
+            <span class="fleet-meta-val"><span class="fleet-status-dot ${dotCls}"></span>${label}</span>
+          </div>
+          <div class="fleet-meta-item">
+            <span class="fleet-meta-lbl">Speed</span>
+            <span class="fleet-meta-val">${v.speed} km/h</span>
+          </div>
+          <div class="fleet-meta-item">
+            <span class="fleet-meta-lbl">Last Update</span>
+            <span class="fleet-meta-val">${ts}</span>
+          </div>
+          ${v.lat ? `<div class="fleet-meta-item">
+            <span class="fleet-meta-lbl">Coords</span>
+            <span class="fleet-meta-val" style="font-family:'JetBrains Mono',monospace;font-size:10px">${Number(v.lat).toFixed(4)}, ${Number(v.lng).toFixed(4)}</span>
+          </div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function filterFleet() { renderFleet(); }
+
+function setFleetFilter(f, btn) {
+  fleetFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFleet();
+}
+
+// ══════════════════════════════════════════════════════
+// MAP TAB
+// ══════════════════════════════════════════════════════
+let adminMap = null, adminMarkers = {}, adminGeofenceLayers = {};
+
+function initAdminMap() {
+  if (adminMap) return; // already initialised
+  adminMap = L.map('admin-map', { zoomControl: false })
+    .setView([9.538, -13.677], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '© OpenStreetMap', subdomains: 'abc'
+  }).addTo(adminMap);
+}
+
+function vehicleColorByStatus(status, speed) {
+  if (speed > 3)             return '#10B981';
+  if (status !== 'offline')  return '#F59E0B';
+  return '#EF4444';
+}
+
+async function loadAdminMap() {
+  if (!adminMap) return;
+  setTimeout(() => adminMap.invalidateSize(), 50);
+
+  try {
+    // Load positions
+    if (!allFleet.length) await loadFleet();
+
+    // Clear existing markers
+    Object.values(adminMarkers).forEach(m => adminMap.removeLayer(m));
+    adminMarkers = {};
+
+    const locs = [];
+    allFleet.forEach(v => {
+      if (!v.lat || !v.lng) return;
+      const status = getFleetStatus(v);
+      const color  = vehicleColorByStatus(status, v.speed);
+      const size   = 34;
+      const icon   = L.divIcon({
+        className: '',
+        html: `<div style="width:${size}px;height:${size}px;background:#fff;border:2.5px solid ${color};border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.3)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="${color}">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+          </svg>
+        </div>`,
+        iconSize: [size,size], iconAnchor: [size/2,size/2]
+      });
+
+      const label = `${v.speed > 3 ? `Moving · ${v.speed} km/h` : status === 'offline' ? 'Offline' : 'Parked'} | ${v.clientName}`;
+      const m = L.marker([v.lat, v.lng], {icon}).addTo(adminMap);
+      m.bindTooltip(`<strong>${v.name}</strong><br>${label}`, { className: 'admin-map-tooltip' });
+      adminMarkers[v.id] = m;
+      locs.push([v.lat, v.lng]);
+    });
+
+    if (locs.length > 1) adminMap.fitBounds(locs, { maxZoom: 14, padding: [40,40] });
+    else if (locs.length === 1) adminMap.setView(locs[0], 15);
+
+    // Load geofence overlays
+    Object.values(adminGeofenceLayers).forEach(l => adminMap.removeLayer(l));
+    adminGeofenceLayers = {};
+    const gRes  = await fetch(`${BACKEND}/api/geofences`, { headers: authHeaders() });
+    const gData = await gRes.json();
+    (gData.geofences || []).forEach(fence => {
+      if (!fence.active) return;
+      const color = fence.color || '#C9A227';
+      let layer;
+      if (fence.type === 'circle' && fence.center_lat)
+        layer = L.circle([fence.center_lat,fence.center_lng], { radius:fence.radius_m, color, fillColor:color, fillOpacity:0.08, weight:2, dashArray:'6 4' });
+      else if (fence.type === 'polygon' && fence.coordinates?.length)
+        layer = L.polygon(fence.coordinates.map(([lng,lat])=>[lat,lng]), { color, fillColor:color, fillOpacity:0.08, weight:2, dashArray:'6 4' });
+      if (layer) {
+        layer.bindTooltip(`<strong>${fence.name}</strong>`, { className:'admin-map-tooltip' });
+        layer.addTo(adminMap);
+        adminGeofenceLayers[fence.id] = layer;
+      }
+    });
+  } catch {}
+}
+
+function centerAdminMap() {
+  const locs = allFleet.filter(v=>v.lat&&v.lng).map(v=>[v.lat,v.lng]);
+  if (!locs.length || !adminMap) return;
+  if (locs.length === 1) adminMap.setView(locs[0], 15, {animate:true});
+  else adminMap.fitBounds(locs, {maxZoom:14, padding:[40,40]});
+}
+
+// ══════════════════════════════════════════════════════
+// GEOFENCES (ZONES) TAB
+// ══════════════════════════════════════════════════════
+let allZones = [];
+
+async function loadZones() {
+  try {
+    const [zRes, evRes] = await Promise.all([
+      fetch(`${BACKEND}/api/geofences`,               { headers: authHeaders() }),
+      fetch(`${BACKEND}/api/geofences/events/recent`, { headers: authHeaders() })
+    ]);
+    const zData  = await zRes.json();
+    const evData = await evRes.json();
+
+    // Count events per geofence
+    const evCount = {};
+    (evData.events || []).forEach(e => {
+      evCount[e.geofence_id] = (evCount[e.geofence_id] || 0) + 1;
+    });
+
+    allZones = (zData.geofences || []).map(z => ({ ...z, eventCount: evCount[z.id] || 0 }));
+    renderZones(evData.events || []);
+  } catch (err) {
+    document.getElementById('zones-list').innerHTML =
+      `<div class="empty-state"><div class="empty-icon">⚠️</div><p class="empty-text">${err.message}</p></div>`;
+  }
+}
+
+function renderZones(recentEvents) {
+  const list = document.getElementById('zones-list');
+  if (!allZones.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🚧</div><p class="empty-text">No zones yet.<br>Create your first zone to start geofencing.</p></div>`;
+    return;
+  }
+
+  // Build events map by geofence_id
+  const evMap = {};
+  recentEvents.forEach(e => {
+    if (!evMap[e.geofence_id]) evMap[e.geofence_id] = [];
+    evMap[e.geofence_id].push(e);
+  });
+
+  list.innerHTML = allZones.map(z => {
+    const devCount = (z.geofence_devices || []).length;
+    const evList   = (evMap[z.id] || []).slice(0,5).map(e => `
+      <div class="event-row">
+        <span class="event-badge ${e.event_type === 'entered' ? 'ev-entered' : 'ev-exited'}">
+          ${e.event_type === 'entered' ? 'ENTERED' : 'EXITED'}
+        </span>
+        <span style="flex:1">${escHtml(e.device_name || `Device ${e.traccar_device_id}`)}</span>
+        <span style="color:var(--grey);font-size:10px;font-family:'JetBrains Mono',monospace">
+          ${new Date(e.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
+        </span>
+      </div>`).join('');
+
+    return `
+      <div class="zone-card">
+        <div class="zone-card-top">
+          <div class="zone-color-dot" style="background:${z.color||'#C9A227'}"></div>
+          <span class="zone-name">${escHtml(z.name)}</span>
+          <div class="zone-badges">
+            <span class="zone-type-badge">${z.type}</span>
+            ${z.active
+              ? '<span class="zone-type-badge" style="color:var(--green)">ACTIVE</span>'
+              : '<span class="zone-type-badge" style="color:var(--red)">INACTIVE</span>'}
+          </div>
+        </div>
+        <div class="zone-card-meta">
+          <div class="fleet-meta-item">
+            <span class="fleet-meta-lbl">Devices</span>
+            <span class="fleet-meta-val">${devCount}</span>
+          </div>
+          <div class="fleet-meta-item">
+            <span class="fleet-meta-lbl">Recent Events</span>
+            <span class="fleet-meta-val">${z.eventCount}</span>
+          </div>
+          ${z.type === 'circle' && z.radius_m ? `<div class="fleet-meta-item">
+            <span class="fleet-meta-lbl">Radius</span>
+            <span class="fleet-meta-val">${z.radius_m}m</span>
+          </div>` : ''}
+          <div class="fleet-meta-item">
+            <span class="fleet-meta-lbl">Notify</span>
+            <span class="fleet-meta-val">${z.notify_enter ? 'Enter' : ''}${z.notify_enter && z.notify_exit ? ' + ' : ''}${z.notify_exit ? 'Exit' : ''}${!z.notify_enter && !z.notify_exit ? 'Off' : ''}</span>
+          </div>
+        </div>
+        <div class="zone-card-actions">
+          <button class="btn-sm btn-sm-gold" onclick="assignDeviceToZone('${z.id}','${escHtml(z.name)}')">+ Assign Device</button>
+          <button class="btn-sm btn-sm-ghost" onclick="toggleZoneEvents('${z.id}')">📋 Events ${z.eventCount > 0 ? `(${z.eventCount})` : ''}</button>
+          <button class="btn-sm ${z.active ? 'btn-sm-red' : 'btn-sm-green'}" onclick="toggleZoneActive('${z.id}',${z.active})">
+            ${z.active ? 'Deactivate' : 'Activate'}
+          </button>
+        </div>
+        <div class="events-list" id="evlist-${z.id}">
+          ${evList || '<div style="font-size:12px;color:var(--grey);padding:8px 0">No recent events</div>'}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleZoneEvents(zoneId) {
+  const el = document.getElementById(`evlist-${zoneId}`);
+  if (el) el.classList.toggle('open');
+}
+
+async function toggleZoneActive(zoneId, currentlyActive) {
+  try {
+    const res  = await fetch(`${BACKEND}/api/geofences/${zoneId}`, {
+      method: 'PUT', headers: authHeaders(),
+      body: JSON.stringify({ active: !currentlyActive })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    showToast(`Zone ${currentlyActive ? 'deactivated' : 'activated'} ✅`, 'success');
+    loadZones();
+  } catch (err) { showToast(err.message, 'error'); }
+}
+
+async function assignDeviceToZone(zoneId, zoneName) {
+  if (!traccarDevices.length) await loadTraccarDevices();
+  const options = traccarDevices.map(d => `${d.name} (ID: ${d.id})`).join('\n');
+  const input   = prompt(`Assign device to zone "${zoneName}"\n\nAvailable devices:\n${options}\n\nEnter Traccar Device ID:`);
+  if (!input) return;
+  try {
+    const res  = await fetch(`${BACKEND}/api/geofences/${zoneId}/devices`, {
+      method: 'POST', headers: authHeaders(),
+      body: JSON.stringify({ traccar_device_id: input.trim() })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    showToast('Device assigned to zone ✅', 'success');
+    loadZones();
+  } catch (err) { showToast(err.message, 'error'); }
+}
+
+// ── CREATE ZONE MODAL ─────────────────────────────────
+function openCreateZoneModal()  { document.getElementById('zone-modal').classList.add('show'); }
+function closeCreateZoneModal() { document.getElementById('zone-modal').classList.remove('show'); }
+
+function toggleZoneFields() {
+  const type = document.getElementById('z-type').value;
+  document.getElementById('z-circle-fields').style.display = type === 'circle' ? 'block' : 'none';
+}
+
+async function createZone() {
+  const name   = document.getElementById('z-name').value.trim();
+  const type   = document.getElementById('z-type').value;
+  const color  = document.getElementById('z-color').value;
+  const enter  = document.getElementById('z-notify-enter').checked;
+  const exit   = document.getElementById('z-notify-exit').checked;
+  const btn    = document.getElementById('z-create-btn');
+
+  if (!name) { showToast('Zone name is required', 'error'); return; }
+
+  const body = { name, type, color, notify_enter: enter, notify_exit: exit };
+
+  if (type === 'circle') {
+    const lat    = parseFloat(document.getElementById('z-lat').value);
+    const lng    = parseFloat(document.getElementById('z-lng').value);
+    const radius = parseInt(document.getElementById('z-radius').value);
+    if (!lat || !lng || !radius) { showToast('Lat, Lng and Radius required for circle', 'error'); return; }
+    body.center_lat = lat; body.center_lng = lng; body.radius_m = radius;
+  }
+
+  btn.disabled = true; btn.textContent = 'Creating...';
+  try {
+    const res  = await fetch(`${BACKEND}/api/geofences`, {
+      method: 'POST', headers: authHeaders(), body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    showToast(`Zone "${name}" created ✅`, 'success');
+    closeCreateZoneModal();
+    loadZones();
+  } catch (err) { showToast(err.message, 'error'); }
+  finally { btn.disabled = false; btn.textContent = 'Create Zone'; }
+}
 </script>
 </body>
 </html>
