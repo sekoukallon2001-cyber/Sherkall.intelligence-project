@@ -7,7 +7,8 @@
 // At 20 vehicles × 3 pushes/sec = 60 potential renders
 // reduced to only changed vehicles.
 
-import { vehicleStore, selectedId, CONFIG } from '../state.js';
+import { vehicleStore, selectedId } from '../state.js';
+import { CONFIG }                   from '../config.js';
 
 // Track last render state per vehicle to detect changes
 const renderCache = new Map(); // vehicleId → hash string
