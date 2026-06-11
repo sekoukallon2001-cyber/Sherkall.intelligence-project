@@ -3,7 +3,8 @@
 // js/ui/sheet.js
 // =====================================================
 
-import { vehicleStore, selectedId, CONFIG } from '../state.js';
+import { vehicleStore, selectedId } from '../state.js';
+import { CONFIG }                   from '../config.js';
 
 export function openSheet(id) {
   document.getElementById('vehicle-sheet')?.classList.add('open');
