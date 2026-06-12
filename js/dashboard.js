@@ -75,8 +75,8 @@ async function loadAll() {
 let currentView = 'map';
 function switchView(name) {
   currentView = name;
-  document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(`view-${name}`)?.classList.add('active');
   document.getElementById(`nav-${name}`)?.classList.add('active');
   if (name === 'alerts') renderAlertsFeed();
