@@ -2,45 +2,57 @@
 // SHERKALL INTELLIGENCE — AUTH MODULE
 // js/auth.js
 // =====================================================
-// Handles token read/write across sessionStorage and
-// localStorage. sessionStorage is tab-specific — prevents
-// cross-tab session contamination in multi-tenant use.
+// sessionStorage = single source of truth per tab.
+// localStorage = persistence only (new tab initial sync).
+// No mixing. No fallback contamination.
 
-// ── READ ─────────────────────────────────────────────
-// sessionStorage takes priority (tab-specific session).
-// Falls back to localStorage (persisted across tabs).
+// ── SYNC ──────────────────────────────────────────────
+// Called once per tab on first access.
+// If this tab has no session yet, copies from localStorage.
+// After this, sessionStorage is the only thing read.
+function ensureSession() {
+  if (!sessionStorage.getItem('sherkall_token')) {
+    const t = localStorage.getItem('sherkall_token');
+    const u = localStorage.getItem('sherkall_user');
+    if (t && u) {
+      sessionStorage.setItem('sherkall_token', t);
+      sessionStorage.setItem('sherkall_user',  u);
+    }
+  }
+}
+
+// ── READ — sessionStorage only after sync ─────────────
 export function getToken() {
-  return sessionStorage.getItem('sherkall_token')
-      || localStorage.getItem('sherkall_token');
+  ensureSession();
+  return sessionStorage.getItem('sherkall_token');
 }
 
 export function getUser() {
-  const raw = sessionStorage.getItem('sherkall_user')
-           || localStorage.getItem('sherkall_user');
-  try { return JSON.parse(raw); } catch { return null; }
+  ensureSession();
+  const raw = sessionStorage.getItem('sherkall_user');
+  try { return raw ? JSON.parse(raw) : null; } catch { return null; }
 }
 
 // ── WRITE ─────────────────────────────────────────────
-// Stored in both on login so each tab has its own copy.
 export function setSession(token, user) {
   const userStr = JSON.stringify(user);
-  localStorage.setItem('sherkall_token', token);
-  localStorage.setItem('sherkall_user',  userStr);
   sessionStorage.setItem('sherkall_token', token);
   sessionStorage.setItem('sherkall_user',  userStr);
+  localStorage.setItem('sherkall_token',   token);
+  localStorage.setItem('sherkall_user',    userStr);
 }
 
 // ── CLEAR ─────────────────────────────────────────────
 export function clearSession() {
   ['sherkall_token', 'sherkall_user'].forEach(k => {
-    localStorage.removeItem(k);
     sessionStorage.removeItem(k);
+    localStorage.removeItem(k);
   });
 }
 
-// ── GUARD ─────────────────────────────────────────────
-// Called on page load. Redirects if not authenticated
-// or if wrong role for this page.
+// ── ROLE GUARD ────────────────────────────────────────
+// Both token and user come from sessionStorage only.
+// No localStorage fallback — no cross-tab contamination.
 export function requireRole(expectedRole) {
   const token = getToken();
   const user  = getUser();
@@ -50,24 +62,15 @@ export function requireRole(expectedRole) {
     return null;
   }
 
-  // Detect cross-tab contamination: sessionStorage has the
-  // correct tab-specific role; localStorage may have been
-  // overwritten by another tab logging in as different role.
-  const sessionUser = (() => {
-    try { return JSON.parse(sessionStorage.getItem('sherkall_user')); } catch { return null; }
-  })();
-
-  // If session says admin but we're on client dashboard → redirect
-  if (expectedRole === 'client' && sessionUser?.role === 'admin') {
+  if (expectedRole === 'client' && user.role === 'admin') {
     window.location.href = '/admin.html';
     return null;
   }
 
-  // If session says client but we're on admin panel → redirect
-  if (expectedRole === 'admin' && sessionUser?.role !== 'admin') {
+  if (expectedRole === 'admin' && user.role !== 'admin') {
     window.location.href = '/login.html';
     return null;
   }
 
-  return { token: getToken(), user: sessionUser || user };
+  return { token, user }; // both from sessionStorage — single source, no mixing
 }
