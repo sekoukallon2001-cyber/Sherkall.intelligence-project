@@ -74,8 +74,8 @@
 
     <!-- Zoom controls -->
     <div class="map-zoom-ctrl">
-      <button class="zoom-btn" onclick="map.zoomIn()">+</button>
-      <button class="zoom-btn zoom-minus" onclick="map.zoomOut()">−</button>
+      <button class="zoom-btn" onclick="zoomIn()">+</button>
+      <button class="zoom-btn zoom-minus" onclick="zoomOut()">−</button>
       <button class="zoom-btn zoom-center" onclick="centerAll()">⊙</button>
     </div>
 
@@ -274,6 +274,7 @@
 </div><!-- /#app -->
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
 <script type="module" src="/js/dashboard.js"></script>
 </body>
 </html>
