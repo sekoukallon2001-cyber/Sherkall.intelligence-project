@@ -6,7 +6,7 @@
 // No logic lives here — only coordination.
 
 import { requireRole, clearSession } from './auth.js';
-import { fetchVehicles, fetchGeofences } from './api.js';
+import { fetchVehicles, fetchPositions, fetchGeofences } from './api.js';
 import { vehicleStore, selectedId, setSelectedId, loadVehicles, onUpdate } from './state.js';
 import { initRealtime, stopRealtime } from './realtime.js';
 import { initMap, setMapLayer, updateMarker, updateAllMarkers, centerVehicle, centerAll, renderGeofences, flashGeofence } from './map.js';
@@ -24,17 +24,18 @@ const { token, user } = session;
 function applyUserInfo() {
   const name  = user?.name  || 'Client';
   const email = user?.email || '—';
-  const plan  = user?.plan  || 'basic';
-  const el = document.getElementById('profile-name');
-  const em = document.getElementById('profile-email');
-  const pl = document.getElementById('profile-plan');
-  const av = document.getElementById('profile-avatar');
-  if (el) el.textContent = name;
-  if (em) em.textContent = email;
-  if (pl) pl.textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
-  if (av) av.textContent = name.charAt(0).toUpperCase();
-  const connName = document.getElementById('conn-user-name');
-  if (connName) connName.textContent = name.charAt(0).toUpperCase();
+
+  // Profile section
+  const profName   = document.getElementById('profile-name');
+  const profEmail  = document.getElementById('profile-email');
+  const profAvatar = document.getElementById('profile-avatar');
+  if (profName)   profName.textContent   = name;
+  if (profEmail)  profEmail.textContent  = email;
+  if (profAvatar) profAvatar.textContent = name.charAt(0).toUpperCase();
+
+  // Topbar avatar — actual element ID is account-avatar (not conn-user-name)
+  const topAvatar = document.getElementById('account-avatar');
+  if (topAvatar) topAvatar.textContent = name.charAt(0).toUpperCase();
 }
 
 // ── STATE SUBSCRIBERS ─────────────────────────────────
@@ -54,18 +55,28 @@ onUpdate(() => {
 // ── LOAD DATA ─────────────────────────────────────────
 async function loadAll() {
   try {
-    const [devData, geoData] = await Promise.all([
+    const [devData, posData, geoData] = await Promise.all([
       fetchVehicles(),
+      fetchPositions(),
       fetchGeofences()
     ]);
+
     if (devData.success) {
       loadVehicles(devData.devices || []);
-      renderVehicleList();
-      updateAllKPIs();
     }
+
+    // Process positions immediately — populates lat/lon so markers appear on map
+    if (posData.success) {
+      processPositions(posData.positions || []);
+    }
+
     if (geoData.success) {
       renderGeofences(geoData.geofences || []);
     }
+
+    renderVehicleList();
+    updateAllKPIs();
+
   } catch (err) {
     console.error('loadAll:', err);
   }
