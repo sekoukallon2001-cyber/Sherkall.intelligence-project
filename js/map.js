@@ -4,7 +4,7 @@
 // =====================================================
 
 import { TILE_LAYERS, CONFIG } from './config.js';
-import { vehicleStore, selectedId, getVehicleStatus } from './state.js';
+import { vehicleStore, selectedId } from './state.js';
 
 let map       = null;
 let tileLayer = null;
@@ -22,6 +22,7 @@ export function initMap() {
 }
 
 export function setMapLayer(type, btn) {
+  if (!map) return;
   if (tileLayer) map.removeLayer(tileLayer);
   const layer = TILE_LAYERS[type];
   if (!layer) return;
@@ -96,7 +97,16 @@ export function centerAll() {
 }
 
 // ── GEOFENCES ─────────────────────────────────────────
+// Queue prevents geofences being silently dropped when
+// renderGeofences is called before initMap completes.
+let pendingGeofences = null;
+
 export function renderGeofences(geofences) {
+  if (!map) {
+    pendingGeofences = geofences; // queue — don't discard
+    return;
+  }
+  pendingGeofences = null;
   Object.values(geofenceLayers).forEach(l => map.removeLayer(l));
   geofenceLayers = {};
   (geofences || []).forEach(fence => {
@@ -119,6 +129,11 @@ export function renderGeofences(geofences) {
       geofenceLayers[fence.id] = layer;
     }
   });
+}
+
+// Called from dashboard.js after initMap() to flush any queued geofences
+export function flushPendingGeofences() {
+  if (pendingGeofences && map) renderGeofences(pendingGeofences);
 }
 
 export function flashGeofence(geofenceId, eventType) {
