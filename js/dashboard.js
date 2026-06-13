@@ -7,9 +7,9 @@
 
 import { requireRole, clearSession } from './auth.js';
 import { fetchVehicles, fetchPositions, fetchGeofences } from './api.js';
-import { vehicleStore, selectedId, setSelectedId, loadVehicles, onUpdate } from './state.js';
+import { vehicleStore, selectedId, setSelectedId, loadVehicles, processPositions, onUpdate } from './state.js';
 import { initRealtime, stopRealtime } from './realtime.js';
-import { initMap, setMapLayer, updateMarker, updateAllMarkers, centerVehicle, centerAll, renderGeofences, flashGeofence } from './map.js';
+import { initMap, setMapLayer, updateMarker, updateAllMarkers, centerVehicle, centerAll, renderGeofences, flashGeofence, flushPendingGeofences } from './map.js';
 import { renderVehicleList } from './ui/vehicleList.js';
 import { openSheet, closeSheet, refreshSheet } from './ui/sheet.js';
 import { renderAlertsFeed, handleGeofenceAlert, showToast } from './ui/alerts.js';
@@ -61,15 +61,17 @@ async function loadAll() {
       fetchGeofences()
     ]);
 
+    // Load vehicles FIRST — creates vehicleStore entries
     if (devData.success) {
       loadVehicles(devData.devices || []);
     }
 
-    // Process positions immediately — populates lat/lon so markers appear on map
+    // Process positions AFTER vehicles exist in store
     if (posData.success) {
       processPositions(posData.positions || []);
     }
 
+    // Render geofences — queued internally if map not ready yet
     if (geoData.success) {
       renderGeofences(geoData.geofences || []);
     }
@@ -155,6 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ?.addEventListener('click', closeSheet);
 
   initMap();
+  flushPendingGeofences(); // render any geofences that loaded before map was ready
   loadAll();
 
   initRealtime({
