@@ -14,7 +14,14 @@ export let geofenceLayers = {};
 // ── INIT ──────────────────────────────────────────────
 export function initMap() {
   map = L.map('map', {
-    zoomControl: false, attributionControl: true
+    zoomControl:       false,
+    attributionControl: true,
+    tap:               false,  // prevent Leaflet eating mobile touch events
+    touchZoom:         true,
+    scrollWheelZoom:   false,
+    rotate:            true,   // enable bearing/rotation
+    touchRotate:       true,   // two-finger rotate gesture on mobile
+    bearing:           0
   }).setView([9.538, -13.677], 12);
 
   const layer = TILE_LAYERS.street;
@@ -95,6 +102,11 @@ export function centerAll() {
   if (locs.length === 1) map.setView(locs[0], 15, { animate: true });
   else map.fitBounds(locs, { maxZoom: 15, padding: [40, 40] });
 }
+
+// ── ZOOM CONTROLS ─────────────────────────────────────
+// Exposed via window in dashboard.js so HTML onclick works
+export function zoomIn()  { if (map) map.zoomIn(); }
+export function zoomOut() { if (map) map.zoomOut(); }
 
 // ── GEOFENCES ─────────────────────────────────────────
 // Queue prevents geofences being silently dropped when
