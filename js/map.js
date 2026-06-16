@@ -158,4 +158,5 @@ export function flashGeofence(geofenceId, eventType) {
   setTimeout(() => layer.setStyle({ color: layer._color || '#C9A227', weight: 2 }), 2000);
 }
 
+export function getMap() { return map; }
 export { map };
