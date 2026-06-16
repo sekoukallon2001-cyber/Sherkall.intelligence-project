@@ -7,9 +7,9 @@
 
 import { requireRole, clearSession } from './auth.js';
 import { fetchVehicles, fetchPositions, fetchGeofences } from './api.js';
-import { vehicleStore, selectedId, setSelectedId, loadVehicles, processPositions, onUpdate } from './state.js';
+import { vehicleStore, selectedId, setSelectedId, loadVehicles, processPositions, onUpdate, resetStore } from './state.js';
 import { initRealtime, stopRealtime } from './realtime.js';
-import { initMap, setMapLayer, updateMarker, updateAllMarkers, centerVehicle, centerAll, renderGeofences, flashGeofence, flushPendingGeofences, zoomIn, zoomOut } from './map.js';
+import { initMap, getMap, setMapLayer, updateMarker, updateAllMarkers, centerVehicle, centerAll, renderGeofences, flashGeofence, flushPendingGeofences, zoomIn, zoomOut } from './map.js';
 import { renderVehicleList } from './ui/vehicleList.js';
 import { openSheet, closeSheet, refreshSheet } from './ui/sheet.js';
 import { renderAlertsFeed, handleGeofenceAlert, showToast } from './ui/alerts.js';
@@ -95,8 +95,8 @@ function switchView(name) {
   if (name === 'alerts') renderAlertsFeed();
   // Recalculate map size when map view becomes visible
   // Leaflet needs this because the container may have had zero height on init
-  if (name === 'map' && map) {
-    setTimeout(() => map.invalidateSize({ animate: false }), 50);
+  if (name === 'map') {
+    setTimeout(() => getMap()?.invalidateSize({ animate: false }), 50);
   }
 }
 
@@ -119,6 +119,7 @@ function locateVehicleOnMap(id) {
 // ── LOGOUT ────────────────────────────────────────────
 function logout() {
   stopRealtime();
+  resetStore();
   clearSession();
   window.location.href = '/login.html';
 }
