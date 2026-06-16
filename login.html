@@ -467,6 +467,8 @@
           if (isAdmin && !onAdminTab) {
             localStorage.removeItem('sherkall_token');
             localStorage.removeItem('sherkall_user');
+            sessionStorage.removeItem('sherkall_token');
+            sessionStorage.removeItem('sherkall_user');
             showError('Admin account detected. Please use the Admin tab.');
             btn.disabled = false;
             btn.innerHTML = 'Se connecter';
@@ -476,6 +478,8 @@
           if (!isAdmin && onAdminTab) {
             localStorage.removeItem('sherkall_token');
             localStorage.removeItem('sherkall_user');
+            sessionStorage.removeItem('sherkall_token');
+            sessionStorage.removeItem('sherkall_user');
             showError('This tab is for admin accounts only.');
             btn.disabled = false;
             btn.innerHTML = 'Se connecter';
