@@ -14,6 +14,12 @@ export let selectedId   = null;
 
 export function setSelectedId(id) { selectedId = id; }
 
+export function resetStore() {
+  vehicleStore = {};
+  selectedId   = null;
+  subscribers.length = 0;
+}
+
 // ── SUBSCRIBERS ───────────────────────────────────────
 // UI modules subscribe here instead of being called directly.
 // Keeps state module decoupled from all UI modules.
