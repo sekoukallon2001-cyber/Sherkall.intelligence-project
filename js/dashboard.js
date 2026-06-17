@@ -14,6 +14,7 @@ import { renderVehicleList } from './ui/vehicleList.js';
 import { openSheet, closeSheet, refreshSheet } from './ui/sheet.js';
 import { renderAlertsFeed, handleGeofenceAlert, showToast } from './ui/alerts.js';
 import { updateAllKPIs, setConnected } from './ui/stats.js';
+import { loadEntitlements, clearEntitlements, canUse, getPlan, upgradeMessage } from './entitlements.js';
 
 // ── AUTH GUARD ────────────────────────────────────────
 const session = requireRole('client');
@@ -36,6 +37,13 @@ function applyUserInfo() {
   // Topbar avatar — actual element ID is account-avatar (not conn-user-name)
   const topAvatar = document.getElementById('account-avatar');
   if (topAvatar) topAvatar.textContent = name.charAt(0).toUpperCase();
+
+  // Plan badge in profile (if element exists)
+  const plan = getPlan();
+  const planEl = document.getElementById('profile-plan-badge');
+  if (planEl && plan.name) {
+    planEl.textContent = plan.name.charAt(0).toUpperCase() + plan.name.slice(1);
+  }
 }
 
 // ── STATE SUBSCRIBERS ─────────────────────────────────
@@ -71,9 +79,11 @@ async function loadAll() {
       processPositions(posData.positions || []);
     }
 
-    // Render geofences — queued internally if map not ready yet
+    // Render geofences — only if plan includes this feature
     if (geoData.success) {
-      renderGeofences(geoData.geofences || []);
+      if (canUse('geofencing')) {
+        renderGeofences(geoData.geofences || []);
+      }
     }
 
     renderVehicleList();
@@ -120,6 +130,7 @@ function locateVehicleOnMap(id) {
 function logout() {
   stopRealtime();
   resetStore();
+  clearEntitlements();
   clearSession();
   window.location.href = '/login.html';
 }
@@ -137,11 +148,15 @@ Object.assign(window, {
   centerAll, centerVehicle: locateVehicleOnMap,
   selectVehicle, locateVehicleOnMap,
   openHistory, contactSupport, reportAlert, refreshAll,
-  zoomIn, zoomOut  // needed by HTML onclick="zoomIn()" / "zoomOut()"
+  zoomIn, zoomOut,
+  canUse, upgradeMessage
 });
 
 // ── INIT ──────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Load entitlements first — all feature gates depend on this
+  await loadEntitlements();
+
   applyUserInfo();
 
   const vf = document.getElementById('vehicle-filter');
