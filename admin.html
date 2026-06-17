@@ -300,9 +300,15 @@ function testClients() {
   const token = sessionStorage.getItem('sherkall_token') || localStorage.getItem('sherkall_token');
   fetch('https://sherkall-backend-production.up.railway.app/api/admin/clients',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()).then(d=>{const list=d.clients?.map(c=>c.id+' | '+c.name+' | '+c.email);alert(list?.join('\n')||JSON.stringify(d));});
 }
-</script>
-<button onclick="testPlans()" style="position:fixed;top:10px;right:10px;z-index:9999;background:gold;color:black;padding:10px;border:none;border-radius:8px;font-weight:bold;">Test Plans API</button>
-<button onclick="testClients()" style="position:fixed;top:60px;right:10px;z-index:9999;background:dodgerblue;color:white;padding:10px;border:none;border-radius:8px;font-weight:bold;">Get Client IDs</button>
+<script>
+function testPlans() {
+  const token = sessionStorage.getItem('sherkall_token') || localStorage.getItem('sherkall_token');
+  fetch('https://sherkall-backend-production.up.railway.app/api/plans',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()).then(d=>alert(JSON.stringify(d,null,2)));
+}
+function testClients() {
+  const token = sessionStorage.getItem('sherkall_token') || localStorage.getItem('sherkall_token');
+  fetch('https://sherkall-backend-production.up.railway.app/api/admin/clients',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()).then(d=>{const list=d.clients?.map(c=>c.id+' | '+c.name+' | '+c.email);alert(list?.join('\n')||JSON.stringify(d));});
+}
 </script>
 <button onclick="testPlans()" style="position:fixed;top:10px;right:10px;z-index:9999;background:gold;color:black;padding:10px;border:none;border-radius:8px;font-weight:bold;">Test Plans API</button>
 <button onclick="testClients()" style="position:fixed;top:60px;right:10px;z-index:9999;background:dodgerblue;color:white;padding:10px;border:none;border-radius:8px;font-weight:bold;">Get Client IDs</button>
