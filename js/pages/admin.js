@@ -40,12 +40,21 @@ function logout() {
 let allClients     = [];
 let traccarDevices = [];
 let selectedClient = null;
+let allPlans       = [];
 
 // ══════════════════════════════════════════════════════
 // LOAD DATA
 // ══════════════════════════════════════════════════════
 async function loadAll() {
-  await Promise.all([loadOverview(), loadClients(), loadTraccarDevices()]);
+  await Promise.all([loadOverview(), loadClients(), loadTraccarDevices(), loadPlans()]);
+}
+
+async function loadPlans() {
+  try {
+    const res  = await fetch(`${BACKEND}/api/plans`, { headers: authHeaders() });
+    const data = await res.json();
+    if (data.success) allPlans = data.plans || [];
+  } catch {}
 }
 
 async function loadOverview() {
@@ -294,6 +303,62 @@ function renderDetail() {
 
     <div class="divider"></div>
 
+    <!-- Plan Assignment -->
+    <div class="so-section" style="margin-top:20px">
+      <p class="so-section-title">Subscription Plan</p>
+      ${(() => {
+        const ent = c.client_entitlements?.[0];
+        const currentPlan = ent?.plan_name || c.plan || null;
+        const currentFee  = ent?.monthly_fee || null;
+        const planOptions = allPlans.map(p =>
+          `<option value="${p.id}" ${currentPlan === p.name ? 'selected' : ''}>
+            ${escHtml(p.display_name)} — ${Number(p.price_gnf).toLocaleString()} GNF
+            ${p.max_devices === null ? '(Unlimited devices)' : `(Max ${p.max_devices} device${p.max_devices > 1 ? 's' : ''})`}
+          </option>`
+        ).join('');
+        return `
+        ${currentPlan ? `
+        <div class="info-grid" style="margin-bottom:12px">
+          <div class="info-item">
+            <span class="info-label">Current Plan</span>
+            <span class="info-value" style="color:var(--gold)">${currentPlan.toUpperCase()}</span>
+          </div>
+          ${currentFee ? `<div class="info-item">
+            <span class="info-label">Monthly Fee</span>
+            <span class="info-value">${Number(currentFee).toLocaleString()} GNF</span>
+          </div>` : ''}
+          ${ent?.max_devices !== undefined ? `<div class="info-item">
+            <span class="info-label">Device Limit</span>
+            <span class="info-value">${ent.max_devices === null ? 'Unlimited' : ent.max_devices}</span>
+          </div>` : ''}
+        </div>` : '<p style="font-size:12px;color:var(--amber);margin-bottom:12px">⚠ No plan assigned yet</p>'}
+        <div class="assign-form">
+          <div class="form-group">
+            <label class="form-label">Select Plan</label>
+            <select class="form-select" id="plan-select">
+              <option value="">— Select plan —</option>
+              ${planOptions}
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Custom Monthly Fee (GNF) — leave blank to use plan price</label>
+            <input class="form-input" id="plan-fee" type="number"
+              placeholder="e.g. 150000" value="${currentFee || ''}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes (optional)</label>
+            <input class="form-input" id="plan-notes" type="text"
+              placeholder="e.g. Promotional rate, 3-month contract">
+          </div>
+          <button class="btn-assign" id="plan-assign-btn" onclick="assignPlan('${c.id}')">
+            ${currentPlan ? 'Update Plan' : 'Assign Plan'}
+          </button>
+        </div>`;
+      })()}
+    </div>
+
+    <div class="divider"></div>
+
     <!-- Assigned Devices -->
     <div class="so-section" style="margin-top:20px">
       <p class="so-section-title">Assigned Devices (${(c.client_devices||[]).length})</p>
@@ -342,6 +407,45 @@ function renderDetail() {
         </button>
       </div>
     </div>`;
+}
+
+// ══════════════════════════════════════════════════════
+// ASSIGN PLAN
+// ══════════════════════════════════════════════════════
+async function assignPlan(clientId) {
+  const planId  = document.getElementById('plan-select').value;
+  const feeVal  = document.getElementById('plan-fee').value.trim();
+  const notes   = document.getElementById('plan-notes').value.trim();
+  const btn     = document.getElementById('plan-assign-btn');
+
+  if (!planId) { showToast('Select a plan first', 'error'); return; }
+
+  btn.disabled    = true;
+  btn.textContent = 'Assigning...';
+
+  try {
+    const body = { plan_id: planId };
+    if (feeVal) body.monthly_fee_override = parseInt(feeVal);
+    if (notes)  body.notes = notes;
+
+    const res  = await fetch(`${BACKEND}/api/entitlements/${clientId}`, {
+      method: 'POST', headers: authHeaders(), body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    showToast(`Plan assigned successfully ✅`, 'success');
+    // Refresh client data to show updated plan
+    await loadClients();
+    selectedClient = allClients.find(c => c.id === clientId);
+    if (selectedClient) renderDetail();
+
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = selectedClient?.client_entitlements?.length ? 'Update Plan' : 'Assign Plan';
+  }
 }
 
 // ══════════════════════════════════════════════════════
