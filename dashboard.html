@@ -2,278 +2,295 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Sherkall Intelligence | Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Sherkall Intel | Admin</title>
   <meta name="theme-color" content="#07111C">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="dashboard.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="/admin.css">
 </head>
 <body>
 
-<div id="app">
-
-  <!-- ══ TOPBAR ═══════════════════════════════════════ -->
+  <!-- ══ TOPBAR ══════════════════════════════════════ -->
   <header class="topbar">
     <div class="brand">
       <div class="brand-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"
-                fill="rgba(201,162,39,0.22)" stroke="#C9A227" stroke-width="1.5" stroke-linejoin="round"/>
-          <path d="M9 12l2 2 4-4" stroke="#C9A227" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z" fill="rgba(201,162,39,0.2)" stroke="#C9A227" stroke-width="1.5"/>
+          <path d="M9 12l2 2 4-4" stroke="#C9A227" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </div>
       SHERKALL <span>INTEL</span>
+      <span class="brand-badge">ADMIN</span>
     </div>
     <div class="topbar-right">
-      <div class="conn-pill" id="conn-indicator">
-        <div class="conn-dot"></div>
-        <span id="conn-label">...</span>
-      </div>
-      <div class="top-avatar" id="account-avatar">H</div>
-      <button class="top-icon-btn logout-btn" onclick="logout()" title="Déconnexion">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
-        </svg>
-      </button>
+      <span class="admin-name" id="admin-name"></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </header>
 
-  <!-- ══ VIEW: MAP ═════════════════════════════════════ -->
-  <div id="view-map" class="view view-map active">
-
-    <!-- Floating HUD stats bar -->
-    <div class="map-hud-bar">
-      <div class="hud-stat">
-        <span class="hud-dot hud-green"></span>
-        <span id="stat-moving">0</span>
-        <span class="hud-lbl">mvt</span>
-      </div>
-      <div class="hud-divider"></div>
-      <div class="hud-stat">
-        <span class="hud-dot hud-amber"></span>
-        <span id="stat-idle">0</span>
-        <span class="hud-lbl">veille</span>
-      </div>
-      <div class="hud-divider"></div>
-      <div class="hud-stat">
-        <span class="hud-dot hud-red"></span>
-        <span id="stat-offline">0</span>
-        <span class="hud-lbl">offline</span>
-      </div>
-    </div>
-
-    <!-- Leaflet map -->
-    <div id="map"></div>
-
-    <!-- Map layer switcher -->
-    <div class="map-layers-fab">
-      <button class="layer-fab active" onclick="setMapLayer('street',this)" title="Rue">🗺</button>
-      <button class="layer-fab" onclick="setMapLayer('satellite',this)" title="Satellite">🛰</button>
-    </div>
-
-    <!-- Zoom controls -->
-    <div class="map-zoom-ctrl">
-      <button class="zoom-btn" onclick="zoomIn()">+</button>
-      <button class="zoom-btn zoom-minus" onclick="zoomOut()">−</button>
-      <button class="zoom-btn zoom-center" onclick="centerAll()">⊙</button>
-    </div>
-
-    <!-- Toast alerts -->
-    <div id="alerts" class="alerts-overlay"></div>
-  </div>
-
-  <!-- ══ VIEW: VEHICLES ════════════════════════════════ -->
-  <div id="view-vehicles" class="view view-scroll">
-    <div class="view-header-block">
-      <h1 class="view-h1">My Fleet</h1>
-    </div>
-
-    <div class="search-box-wrap">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-      </svg>
-      <input id="vehicle-filter" type="text" placeholder="Search vehicle or VIN...">
-    </div>
-
-    <div class="fleet-kpi-row">
-      <div class="kpi-card">
-        <p class="kpi-label">ACTIVE ASSETS</p>
-        <p class="kpi-value kpi-green" id="kpi-active">0</p>
-      </div>
-      <div class="kpi-card">
-        <p class="kpi-label">ALERTS</p>
-        <p class="kpi-value kpi-red" id="kpi-alerts">0</p>
-      </div>
-    </div>
-
-    <ul id="vehicle-list" class="veh-list"></ul>
-
-    <button class="fab" onclick="contactSupport()" title="Support">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
-    </button>
-  </div>
-
-  <!-- ══ VIEW: ALERTS ══════════════════════════════════ -->
-  <div id="view-alerts" class="view view-scroll">
-    <div class="view-header-block">
-      <p class="view-eyebrow">SYSTEM MONITOR</p>
-      <div class="view-title-row">
-        <h1 class="view-h1">Recent Activity</h1>
-        <div class="live-pill">
-          <span class="live-dot-anim"></span>
-          Live Intel
-        </div>
-      </div>
-    </div>
-    <div id="alerts-feed" class="alerts-feed"></div>
-  </div>
-
-  <!-- ══ VIEW: PROFILE ═════════════════════════════════ -->
-  <div id="view-profile" class="view view-scroll">
-
-    <div class="profile-hero">
-      <div class="prof-avatar-ring">
-        <div class="prof-avatar" id="profile-avatar">H</div>
-        <div class="prof-badge-icon">
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="#C9A227">
-            <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z"/>
-          </svg>
-        </div>
-      </div>
-      <h2 class="prof-name" id="profile-name">—</h2>
-      <p class="prof-email" id="profile-email">—</p>
-      <div class="prof-plan-pill">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/>
-        </svg>
-        Sherkall Elite Member
-      </div>
-    </div>
-
-    <!-- Fleet Management -->
-    <div class="settings-block">
-      <p class="settings-title">Fleet Management</p>
-      <div class="settings-group">
-        <div class="settings-row" onclick="contactSupport()">
-          <div class="srow-icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
-            </svg>
-          </div>
-          <div class="srow-text">
-            <p class="srow-title">Alert Preferences</p>
-            <p class="srow-sub">Custom Push & SMS triggers</p>
-          </div>
-          <svg class="srow-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
-        </div>
-        <div class="settings-row" onclick="contactSupport()">
-          <div class="srow-icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
-            </svg>
-          </div>
-          <div class="srow-text">
-            <p class="srow-title">Geofence Settings</p>
-            <p class="srow-sub">Manage boundary zones</p>
-          </div>
-          <svg class="srow-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
-        </div>
-      </div>
-    </div>
-
-    <!-- Support -->
-    <div class="settings-block">
-      <p class="settings-title">Support & Help</p>
-      <div class="settings-group">
-        <div class="settings-row" onclick="contactSupport()">
-          <div class="srow-icon srow-whatsapp">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-            </svg>
-          </div>
-          <div class="srow-text">
-            <p class="srow-title">WhatsApp Support</p>
-            <p class="srow-sub">Direct line to SOC operator</p>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px">
-            <span class="online-badge">● Online</span>
-            <svg class="srow-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
-          </div>
-        </div>
-        <div class="settings-row" onclick="contactSupport()">
-          <div class="srow-icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-          </div>
-          <div class="srow-text">
-            <p class="srow-title">FAQ</p>
-            <p class="srow-sub">Help center and guides</p>
-          </div>
-          <svg class="srow-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
-        </div>
-      </div>
-    </div>
-
-    <button class="logout-full-btn" onclick="logout()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
-      </svg>
-      Logout
-    </button>
-    <p class="prof-version">SHERKALL INTEL V4.2.0-STABLE</p>
-  </div>
-
-  <!-- ══ VEHICLE DETAIL BOTTOM SHEET ══════════════════ -->
-  <div id="sheet-backdrop" class="sheet-backdrop" onclick="closeSheet()"></div>
-  <div id="vehicle-sheet" class="bottom-sheet">
-    <div class="sheet-handle-wrap">
-      <div class="sheet-handle"></div>
-    </div>
-    <div id="sheet-body" class="sheet-body"></div>
-  </div>
-
-  <!-- ══ BOTTOM NAVIGATION ═════════════════════════════ -->
-  <nav class="bottom-nav">
-    <button class="nav-btn active" id="nav-map" onclick="switchView('map')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
-        <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
-      </svg>
-      <span>Map</span>
-    </button>
-    <button class="nav-btn" id="nav-vehicles" onclick="switchView('vehicles')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="1" y="3" width="15" height="13"/>
-        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-        <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-      </svg>
-      <span>Vehicles</span>
-    </button>
-    <button class="nav-btn" id="nav-alerts" onclick="switchView('alerts')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-        <path d="M13.73 21a2 2 0 01-3.46 0"/>
-      </svg>
-      <span>Alerts</span>
-      <span class="nav-badge" id="nav-badge-alerts" style="display:none">0</span>
-    </button>
-    <button class="nav-btn" id="nav-profile" onclick="switchView('profile')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-      </svg>
-      <span>Profile</span>
-    </button>
+  <!-- ══ TAB NAVIGATION ════════════════════════════ -->
+  <nav class="admin-tabs">
+    <button class="admin-tab active" id="tab-btn-clients"   onclick="switchTab('clients')">👥 Clients</button>
+    <button class="admin-tab"        id="tab-btn-fleet"     onclick="switchTab('fleet')">🚗 Fleet</button>
+    <button class="admin-tab"        id="tab-btn-map"       onclick="switchTab('map')">🗺 Map</button>
+    <button class="admin-tab"        id="tab-btn-geofences" onclick="switchTab('geofences')">🚧 Zones</button>
   </nav>
 
-</div><!-- /#app -->
+  <!-- ══ TAB: CLIENTS ═══════════════════════════════ -->
+  <div id="tab-clients" class="tab-content active">
+  <!-- ══ MAIN ════════════════════════════════════════ -->
+  <main class="main">
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <p class="stat-label">Total Clients</p>
+        <p class="stat-value stat-white" id="stat-total">—</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Active</p>
+        <p class="stat-value stat-green" id="stat-active">—</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Devices</p>
+        <p class="stat-value stat-gold" id="stat-devices">—</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Suspended</p>
+        <p class="stat-value stat-red" id="stat-suspended">—</p>
+      </div>
+    </div>
+
+    <!-- Section header -->
+    <div class="section-header">
+      <h2 class="section-title">Clients</h2>
+      <div class="search-wrap">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="search-input" placeholder="Search clients..." oninput="filterClients()">
+      </div>
+      <button class="btn-primary" onclick="openCreateModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Client
+      </button>
+    </div>
+
+    <!-- Client list -->
+    <div class="client-list" id="client-list">
+      <div class="empty-state">
+        <div class="empty-icon">👥</div>
+        <p class="empty-text">Loading clients...</p>
+      </div>
+    </div>
+
+  </main>
+  </div><!-- /#tab-clients -->
+
+  <!-- ══ TAB: FLEET ═════════════════════════════════ -->
+  <div id="tab-fleet" class="tab-content">
+    <main class="main">
+      <div class="section-header">
+        <h2 class="section-title">Live Fleet</h2>
+        <div class="search-wrap">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="fleet-search" placeholder="Search vehicle..." oninput="filterFleet()">
+        </div>
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active" data-filter="all"     onclick="setFleetFilter('all',this)">All</button>
+        <button class="filter-btn"        data-filter="moving"  onclick="setFleetFilter('moving',this)">● Moving</button>
+        <button class="filter-btn"        data-filter="idle"    onclick="setFleetFilter('idle',this)">● Idle</button>
+        <button class="filter-btn"        data-filter="offline" onclick="setFleetFilter('offline',this)">● Offline</button>
+      </div>
+      <div id="fleet-list">
+        <div class="empty-state"><div class="empty-icon">🚗</div><p class="empty-text">Loading fleet...</p></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ══ TAB: MAP ════════════════════════════════════ -->
+  <div id="tab-map" class="tab-content">
+    <div style="padding:12px 20px 0;display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:11px;color:var(--grey)">
+          <span style="color:var(--green)">●</span> Moving &nbsp;
+          <span style="color:var(--amber)">●</span> Idle &nbsp;
+          <span style="color:var(--red)">●</span> Offline
+        </span>
+      </div>
+      <button class="filter-btn" onclick="centerAdminMap()">⊙ Center All</button>
+    </div>
+    <div style="padding:12px 20px 20px">
+      <div id="admin-map-container"><div id="admin-map"></div></div>
+    </div>
+  </div>
+
+  <!-- ══ TAB: ZONES (GEOFENCES) ═════════════════════ -->
+  <div id="tab-geofences" class="tab-content">
+    <main class="main">
+      <div class="section-header">
+        <h2 class="section-title">Zones</h2>
+        <button class="btn-primary" onclick="openCreateZoneModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Zone
+        </button>
+      </div>
+      <div id="zones-list">
+        <div class="empty-state"><div class="empty-icon">🚧</div><p class="empty-text">Loading zones...</p></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ══ CREATE ZONE MODAL ═══════════════════════════ -->
+  <div class="modal-overlay" id="zone-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Create Zone</h3>
+        <button class="so-close" onclick="closeCreateZoneModal()">✕</button>
+      </div>
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+        <div class="form-group">
+          <label class="form-label">Zone Name *</label>
+          <input class="form-input" id="z-name" type="text" placeholder="e.g. Warehouse Conakry">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select class="form-select" id="z-type" onchange="toggleZoneFields()">
+              <option value="circle">Circle</option>
+              <option value="polygon">Polygon</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Color</label>
+            <select class="form-select" id="z-color">
+              <option value="#C9A227">Gold</option>
+              <option value="#10B981">Green</option>
+              <option value="#EF4444">Red</option>
+              <option value="#3B82F6">Blue</option>
+              <option value="#8B5CF6">Purple</option>
+            </select>
+          </div>
+        </div>
+        <div id="z-circle-fields">
+          <!-- Interactive map picker - tap to set zone center -->
+          <p class="picker-hint">👆 Tap the map to place the zone center</p>
+          <div id="zone-picker-map"></div>
+          <div class="picker-coords">
+            <div class="picker-coord-badge" id="z-lat-display">Lat: —</div>
+            <div class="picker-coord-badge" id="z-lng-display">Lng: —</div>
+          </div>
+          <!-- Hidden inputs hold actual values -->
+          <input type="hidden" id="z-lat">
+          <input type="hidden" id="z-lng">
+          <div class="form-group">
+            <label class="form-label">Radius (metres) *</label>
+            <input class="form-input" id="z-radius" type="number" placeholder="500" min="50"
+              oninput="updatePickerPreview()">
+          </div>
+        </div>
+        <div style="display:flex;gap:16px;align-items:center">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+            <input type="checkbox" id="z-notify-enter" checked style="width:16px;height:16px">
+            Notify on Enter
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+            <input type="checkbox" id="z-notify-exit" style="width:16px;height:16px">
+            Notify on Exit
+          </label>
+        </div>
+        <button class="btn-assign" id="z-create-btn" onclick="createZone()">Create Zone</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CLIENT DETAIL SLIDE-OVER ════════════════════ -->
+  <div class="overlay" id="overlay" onclick="closeDetail()"></div>
+  <div class="slide-over" id="slide-over">
+    <div class="so-header">
+      <div>
+        <p style="font-size:11px;color:var(--grey);margin-bottom:3px;">CLIENT DETAIL</p>
+        <h2 id="so-name" style="font-size:17px;font-weight:700"></h2>
+      </div>
+      <button class="so-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="so-body" id="so-body"></div>
+  </div>
+
+  <!-- ══ CREATE CLIENT MODAL ═════════════════════════ -->
+  <div class="modal-overlay" id="create-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Create New Client</h3>
+        <button class="so-close" onclick="closeCreateModal()">✕</button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Success credentials box -->
+        <div class="credentials-box" id="cred-box">
+          <p class="cred-title">✅ Client created — share these credentials:</p>
+          <div class="cred-row"><span class="cred-key">Email</span><span class="cred-val" id="cred-email"></span></div>
+          <div class="cred-row"><span class="cred-key">Password</span><span class="cred-val" id="cred-password"></span></div>
+          <div class="cred-row"><span class="cred-key">Login URL</span><span class="cred-val">sherkallintel.vercel.app/login.html</span></div>
+        </div>
+
+        <div id="create-form-fields">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Full Name *</label>
+              <input class="form-input" id="f-name" type="text" placeholder="Mamadou Diallo">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone (WhatsApp)</label>
+              <input class="form-input" id="f-phone" type="text" placeholder="+224 6XX XXX XXX">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input class="form-input" id="f-email" type="email" placeholder="client@example.com">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <div style="display:flex;gap:8px">
+              <input class="form-input" id="f-password" type="text" placeholder="Minimum 6 characters" style="flex:1">
+              <button type="button" onclick="generatePassword()" style="padding:11px 14px;background:var(--gold-dim);border:1px solid var(--gold-bdr);border-radius:var(--radius-sm);color:var(--gold);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">
+                Auto
+              </button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Plan</label>
+              <select class="form-select" id="f-plan">
+                <option value="basic">Basic</option>
+                <option value="standard">Standard</option>
+                <option value="premium">Premium</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Monthly Fee (GNF)</label>
+              <input class="form-input" id="f-fee" type="number" placeholder="500000">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <input class="form-input" id="f-notes" type="text" placeholder="Internal notes about this client">
+          </div>
+
+          <button class="btn-assign" id="create-btn" onclick="createClient()">
+            Create Client
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script type="module" src="/js/dashboard.js"></script>
+<script defer src="/js/pages/admin.js"></script>
 </body>
 </html>
