@@ -621,6 +621,15 @@ function openCreateModal() {
   document.getElementById('create-form-fields').style.display = 'flex';
   document.getElementById('create-form-fields').style.flexDirection = 'column';
   document.getElementById('create-form-fields').style.gap = '14px';
+
+  // Populate plan dropdown from allPlans (dynamic, not hardcoded)
+  const planSelect = document.getElementById('f-plan');
+  if (planSelect && allPlans.length) {
+    planSelect.innerHTML = allPlans.map(p =>
+      `<option value="${p.name}">${escHtml(p.display_name)} — ${Number(p.price_gnf).toLocaleString()} GNF</option>`
+    ).join('');
+  }
+
   clearCreateForm();
 }
 
@@ -730,11 +739,14 @@ function switchTab(name) {
   }
   if (name === 'map') {
     initAdminMap();
-    // invalidateSize AFTER the tab is visible in the DOM
+    // invalidateSize must run AFTER CSS display:flex is applied and browser has painted
+    // 80ms is not enough on mobile — increase to 200ms
     setTimeout(() => {
-      if (adminMap) adminMap.invalidateSize();
-      loadAdminMap();
-    }, 80);
+      if (adminMap) {
+        adminMap.invalidateSize({ animate: false });
+        loadAdminMap();
+      }
+    }, 200);
   }
   if (name === 'geofences') loadZones();
 }
@@ -872,13 +884,18 @@ let adminMap = null, adminMarkers = {}, adminGeofenceLayers = {};
 function initAdminMap() {
   if (adminMap) return;
   adminMap = L.map('admin-map', {
-    zoomControl:       true,
-    tap:               false,  // critical: prevents Leaflet from eating mobile touch events
-    tapTolerance:      15,
-    touchZoom:         true,
-    scrollWheelZoom:   false,
-    attributionControl: true
+    zoomControl:        true,
+    tap:                false,
+    tapTolerance:       15,
+    touchZoom:          true,
+    scrollWheelZoom:    false,
+    attributionControl: true,
+    worldCopyJump:      true,
+    maxBoundsViscosity: 0.8
   }).setView([9.538, -13.677], 12);
+
+  adminMap.setMaxBounds([[-90, -180], [90, 180]]);
+
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19, attribution: '© OpenStreetMap', subdomains: 'abc'
   }).addTo(adminMap);
