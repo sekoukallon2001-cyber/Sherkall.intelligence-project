@@ -51,13 +51,30 @@ export function clearSession() {
 }
 
 // ── ROLE GUARD ────────────────────────────────────────
-// Both token and user come from sessionStorage only.
-// No localStorage fallback — no cross-tab contamination.
+// Reads DIRECTLY from sessionStorage — never uses ensureSession.
+// ensureSession only runs for new tabs with no session.
+// requireRole must always see the freshest sessionStorage data.
 export function requireRole(expectedRole) {
-  const token = getToken();
-  const user  = getUser();
+  const token  = sessionStorage.getItem('sherkall_token');
+  const rawUser = sessionStorage.getItem('sherkall_user');
 
-  if (!token || !user) {
+  // If sessionStorage is empty, try localStorage once (new tab scenario)
+  // but do NOT persist stale data back to sessionStorage here
+  const effectiveToken = token || localStorage.getItem('sherkall_token');
+  const effectiveRaw   = rawUser || localStorage.getItem('sherkall_user');
+
+  if (!effectiveToken || !effectiveRaw) {
+    window.location.href = '/login.html';
+    return null;
+  }
+
+  let user;
+  try { user = JSON.parse(effectiveRaw); } catch {
+    window.location.href = '/login.html';
+    return null;
+  }
+
+  if (!user?.role) {
     window.location.href = '/login.html';
     return null;
   }
@@ -72,5 +89,11 @@ export function requireRole(expectedRole) {
     return null;
   }
 
-  return { token, user }; // both from sessionStorage — single source, no mixing
+  // If we used localStorage fallback, sync to sessionStorage now
+  if (!token && effectiveToken) {
+    sessionStorage.setItem('sherkall_token', effectiveToken);
+    sessionStorage.setItem('sherkall_user',  effectiveRaw);
+  }
+
+  return { token: effectiveToken, user };
 }
