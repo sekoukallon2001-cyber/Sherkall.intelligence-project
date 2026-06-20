@@ -486,13 +486,13 @@
             return;
           }
 
-          // Save token and user info
-          // Store in localStorage (persists across tabs) AND sessionStorage (tab-specific)
-          // sessionStorage ensures each tab has its own isolated session
-          localStorage.setItem('sherkall_token', data.token);
-          localStorage.setItem('sherkall_user', JSON.stringify(data.user));
+          // Write sessionStorage FIRST — dashboard reads this on load
+          // sessionStorage must be set before the redirect fires
           sessionStorage.setItem('sherkall_token', data.token);
           sessionStorage.setItem('sherkall_user', JSON.stringify(data.user));
+          // localStorage second — for persistence across new tabs
+          localStorage.setItem('sherkall_token', data.token);
+          localStorage.setItem('sherkall_user', JSON.stringify(data.user));
 
           showSuccess('Connexion réussie! Redirection...');
 
