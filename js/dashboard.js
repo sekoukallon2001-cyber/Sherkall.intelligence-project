@@ -17,9 +17,12 @@ import { updateAllKPIs, setConnected } from './ui/stats.js';
 import { loadEntitlements, clearEntitlements, canUse, getPlan, upgradeMessage } from './entitlements.js';
 
 // ── AUTH GUARD ────────────────────────────────────────
-const session = requireRole('client');
-if (!session) throw new Error('Not authenticated');
-const { token, user } = session;
+// NOTE: session and user are declared here but populated
+// inside DOMContentLoaded to ensure storage writes from
+// login.html are fully committed before we read them.
+let session = null;
+let token   = null;
+let user    = null;
 
 // ── APPLY USER INFO ───────────────────────────────────
 function applyUserInfo() {
@@ -154,6 +157,15 @@ Object.assign(window, {
 
 // ── INIT ──────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+  // ── AUTH CHECK — runs here not at module level ────────
+  // Module evaluation happens before storage writes from
+  // login.html are fully committed on some mobile browsers.
+  // Running inside DOMContentLoaded guarantees fresh reads.
+  session = requireRole('client');
+  if (!session) return; // requireRole handles redirect
+  token = session.token;
+  user  = session.user;
+
   // Load entitlements first — all feature gates depend on this
   await loadEntitlements();
 
