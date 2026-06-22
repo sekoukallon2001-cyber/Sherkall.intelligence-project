@@ -490,20 +490,16 @@
           // sessionStorage must be set before the redirect fires
           sessionStorage.setItem('sherkall_token', data.token);
           sessionStorage.setItem('sherkall_user', JSON.stringify(data.user));
-          sessionStorage.setItem('sherkall_token', data.token);
-sessionStorage.setItem('sherkall_user', JSON.stringify(data.user));
-// TEMPORARY DEBUG — remove after testing
-alert('Role: ' + data.user.role + ' | Email: ' + data.user.email);
           // localStorage second — for persistence across new tabs
           localStorage.setItem('sherkall_token', data.token);
           localStorage.setItem('sherkall_user', JSON.stringify(data.user));
 
           showSuccess('Connexion réussie! Redirection...');
 
-          // Redirect by role
-          setTimeout(() => {
-            window.location.href = isAdmin ? '/admin.html' : '/dashboard.html';
-          }, 1000);
+          // Redirect immediately — no setTimeout
+          // setTimeout causes sessionStorage to be cleared on some
+          // Android Chrome versions before the next page loads
+          window.location.href = isAdmin ? '/admin.html' : '/dashboard.html';
 
         } else {
           showError(data.message || 'Email ou mot de passe incorrect');
