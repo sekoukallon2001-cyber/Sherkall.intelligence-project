@@ -490,6 +490,10 @@
           // sessionStorage must be set before the redirect fires
           sessionStorage.setItem('sherkall_token', data.token);
           sessionStorage.setItem('sherkall_user', JSON.stringify(data.user));
+          sessionStorage.setItem('sherkall_token', data.token);
+sessionStorage.setItem('sherkall_user', JSON.stringify(data.user));
+// TEMPORARY DEBUG — remove after testing
+alert('Role: ' + data.user.role + ' | Email: ' + data.user.email);
           // localStorage second — for persistence across new tabs
           localStorage.setItem('sherkall_token', data.token);
           localStorage.setItem('sherkall_user', JSON.stringify(data.user));
