@@ -51,25 +51,38 @@ export function clearSession() {
 }
 
 // ── ROLE GUARD ────────────────────────────────────────
-// Reads DIRECTLY from sessionStorage — never uses ensureSession.
-// ensureSession only runs for new tabs with no session.
-// requireRole must always see the freshest sessionStorage data.
+// Critical rule: token and user must come from the SAME
+// storage source. Never mix sessionStorage token with
+// localStorage user — they may belong to different accounts.
 export function requireRole(expectedRole) {
-  const token  = sessionStorage.getItem('sherkall_token');
-  const rawUser = sessionStorage.getItem('sherkall_user');
+  // Try sessionStorage first (tab-specific, freshest data)
+  let token  = sessionStorage.getItem('sherkall_token');
+  let rawUser = sessionStorage.getItem('sherkall_user');
 
-  // If sessionStorage is empty, try localStorage once (new tab scenario)
-  // but do NOT persist stale data back to sessionStorage here
-  const effectiveToken = token || localStorage.getItem('sherkall_token');
-  const effectiveRaw   = rawUser || localStorage.getItem('sherkall_user');
+  // Only fall back to localStorage if BOTH are missing from sessionStorage
+  // Never mix one from session and one from local
+  if (!token || !rawUser) {
+    token   = localStorage.getItem('sherkall_token');
+    rawUser = localStorage.getItem('sherkall_user');
 
-  if (!effectiveToken || !effectiveRaw) {
+    // If found in localStorage, sync to sessionStorage immediately
+    if (token && rawUser) {
+      sessionStorage.setItem('sherkall_token', token);
+      sessionStorage.setItem('sherkall_user',  rawUser);
+    }
+  }
+
+  if (!token || !rawUser) {
     window.location.href = '/login.html';
     return null;
   }
 
   let user;
-  try { user = JSON.parse(effectiveRaw); } catch {
+  try { user = JSON.parse(rawUser); } catch {
+    // Corrupt storage — clear everything and force re-login
+    ['sherkall_token','sherkall_user'].forEach(k => {
+      sessionStorage.removeItem(k); localStorage.removeItem(k);
+    });
     window.location.href = '/login.html';
     return null;
   }
@@ -89,11 +102,5 @@ export function requireRole(expectedRole) {
     return null;
   }
 
-  // If we used localStorage fallback, sync to sessionStorage now
-  if (!token && effectiveToken) {
-    sessionStorage.setItem('sherkall_token', effectiveToken);
-    sessionStorage.setItem('sherkall_user',  effectiveRaw);
-  }
-
-  return { token: effectiveToken, user };
+  return { token, user };
 }
