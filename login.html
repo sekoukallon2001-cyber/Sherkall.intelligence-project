@@ -486,20 +486,19 @@
             return;
           }
 
-          // Write sessionStorage FIRST — dashboard reads this on load
-          // sessionStorage must be set before the redirect fires
+          // Write to both storages
           sessionStorage.setItem('sherkall_token', data.token);
           sessionStorage.setItem('sherkall_user', JSON.stringify(data.user));
-          // localStorage second — for persistence across new tabs
           localStorage.setItem('sherkall_token', data.token);
           localStorage.setItem('sherkall_user', JSON.stringify(data.user));
 
           showSuccess('Connexion réussie! Redirection...');
 
-          // Redirect immediately — no setTimeout
-          // setTimeout causes sessionStorage to be cleared on some
-          // Android Chrome versions before the next page loads
-          window.location.href = isAdmin ? '/admin.html' : '/dashboard.html';
+          // Pass token in URL hash as fallback for mobile browsers
+          // that clear sessionStorage on navigation
+          const encoded = encodeURIComponent(data.token);
+          const dest = isAdmin ? '/admin.html' : '/dashboard.html';
+          window.location.href = dest + '#tk=' + encoded;
 
         } else {
           showError(data.message || 'Email ou mot de passe incorrect');
