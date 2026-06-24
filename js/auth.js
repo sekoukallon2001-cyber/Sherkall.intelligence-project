@@ -13,19 +13,22 @@ const KEY_USER  = 'sherkall_user';
 //   2. sessionStorage — tab-specific current session
 //   3. localStorage   — cross-tab persistence fallback
 function ensureSession() {
-  // 1. URL hash token passed from login redirect
-  //    Bypasses sessionStorage clearing on Android Chrome navigation
+  // 1. URL hash — freshest data, passed directly from login
+  //    Both token AND user come from hash so we never touch localStorage
+  //    which may have stale data from a different account
   const hash = window.location.hash || '';
   if (hash.includes('tk=')) {
-    const tk  = decodeURIComponent((hash.split('tk=')[1] || '').split('&')[0]);
-    const lsU = localStorage.getItem(KEY_USER);
-    if (tk && lsU) {
-      sessionStorage.setItem(KEY_TOKEN, tk);
-      sessionStorage.setItem(KEY_USER,  lsU);
-      // Remove token from URL so it doesn't appear in browser history
-      history.replaceState(null, '', window.location.pathname);
-      return;
-    }
+    try {
+      const params = new URLSearchParams(hash.slice(1));
+      const tk = decodeURIComponent(params.get('tk') || '');
+      const u  = decodeURIComponent(params.get('u')  || '');
+      if (tk && u) {
+        sessionStorage.setItem(KEY_TOKEN, tk);
+        sessionStorage.setItem(KEY_USER,  u);
+        history.replaceState(null, '', window.location.pathname);
+        return;
+      }
+    } catch {}
   }
 
   // 2. If sessionStorage empty, sync from localStorage
