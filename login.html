@@ -494,11 +494,13 @@
 
           showSuccess('Connexion réussie! Redirection...');
 
-          // Pass token in URL hash as fallback for mobile browsers
-          // that clear sessionStorage on navigation
-          const encoded = encodeURIComponent(data.token);
+          // Pass BOTH token and user in URL hash
+          // This bypasses sessionStorage clearing on Android Chrome navigation
+          // We don't rely on localStorage because it may have stale data from another session
+          const tk = encodeURIComponent(data.token);
+          const u  = encodeURIComponent(JSON.stringify(data.user));
           const dest = isAdmin ? '/admin.html' : '/dashboard.html';
-          window.location.href = dest + '#tk=' + encoded;
+          window.location.href = dest + '#tk=' + tk + '&u=' + u;
 
         } else {
           showError(data.message || 'Email ou mot de passe incorrect');
