@@ -157,12 +157,25 @@ Object.assign(window, {
 
 // ── INIT ──────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+  // ── TEMPORARY DEBUG — remove after testing ──────────
+  const _hash = window.location.hash || '';
+  const _ssT  = sessionStorage.getItem('sherkall_token');
+  const _ssU  = sessionStorage.getItem('sherkall_user');
+  const _lsT  = localStorage.getItem('sherkall_token');
+  const _lsU  = localStorage.getItem('sherkall_user');
+  let _role = '?';
+  try { _role = JSON.parse(_ssU || _lsU || '{}').role || 'none'; } catch {}
+  alert(
+    'HASH: ' + (_hash ? _hash.substring(0,30) : 'NONE') +
+    '\nSS token: ' + (_ssT ? 'YES' : 'NO') +
+    '\nSS user role: ' + ((() => { try { return JSON.parse(_ssU||'{}').role; } catch { return 'ERR'; } })()) +
+    '\nLS user role: ' + ((() => { try { return JSON.parse(_lsU||'{}').role; } catch { return 'ERR'; } })())
+  );
+  // ── END DEBUG ────────────────────────────────────────
+
   // ── AUTH CHECK — runs here not at module level ────────
-  // Module evaluation happens before storage writes from
-  // login.html are fully committed on some mobile browsers.
-  // Running inside DOMContentLoaded guarantees fresh reads.
   session = requireRole('client');
-  if (!session) return; // requireRole handles redirect
+  if (!session) return;
   token = session.token;
   user  = session.user;
 
