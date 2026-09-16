@@ -5,7 +5,7 @@
 // Single source of truth for all constants.
 // White-label: change BACKEND_URL per tenant deployment.
 
-export const BACKEND_URL = 'https://sherkall-backend-production.up.railway.app';
+export const BACKEND_URL = 'https://sherkall-backend.onrender.com';
 
 export const CONFIG = {
   SPEED_THRESHOLD:    3,       // km/h — moving vs idle

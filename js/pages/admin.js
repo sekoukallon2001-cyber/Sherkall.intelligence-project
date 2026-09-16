@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════════════════
-const BACKEND = 'https://sherkall-backend-production.up.railway.app';
+const BACKEND = 'https://sherkall-backend.onrender.com';
 const token   = sessionStorage.getItem('sherkall_token') || localStorage.getItem('sherkall_token');
 
 // Safe parse — malformed JSON in storage crashes the entire script

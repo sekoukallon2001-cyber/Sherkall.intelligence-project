@@ -69,7 +69,7 @@ async function loadAll() {
     const [devData, posData, geoData] = await Promise.all([
       fetchVehicles(),
       fetchPositions(),
-      fetchGeofences()
+      fetchGeofences(),
     ]);
 
     // Load vehicles FIRST — creates vehicleStore entries
